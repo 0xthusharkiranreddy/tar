@@ -2,15 +2,18 @@ name: checksec
 category: binary
 description: Binary protection analysis
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "checksec --file {binary}"
+command_template: checksec --file {binary}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Check NX (no-execute), ASLR, stack canary, PIE (position-independent), RELRO. Determines which exploitation techniques are viable."
+mechanism: '$ checksec --file ./vuln [*] ''/tmp/vuln'' Arch:     amd64-64-little RELRO:    Full
+  Stack:    Canary found NX:       NX enabled PIE:      No PIE (0x400000) `checksec`
+  (part of [pwntools](https://github.'
+hacktricks_ref: binary-exploitation/common-binary-protections-and-bypasses/relro.md

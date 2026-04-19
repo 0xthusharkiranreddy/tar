@@ -2,16 +2,18 @@ name: gobuster
 category: web
 description: Directory and vhost brute-forcing on web servers
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_engagement.target_url
-  wordlist: "/usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt"
-command_template: "gobuster dir -u {target_url} -w {wordlist} -t 50 -o /tmp/gobuster_output.txt"
+  wordlist: /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt
+command_template: gobuster dir -u {target_url} -w {wordlist} -t 50 -o /tmp/gobuster_output.txt
 parser: gobuster_parser
 expected_effects:
-  - web_directories_discovered
+- web_directories_discovered
 falsifier:
-  pattern: "Error|Unable to connect"
+  pattern: Error|Unable to connect
   timeout: 300
 model_tier: haiku
-mechanism: "Directory brute-force using wordlists. Use 'dir' mode for paths, 'vhost' mode for virtual hosts, 'dns' for subdomain enum. -x flag adds extensions (php,txt,html)."
+mechanism: Directory brute-force using wordlists. Use 'dir' mode for paths, 'vhost'
+  mode for virtual hosts, 'dns' for subdomain enum. -x flag adds extensions (php,txt,html).
+hacktricks_ref: network-services-pentesting/pentesting-smb/README.md

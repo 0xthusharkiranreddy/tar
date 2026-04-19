@@ -2,16 +2,19 @@ name: whatweb
 category: web
 description: Web technology fingerprinting
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_engagement.target_url
-command_template: "whatweb -a 3 {target_url}"
+command_template: whatweb -a 3 {target_url}
 parser: null
 expected_effects:
-  - web_tech_identified
-  - cms_identified
+- web_tech_identified
+- cms_identified
 falsifier:
-  pattern: "ERROR|Timed out"
+  pattern: ERROR|Timed out
   timeout: 60
 model_tier: haiku
-mechanism: "Fingerprints web technologies: CMS (WordPress/Drupal/Joomla), frameworks (Django/Rails/Laravel), languages (PHP/ASP.NET), servers (Apache/Nginx/IIS), JavaScript libraries. -a 3 is aggressive mode."
+mechanism: 'Fingerprints web technologies: CMS (WordPress/Drupal/Joomla), frameworks
+  (Django/Rails/Laravel), languages (PHP/ASP.NET), servers (Apache/Nginx/IIS), JavaScript
+  libraries. -a 3 is aggressive mode.'
+hacktricks_ref: generic-hacking/tunneling-and-port-forwarding.md

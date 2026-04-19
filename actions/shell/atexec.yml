@@ -2,21 +2,23 @@ name: atexec
 category: shell
 description: Command execution via Windows Task Scheduler
 preconditions:
-  - service.port==445
-  - has_cred
-  - os==windows
+- service.port==445
+- has_cred
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
   domain: from_engagement.domain
   username: from_cred.username
   password: from_cred.password
   command: from_engagement.exec_command
-command_template: "impacket-atexec '{domain}/{username}:{password}@{target_ip}' '{command}'"
+command_template: impacket-atexec '{domain}/{username}:{password}@{target_ip}' '{command}'
 parser: null
 expected_effects:
-  - command_executed
+- command_executed
 falsifier:
-  pattern: "ACCESS_DENIED|rpc_s_access_denied"
+  pattern: ACCESS_DENIED|rpc_s_access_denied
   timeout: 30
 model_tier: haiku
-mechanism: "Registers a scheduled task via ATSVC, executes command, retrieves output. Alternative to psexec/smbexec when service creation is blocked. Requires admin privileges."
+mechanism: Registers a scheduled task via ATSVC, executes command, retrieves output.
+  Alternative to psexec/smbexec when service creation is blocked. Requires admin privileges.
+hacktricks_ref: network-services-pentesting/pentesting-smb/README.md

@@ -2,15 +2,17 @@ name: vnc_access
 category: services
 description: VNC access and enumeration
 preconditions:
-  - service.port==5900
+- service.port==5900
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "vncviewer {target_ip}:5900"
+command_template: vncviewer {target_ip}:5900
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "VNC provides remote desktop. Try no auth first, then common passwords. Encrypted VNC passwords stored in files can be decrypted (known key)."
+mechanism: VNC provides remote desktop. Try no auth first, then common passwords.
+  Encrypted VNC passwords stored in files can be decrypted (known key).
+hacktricks_ref: network-services-pentesting/pentesting-vnc.md

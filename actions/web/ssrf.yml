@@ -2,17 +2,20 @@ name: ssrf
 category: web
 description: Server-Side Request Forgery exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_finding.url
   internal_target: from_finding.internal_url
-command_template: "curl -s '{target_url}?url={internal_target}'"
+command_template: curl -s '{target_url}?url={internal_target}'
 parser: null
 expected_effects:
-  - internal_service_accessed
-  - metadata_leaked
+- internal_service_accessed
+- metadata_leaked
 falsifier:
-  pattern: "forbidden|blocked|error"
+  pattern: 403|refused|blocked|filtered|timeout
   timeout: 30
 model_tier: haiku
-mechanism: "Makes server fetch attacker-controlled URLs. Targets: cloud metadata (169.254.169.254), internal services (127.0.0.1:port), file:// for local files. Bypasses: decimal IP, IPv6, DNS rebinding, URL encoding, redirect chains."
+mechanism: 'Makes server fetch attacker-controlled URLs. Targets: cloud metadata (169.254.169.254),
+  internal services (127.0.0.1:port), file:// for local files. Bypasses: decimal IP,
+  IPv6, DNS rebinding, URL encoding, redirect chains.'
+hacktricks_ref: pentesting-web/pocs-and-polygloths-cheatsheet/README.md

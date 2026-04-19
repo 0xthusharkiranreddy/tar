@@ -2,19 +2,23 @@ name: kerbrute_spray
 category: ad
 description: Kerberos password spraying (avoids account lockouts)
 preconditions:
-  - service.port==88
-  - domain_joined
+- service.port==88
+- domain_joined
 parameters:
   target_ip: from_engagement.target_ip
   domain: from_engagement.domain
   password: from_engagement.spray_password
-command_template: "kerbrute passwordspray --dc {target_ip} -d {domain} /tmp/users.txt '{password}'"
+command_template: kerbrute passwordspray --dc {target_ip} -d {domain} /tmp/users.txt
+  '{password}'
 parser: null
 expected_effects:
-  - valid_creds_found
-  - has_cred
+- valid_creds_found
+- has_cred
 falsifier:
-  pattern: "0 valid passwords"
+  pattern: 0 valid passwords|error|timeout|locked out
   timeout: 120
 model_tier: haiku
-mechanism: "Kerberos pre-auth spray. Faster and stealthier than SMB-based spraying. Does not trigger traditional logon failure events (4625). Use one password per spray round with delay between rounds to avoid lockout."
+mechanism: Kerberos pre-auth spray. Faster and stealthier than SMB-based spraying.
+  Does not trigger traditional logon failure events (4625). Use one password per spray
+  round with delay between rounds to avoid lockout.
+hacktricks_ref: windows-hardening/active-directory-methodology/README.md

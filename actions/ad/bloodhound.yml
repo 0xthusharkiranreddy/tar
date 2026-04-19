@@ -2,20 +2,24 @@ name: bloodhound
 category: ad
 description: BloodHound data collection for AD attack path analysis
 preconditions:
-  - service.port==389
-  - domain_joined
+- service.port==389
+- domain_joined
 parameters:
   target_ip: from_engagement.target_ip
   domain: from_engagement.domain
   username: from_cred.username
   password: from_cred.password
-command_template: "bloodhound-python -c all -u '{username}' -p '{password}' -d {domain} -dc {target_ip} -ns {target_ip}"
+command_template: bloodhound-python -c all -u '{username}' -p '{password}' -d {domain}
+  -dc {target_ip} -ns {target_ip}
 parser: bloodhound_parser
 expected_effects:
-  - ad_graph_collected
-  - attack_paths_identified
+- ad_graph_collected
+- attack_paths_identified
 falsifier:
-  pattern: "ERROR|Authentication failed|Connection refused"
+  pattern: ERROR|Authentication failed|Connection refused
   timeout: 120
 model_tier: haiku
-mechanism: "Collects AD objects (users, groups, computers, GPOs, ACLs, sessions, trusts) via LDAP/SAMR/SRVSVC. Produces JSON files for BloodHound graph analysis. Key queries: shortest path to DA, Kerberoastable users, AS-REP roastable, owned principals."
+mechanism: 'Collects AD objects (users, groups, computers, GPOs, ACLs, sessions, trusts)
+  via LDAP/SAMR/SRVSVC. Produces JSON files for BloodHound graph analysis. Key queries:
+  shortest path to DA, Kerberoastable users, AS-REP roastable, owned principals.'
+hacktricks_ref: windows-hardening/active-directory-methodology/acl-persistence-abuse/BadSuccessor.md

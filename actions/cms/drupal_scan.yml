@@ -2,16 +2,19 @@ name: drupal_scan
 category: cms
 description: Drupal version detection and known vulnerability check
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_engagement.target_url
-command_template: "droopescan scan drupal -u {target_url}"
+command_template: droopescan scan drupal -u {target_url}
 parser: null
 expected_effects:
-  - drupal_version_found
-  - drupal_vulns_found
+- drupal_version_found
+- drupal_vulns_found
 falsifier:
-  pattern: "not a Drupal site|error"
+  pattern: not a Drupal site|error
   timeout: 120
 model_tier: haiku
-mechanism: "Drupal version detection via CHANGELOG.txt, core files. Key CVEs: Drupalgeddon (SA-CORE-2014-005), Drupalgeddon2 (CVE-2018-7600), Drupalgeddon3 (CVE-2018-7602). All allow unauthenticated RCE on vulnerable versions."
+mechanism: 'Drupal version detection via CHANGELOG.txt, core files. Key CVEs: Drupalgeddon
+  (SA-CORE-2014-005), Drupalgeddon2 (CVE-2018-7600), Drupalgeddon3 (CVE-2018-7602).
+  All allow unauthenticated RCE on vulnerable versions.'
+hacktricks_ref: network-services-pentesting/pentesting-web/drupal/README.md

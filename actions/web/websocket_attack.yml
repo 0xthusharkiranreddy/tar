@@ -2,15 +2,18 @@ name: websocket_attack
 category: web
 description: WebSocket exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "websocat ws://{target_ip}:{port}"
+command_template: websocat ws://{target_ip}:{port}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "WebSockets bypass CORS, may skip auth checks applied to HTTP. Test: CSWSH (cross-site WebSocket hijacking), injection in WS messages, auth bypass."
+mechanism: Note that when **establishing** a **websocket** connection the **cookie**
+  is **sent** to the server. The **server** might be using it to **relate** each **specific**
+  **user** with his **websocket** **session based on the sent cookie**.
+hacktricks_ref: pentesting-web/xss-cross-site-scripting/dom-xss.md

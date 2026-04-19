@@ -2,15 +2,17 @@ name: backup_operators
 category: privesc
 description: Backup Operators group privesc
 preconditions:
-  - os==windows
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "diskshadow.exe /s shadow_script.txt"
+command_template: diskshadow.exe /s shadow_script.txt
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Backup Operators can read any file via SeBackupPrivilege. Use diskshadow to create VSS copy, then robocopy /B to read NTDS.dit. Extract hashes with secretsdump."
+mechanism: Backup Operators can read any file via SeBackupPrivilege. Use diskshadow
+  to create VSS copy, then robocopy /B to read NTDS.dit. Extract hashes with secretsdump.
+hacktricks_ref: mobile-pentesting/android-app-pentesting/adb-commands.md

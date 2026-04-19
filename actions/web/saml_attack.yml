@@ -2,15 +2,18 @@ name: saml_attack
 category: web
 description: SAML authentication bypass
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 saml_tool.py --url '{target_url}' --response '{saml_response}'"
+command_template: python3 saml_tool.py --url '{target_url}' --response '{saml_response}'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "SAML attacks: XML signature wrapping (move assertion outside signed portion), comment injection (user<!-->admin), XXE in SAML response, golden SAML with stolen cert."
+mechanism: 'SAML attacks: XML signature wrapping (move assertion outside signed portion),
+  comment injection (user<!-->admin), XXE in SAML response, golden SAML with stolen
+  cert.'
+hacktricks_ref: network-services-pentesting/49-pentesting-tacacs+.md

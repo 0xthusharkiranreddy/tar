@@ -2,16 +2,20 @@ name: read_laps
 category: ad
 description: Read LAPS password via LDAP
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 pyLAPS.py --action get -d {domain} -u '{username}' -p '{password}' --dc-ip {target_ip}"
+command_template: python3 pyLAPS.py --action get -d {domain} -u '{username}' -p '{password}'
+  --dc-ip {target_ip}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "LAPS stores randomized local admin password in ms-Mcs-AdmPwd (LAPSv1) or ms-LAPS-Password (LAPSv2). Readable by authorized groups. Gives local admin on target computer."
+mechanism: LAPS stores randomized local admin password in ms-Mcs-AdmPwd (LAPSv1) or
+  ms-LAPS-Password (LAPSv2). Readable by authorized groups. Gives local admin on target
+  computer.
+hacktricks_ref: windows-hardening/active-directory-methodology/laps.md

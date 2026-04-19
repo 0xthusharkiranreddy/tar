@@ -2,16 +2,20 @@ name: smtp_enum
 category: services
 description: SMTP user enumeration via VRFY/EXPN/RCPT
 preconditions:
-  - service.port==25
+- service.port==25
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "smtp-user-enum -M VRFY -U /usr/share/seclists/Usernames/Names/names.txt -t {target_ip}"
+command_template: smtp-user-enum -M VRFY -U /usr/share/seclists/Usernames/Names/names.txt
+  -t {target_ip}
 parser: null
 expected_effects:
-  - email_users_found
-  - has_users
+- email_users_found
+- has_users
 falsifier:
-  pattern: "0 results|Connection refused"
+  pattern: 0 results|Connection refused
   timeout: 120
 model_tier: haiku
-mechanism: "SMTP VRFY confirms if user exists, EXPN expands mailing lists, RCPT TO checks valid recipients. Enumerated users feed into password spraying. Some servers respond differently for valid vs invalid users even without VRFY."
+mechanism: SMTP VRFY confirms if user exists, EXPN expands mailing lists, RCPT TO
+  checks valid recipients. Enumerated users feed into password spraying. Some servers
+  respond differently for valid vs invalid users even without VRFY.
+hacktricks_ref: network-services-pentesting/pentesting-smtp/README.md

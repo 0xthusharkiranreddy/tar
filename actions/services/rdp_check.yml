@@ -2,18 +2,22 @@ name: rdp_check
 category: services
 description: RDP access check and connection
 preconditions:
-  - service.port==3389
-  - has_cred
+- service.port==3389
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
   username: from_cred.username
   password: from_cred.password
-command_template: "xfreerdp /v:{target_ip} /u:{username} /p:'{password}' /cert:ignore +clipboard"
+command_template: xfreerdp /v:{target_ip} /u:{username} /p:'{password}' /cert:ignore
+  +clipboard
 parser: null
 expected_effects:
-  - rdp_session_obtained
+- rdp_session_obtained
 falsifier:
-  pattern: "LOGON_FAILURE|Connection refused|SSL_NOT_ALLOWED"
+  pattern: LOGON_FAILURE|Connection refused|SSL_NOT_ALLOWED
   timeout: 30
 model_tier: haiku
-mechanism: "RDP provides full GUI access. Requires user in Remote Desktop Users group (or admin). BlueKeep (CVE-2019-0708) for unauthenticated RCE on old versions. Use /drive:share,/tmp for file transfer."
+mechanism: RDP provides full GUI access. Requires user in Remote Desktop Users group
+  (or admin). BlueKeep (CVE-2019-0708) for unauthenticated RCE on old versions. Use
+  /drive:share,/tmp for file transfer.
+hacktricks_ref: generic-hacking/brute-force.md

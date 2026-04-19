@@ -2,17 +2,21 @@ name: wordpress_scan
 category: cms
 description: WordPress vulnerability scanning with wpscan
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_engagement.target_url
-command_template: "wpscan --url {target_url} --enumerate u,vp,vt,dbe --plugins-detection aggressive"
+command_template: wpscan --url {target_url} --enumerate u,vp,vt,dbe --plugins-detection
+  aggressive
 parser: null
 expected_effects:
-  - wordpress_version_found
-  - vulnerable_plugins_found
-  - users_enumerated
+- wordpress_version_found
+- vulnerable_plugins_found
+- users_enumerated
 falsifier:
-  pattern: "does not seem to be running WordPress|connection refused"
+  pattern: does not seem to be running WordPress|connection refused
   timeout: 300
 model_tier: haiku
-mechanism: "Enumerates WordPress users (author archives), plugins (known paths), themes, and checks versions against WPVulnDB. Key vulns: plugin file upload, SQLi in plugins, auth bypass, xmlrpc.php brute-force."
+mechanism: 'Enumerates WordPress users (author archives), plugins (known paths), themes,
+  and checks versions against WPVulnDB. Key vulns: plugin file upload, SQLi in plugins,
+  auth bypass, xmlrpc.php brute-force.'
+hacktricks_ref: generic-methodologies-and-resources/basic-forensic-methodology/malware-analysis.md

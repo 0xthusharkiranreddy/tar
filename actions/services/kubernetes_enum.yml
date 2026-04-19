@@ -2,15 +2,18 @@ name: kubernetes_enum
 category: services
 description: Kubernetes API enumeration
 preconditions:
-  - service.port==6443
+- service.port==6443
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "kubectl --server=https://{target_ip}:6443 --insecure-skip-tls-verify get pods --all-namespaces"
+command_template: kubectl --server=https://{target_ip}:6443 --insecure-skip-tls-verify
+  get pods --all-namespaces
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 120
 model_tier: haiku
-mechanism: "Unauthenticated K8s API: list pods, secrets, configmaps. Anonymous RBAC may allow secret reading. Service account tokens in /var/run/secrets/kubernetes.io/serviceaccount/."
+mechanism: 'Unauthenticated K8s API: list pods, secrets, configmaps. Anonymous RBAC
+  may allow secret reading. Service account tokens in /var/run/secrets/kubernetes.io/serviceaccount/.'
+hacktricks_ref: network-services-pentesting/1080-pentesting-socks.md

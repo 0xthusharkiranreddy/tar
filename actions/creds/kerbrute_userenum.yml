@@ -2,17 +2,21 @@ name: kerbrute_userenum
 category: creds
 description: Enumerate valid domain usernames via Kerberos pre-auth
 preconditions:
-  - service.port==88
-  - domain_joined
+- service.port==88
+- domain_joined
 parameters:
   target_ip: from_service.host_ip
   domain: from_host.domain
-  wordlist: "/usr/share/seclists/Usernames/xato-net-10-million-usernames-ktop.txt"
-command_template: "kerbrute userenum --dc {target_ip} -d {domain} {wordlist} 2>&1 | head -100"
+  wordlist: /usr/share/seclists/Usernames/xato-net-10-million-usernames-ktop.txt
+command_template: kerbrute userenum --dc {target_ip} -d {domain} {wordlist} 2>&1 |
+  head -100
 expected_effects:
-  - has_users
+- has_users
 falsifier:
-  pattern: "no valid usernames found|connection refused|timeout"
+  pattern: no valid usernames found|connection refused|timeout
   timeout: 120
 model_tier: haiku
-mechanism: "Sends AS-REQ for each username. Valid names get KDC_ERR_PREAUTH_REQUIRED (user exists, need password). Invalid names get KDC_ERR_C_PRINCIPAL_UNKNOWN. No lockout risk — pre-auth check is not a logon attempt."
+mechanism: Sends AS-REQ for each username. Valid names get KDC_ERR_PREAUTH_REQUIRED
+  (user exists, need password). Invalid names get KDC_ERR_C_PRINCIPAL_UNKNOWN. No
+  lockout risk — pre-auth check is not a logon attempt.
+hacktricks_ref: windows-hardening/active-directory-methodology/password-spraying.md

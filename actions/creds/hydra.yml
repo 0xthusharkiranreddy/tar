@@ -2,19 +2,22 @@ name: hydra
 category: creds
 description: Online password brute-forcing for various protocols
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
   username: from_cred.username
-  wordlist: "/usr/share/wordlists/rockyou.txt"
+  wordlist: /usr/share/wordlists/rockyou.txt
   protocol: from_finding.protocol
-command_template: "hydra -l {username} -P {wordlist} {target_ip} {protocol} -t 16"
+command_template: hydra -l {username} -P {wordlist} {target_ip} {protocol} -t 16
 parser: null
 expected_effects:
-  - password_found
-  - has_cred
+- password_found
+- has_cred
 falsifier:
-  pattern: "0 valid passwords found"
+  pattern: 0 valid passwords|error|refused|timeout
   timeout: 600
 model_tier: haiku
-mechanism: "Online brute-force against live services: ssh, ftp, http-post-form, smb, rdp, mysql, etc. Use -l for single user, -L for list. For HTTP forms: hydra -l admin -P wordlist target http-post-form '/login:user=^USER^&pass=^PASS^:Invalid'."
+mechanism: 'Online brute-force against live services: ssh, ftp, http-post-form, smb,
+  rdp, mysql, etc. Use -l for single user, -L for list. For HTTP forms: hydra -l admin
+  -P wordlist target http-post-form ''/login:user=^USER^&pass=^PASS^:Invalid''.'
+hacktricks_ref: network-services-pentesting/pentesting-smb/README.md

@@ -100,6 +100,66 @@ if [ -n "$LEDGER_BLOCKED" ]; then
     printf '[TAR LEDGER] %s\n' "$LEDGER_BLOCKED"
 fi
 
+# ── Technique prerequisite check via TechniqueAdvisor ──
+PREREQ_WARN=$(python3 -c "
+import sys, re
+sys.path.insert(0, '$ROOT/.claude/scripts')
+
+cmd = '''$COMMAND'''
+
+# Detect action from command
+action = ''
+patterns = [
+    (r'GetUserSPNs', 'kerberoast'), (r'GetNPUsers', 'asreproast'),
+    (r'secretsdump', 'secretsdump'), (r'certipy\s+find', 'certipy'),
+    (r'certipy\s+req', 'certipy'), (r'psexec', 'psexec'),
+    (r'wmiexec', 'wmiexec'), (r'evil-winrm', 'evil_winrm'),
+    (r'ntlmrelayx', 'ntlmrelayx'), (r'responder', 'responder'),
+    (r'PetitPotam', 'petitpotam'), (r'bloodhound', 'bloodhound'),
+    (r'rbcd|resource.based', 'rbcd'), (r'dcsync|DCSync', 'dcsync'),
+    (r'hydra', 'hydra'), (r'sqlmap', 'sqlmap'),
+]
+for pat, act in patterns:
+    if re.search(pat, cmd, re.I):
+        action = act
+        break
+
+if action:
+    try:
+        from technique_advisor import get_advisor
+        from world_model import WorldModel
+
+        advisor = get_advisor()
+        prereqs = advisor.get_prerequisites(action)
+
+        if prereqs:
+            wm = WorldModel('$WM_DB')
+            services = wm.get_services()
+            predicates = wm.get_state_predicates()
+            creds = wm.get_creds()
+            wm.close()
+
+            ports = set(s['port'] for s in services)
+            state = {
+                'ports': ports,
+                'predicates': predicates,
+                'has_cred': bool(creds),
+                'has_admin_cred': any(c.get('is_admin') for c in creds),
+                'has_domain_cred': any(c.get('domain') for c in creds),
+            }
+
+            all_met, unmet = advisor.check_prerequisites_against_state(action, state)
+            if unmet:
+                for u in unmet[:3]:
+                    print(f'PREREQ: {u}')
+    except Exception:
+        pass
+" 2>/dev/null || echo '')
+
+if [ -n "$PREREQ_WARN" ]; then
+    printf '[TAR TECHNIQUE CHECK]\n%s\n' "$PREREQ_WARN"
+fi
+
 # Pre-attack platform check on first pentest tool invocation
 case "$COMMAND" in
     *nmap*|*netexec*|*crackmapexec*|*smbclient*|*impacket*|*evil-winrm*|*rpcclient*|*ldapsearch*|*bloodhound*|*certipy*|*responder*|*ntlmrelayx*)

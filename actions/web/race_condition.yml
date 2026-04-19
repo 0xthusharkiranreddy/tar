@@ -2,15 +2,18 @@ name: race_condition
 category: web
 description: Race condition exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "turbo-intruder -u '{target_url}' -s race.py"
+command_template: turbo-intruder -u '{target_url}' -s race.py
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Send parallel requests to exploit TOCTOU. Common in: coupon redemption, balance transfers, vote counting, file upload + access. Use Burp Turbo Intruder for precise timing."
+mechanism: 'Send parallel requests to exploit TOCTOU. Common in: coupon redemption,
+  balance transfers, vote counting, file upload + access. Use Burp Turbo Intruder
+  for precise timing.'
+hacktricks_ref: pentesting-web/2fa-bypass.md

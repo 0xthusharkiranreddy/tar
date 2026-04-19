@@ -2,15 +2,18 @@ name: blind_ssrf
 category: web
 description: Blind SSRF detection and exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}' -d 'url=http://{collaborator}'"
+command_template: curl -s '{target_url}' -d 'url=http://{collaborator}'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "No direct response but out-of-band DNS/HTTP callback confirms SSRF. Use Burp Collaborator or interact.sh. Escalate: cloud metadata, internal port scan, protocol smuggling."
+mechanism: 'No direct response but out-of-band DNS/HTTP callback confirms SSRF. Use
+  Burp Collaborator or interact.sh. Escalate: cloud metadata, internal port scan,
+  protocol smuggling.'
+hacktricks_ref: pentesting-web/ssrf-server-side-request-forgery/README.md

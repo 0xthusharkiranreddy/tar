@@ -2,19 +2,22 @@ name: ldap_enum
 category: ad
 description: LDAP enumeration via netexec for users, groups, policies
 preconditions:
-  - service.port==389
-  - has_cred
+- service.port==389
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
   username: from_cred.username
   password: from_cred.password
-command_template: "netexec ldap {target_ip} -u '{username}' -p '{password}' --users"
+command_template: netexec ldap {target_ip} -u '{username}' -p '{password}' --users
 parser: crackmapexec_parser
 expected_effects:
-  - users_enumerated
-  - domain_info_obtained
+- users_enumerated
+- domain_info_obtained
 falsifier:
-  pattern: "INVALID_CREDENTIALS|Connection refused"
+  pattern: INVALID_CREDENTIALS|Connection refused
   timeout: 60
 model_tier: haiku
-mechanism: "Queries LDAP directory with valid creds. Enumerates users, groups, GPOs, trusts. Modules: --gmsa for gMSA passwords, --kerberoasting for SPNs, --asreproast for accounts without preauth."
+mechanism: 'Queries LDAP directory with valid creds. Enumerates users, groups, GPOs,
+  trusts. Modules: --gmsa for gMSA passwords, --kerberoasting for SPNs, --asreproast
+  for accounts without preauth.'
+hacktricks_ref: windows-hardening/active-directory-methodology/kerberoast.md

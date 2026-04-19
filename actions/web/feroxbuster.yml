@@ -2,17 +2,20 @@ name: feroxbuster
 category: web
 description: Recursive directory and file brute-forcing on web servers
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_engagement.target_url
-  wordlist: "/usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt"
-command_template: "feroxbuster -u {target_url} -w {wordlist} -t 50 -o /tmp/ferox_output.txt"
+  wordlist: /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt
+command_template: feroxbuster -u {target_url} -w {wordlist} -t 50 -o /tmp/ferox_output.txt
 parser: gobuster_parser
 expected_effects:
-  - web_directories_discovered
-  - web_files_discovered
+- web_directories_discovered
+- web_files_discovered
 falsifier:
-  pattern: "Could not connect|0 requests"
+  pattern: error|Could not connect|refused
   timeout: 300
 model_tier: haiku
-mechanism: "Recursive directory brute-force. Unlike gobuster, feroxbuster automatically follows discovered directories and recurses into them. Uses raft wordlists for broader coverage."
+mechanism: Recursive directory brute-force. Unlike gobuster, feroxbuster automatically
+  follows discovered directories and recurses into them. Uses raft wordlists for broader
+  coverage.
+hacktricks_ref: network-services-pentesting/pentesting-smb/README.md

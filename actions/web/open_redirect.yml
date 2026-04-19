@@ -2,15 +2,17 @@ name: open_redirect
 category: web
 description: Open redirect exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}/redirect?url=http://attacker.com'"
+command_template: curl -s '{target_url}/redirect?url=http://attacker.com'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Redirect users to attacker-controlled site. Chain with SSRF (redirect to internal), OAuth token theft (redirect_uri manipulation), or phishing."
+mechanism: Redirect users to attacker-controlled site. Chain with SSRF (redirect to
+  internal), OAuth token theft (redirect_uri manipulation), or phishing.
+hacktricks_ref: pentesting-web/server-side-inclusion-edge-side-inclusion-injection.md

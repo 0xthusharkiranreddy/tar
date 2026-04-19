@@ -2,16 +2,20 @@ name: redis_enum
 category: services
 description: Redis enumeration and exploitation (no-auth access)
 preconditions:
-  - service.port==6379
+- service.port==6379
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "redis-cli -h {target_ip} INFO"
+command_template: redis-cli -h {target_ip} INFO
 parser: null
 expected_effects:
-  - redis_info_obtained
-  - keys_enumerated
+- redis_info_obtained
+- keys_enumerated
 falsifier:
-  pattern: "NOAUTH|Connection refused"
+  pattern: NOAUTH|Connection refused
   timeout: 30
 model_tier: haiku
-mechanism: "Redis without auth: INFO for version/config, KEYS * for all keys, GET key for values, CONFIG GET dir for write location. RCE via: (1) write SSH key to authorized_keys, (2) write webshell via CONFIG SET dir/dbfilename, (3) Lua sandbox escape on old versions."
+mechanism: 'Redis without auth: INFO for version/config, KEYS * for all keys, GET
+  key for values, CONFIG GET dir for write location. RCE via: (1) write SSH key to
+  authorized_keys, (2) write webshell via CONFIG SET dir/dbfilename, (3) Lua sandbox
+  escape on old versions.'
+hacktricks_ref: generic-hacking/brute-force.md

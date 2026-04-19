@@ -2,15 +2,17 @@ name: joomla_scan
 category: cms
 description: Joomla vulnerability scanning
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "joomscan -u {target_url}"
+command_template: joomscan -u {target_url}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 120
 model_tier: haiku
-mechanism: "Joomla: check /administrator/ for admin panel, /configuration.php for DB creds (if accessible), plugin vulns. Version detection via /language/en-GB/en-GB.xml."
+mechanism: 'Joomla: check /administrator/ for admin panel, /configuration.php for
+  DB creds (if accessible), plugin vulns. Version detection via /language/en-GB/en-GB.xml.'
+hacktricks_ref: network-services-pentesting/pentesting-web/joomla.md

@@ -2,18 +2,20 @@ name: enum4linux_ng
 category: smb
 description: Comprehensive SMB/RPC enumeration with enum4linux-ng
 preconditions:
-  - service.port==445
+- service.port==445
 parameters:
   target_ip: from_service.host_ip
-command_template: "enum4linux-ng -A {target_ip} 2>&1 | head -200"
+command_template: enum4linux-ng -A {target_ip} 2>&1 | head -200
 parser: smbclient_parser
-parser_args: "--tool enum4linux --host {target_ip}"
+parser_args: --tool enum4linux --host {target_ip}
 expected_effects:
-  - has_users
-  - has_shares
-  - domain_joined
+- has_users
+- has_shares
+- domain_joined
 falsifier:
-  pattern: "Could not connect|Connection refused|all tests failed"
+  pattern: Could not connect|Connection refused|all tests failed
   timeout: 120
 model_tier: haiku
-mechanism: "Wraps rpcclient, smbclient, and ldapsearch calls. Enumerates users via RID cycling (500-4000), shares, groups, password policy, and OS info in one pass."
+mechanism: Wraps rpcclient, smbclient, and ldapsearch calls. Enumerates users via
+  RID cycling (500-4000), shares, groups, password policy, and OS info in one pass.
+hacktricks_ref: generic-hacking/tunneling-and-port-forwarding.md

@@ -2,16 +2,19 @@ name: oracle_enum
 category: services
 description: Oracle database enumeration
 preconditions:
-  - service.port==1521
-  - has_cred
+- service.port==1521
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "odat all -s {target_ip} -d {sid} -U {username} -P {password}"
+command_template: odat all -s {target_ip} -d {sid} -U {username} -P {password}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 120
 model_tier: haiku
-mechanism: "ODAT automates: SID brute-force, credential check, file upload/read, command execution via Java/DBMS_SCHEDULER, privilege escalation."
+mechanism: '* [Oracle SQL Default Databases](#oracle-sql-default-databases) * [Oracle
+  SQL Comments](#oracle-sql-comments) * [Oracle SQL Enumeration](#oracle-sql-enumeration)
+  * [Oracle SQL Database Credentials](#oracle-sql-database-credentials)'
+hacktricks_ref: network-services-pentesting/pentesting-smtp/README.md

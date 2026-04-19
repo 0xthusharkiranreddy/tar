@@ -2,16 +2,19 @@ name: acl_abuse_chain
 category: ad
 description: ACL abuse chain (GenericAll→ForceChangePassword→DCSync)
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "# Chain: identify ACL edge → exploit permission → escalate"
+command_template: '# Chain: identify ACL edge → exploit permission → escalate'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "BloodHound ACL edges: GenericAll (full control), GenericWrite (modify attrs), WriteDACL (grant rights), WriteOwner (take ownership), ForceChangePassword, AddMember."
+mechanism: 'BloodHound ACL edges: GenericAll (full control), GenericWrite (modify
+  attrs), WriteDACL (grant rights), WriteOwner (take ownership), ForceChangePassword,
+  AddMember.'
+hacktricks_ref: windows-hardening/active-directory-methodology/README.md

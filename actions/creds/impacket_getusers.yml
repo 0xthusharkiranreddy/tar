@@ -2,20 +2,23 @@ name: impacket_getusers
 category: creds
 description: Enumerate domain users via LDAP with valid creds
 preconditions:
-  - service.port==88
-  - has_cred
-  - domain_joined
+- service.port==88
+- has_cred
+- domain_joined
 parameters:
   target_ip: from_service.host_ip
   username: from_cred.username
   password: from_cred.password
   domain: from_host.domain
-command_template: "impacket-GetADUsers -all -dc-ip {target_ip} {domain}/{username}:{password} 2>&1"
+command_template: impacket-GetADUsers -all -dc-ip {target_ip} {domain}/{username}:{password}
+  2>&1
 parser: crackmapexec_parser
 expected_effects:
-  - has_users
+- has_users
 falsifier:
-  pattern: "error|KDC_ERR|invalid credentials|LOGON_FAILURE"
+  pattern: error|KDC_ERR|invalid credentials|LOGON_FAILURE
   timeout: 60
 model_tier: haiku
-mechanism: "Queries LDAP for all user objects in the domain. Returns SAMAccountName, description (often contains passwords), last logon, and account status."
+mechanism: Queries LDAP for all user objects in the domain. Returns SAMAccountName,
+  description (often contains passwords), last logon, and account status.
+hacktricks_ref: network-services-pentesting/pentesting-smb/README.md

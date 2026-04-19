@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TAR Planner Context Hook (UserPromptSubmit)
-# Injects ranked actions + filled commands + state summary into each prompt.
-# Must complete in <2s for responsive UX.
+# TAR Planner Context Hook v2 (UserPromptSubmit)
+# Injects: world state + ranked actions + HackTricks technique context + failure guidance
+# Must complete in <3s for responsive UX (knowledge index cached at ~0.4s).
 
 ROOT=/home/kali
 CURRENT_REAL=$(readlink -f "$ROOT/current" 2>/dev/null || printf '%s' "$ROOT/current")
@@ -20,7 +20,7 @@ if [ -f "$STATE_FILE" ]; then
     LAST_ACTION=$(grep -oP '(?<=Last Action: )\S+' "$STATE_FILE" 2>/dev/null | tail -1 || echo '')
 fi
 
-# Get ranked actions + filled commands in a single Python call
+# Get ranked actions + filled commands + knowledge context in a single Python call
 CONTEXT=$(python3 -c "
 import sys, json
 sys.path.insert(0, '$SCRIPTS_DIR')
@@ -37,6 +37,7 @@ wm = WorldModel(db)
 summary = wm.get_state_summary()
 phase = wm.current_phase()
 failed_list = summary.get('failed_actions', [])
+services = summary.get('services', [])
 wm.close()
 
 # Rank top 10 actions
@@ -46,12 +47,34 @@ action_names = [a['name'] for a in ranked]
 # Fill parameters for all ranked actions
 filled = fill_multiple(db, action_names)
 
-# Build compact state block
+# ── Load knowledge index + technique advisor (cached, ~0.4s) ──
+try:
+    from knowledge_index import get_index
+    from technique_advisor import get_advisor
+    ki = get_index()
+    advisor = get_advisor()
+    has_knowledge = True
+except Exception:
+    has_knowledge = False
+
+# ── Build compact state block ──
 state_lines = []
 state_lines.append(f'Phase: {phase}')
-if summary.get('services'):
-    ports = [f\"{s['port']}/{s.get('product','?')[:15]}\" for s in summary['services'][:12]]
+if services:
+    ports = [f\"{s['port']}/{s.get('product','?')[:15]}\" for s in services[:12]]
     state_lines.append(f\"Services: {', '.join(ports)}\")
+
+    # Version-specific vuln check (if knowledge available)
+    if has_knowledge:
+        for s in services[:6]:
+            product = s.get('product', '')
+            version = s.get('version', '')
+            if product and version:
+                vulns = ki.get_version_vulns(product, version)
+                if vulns:
+                    for v in vulns[:1]:
+                        state_lines.append(f\"[!] {product} {version}: see {v['heading'][:60]}\")
+
 if summary.get('creds'):
     creds = [f\"{c['user']}@{c.get('domain','?')}({'pw' if c.get('has_password') else 'hash'})\" for c in summary['creds'][:5]]
     state_lines.append(f\"Creds: {', '.join(creds)}\")
@@ -65,7 +88,7 @@ print('## TAR World State')
 for l in state_lines:
     print(l)
 
-# Failure reasoning block — only when there are recent failures
+# ── Failure Analysis with HackTricks guidance ──
 if failed_list:
     wm2 = WorldModel(db)
     recent_failures = wm2.get_failed_attempts()
@@ -74,22 +97,48 @@ if failed_list:
     print()
     print('## Failure Analysis')
     seen = set()
-    for f in recent_failures[-5:]:  # Last 5 failures
+    for f in recent_failures[-5:]:
         aname = f['action_name']
         if aname in seen:
             continue
         seen.add(aname)
         silence = f.get('silence_pattern') or f.get('error_output') or 'no output'
-        silence = silence[:80]
-        print(f'- **{aname}** failed: {silence}')
+        silence_short = silence[:80]
+        print(f'- **{aname}** failed: {silence_short}')
 
-    # Provide reasoning guidance
+        # Inject HackTricks failure guidance
+        if has_knowledge:
+            try:
+                interp = advisor.get_failure_interpretation(aname, silence)
+                if interp and not interp.startswith('No specific'):
+                    # Trim to 2 lines max
+                    interp_lines = interp.split(chr(10))[:2]
+                    for il in interp_lines:
+                        il = il.strip()
+                        if il:
+                            print(f'  → {il[:120]}')
+            except Exception:
+                pass
+
     print()
     print('**Before next action**: State what the failure teaches you about the target.')
-    print('Do NOT retry a failed action with the same parameters.')
-    print('Ask: what would produce exactly this silence/error? Then choose an action that tests a different hypothesis.')
+    print('Do NOT retry with same parameters. Choose an action that tests a DIFFERENT hypothesis.')
 
-# Build ranked action table
+    # When stuck (>=2 failures), suggest alternatives from HackTricks/PAT
+    if has_knowledge and len(set(f['action_name'] for f in recent_failures[-4:])) >= 2:
+        try:
+            svc_tuples = [(s['port'], s.get('product', '')) for s in services[:5]]
+            last_failed = recent_failures[-1]['action_name']
+            alts = ki.get_alternatives(last_failed, services=svc_tuples)
+            if alts:
+                print()
+                print('## Alternative Approaches (from HackTricks/PAT)')
+                for a in alts[:3]:
+                    print(f'- **{a[\"heading\"][:50]}** [{a[\"source\"]}]: {a[\"text\"][:100]}...')
+        except Exception:
+            pass
+
+# ── Ranked Action Table with Technique Context ──
 print()
 print(f'## Top Actions (phase={phase}, last={last or \"none\"})')
 print()
@@ -105,9 +154,25 @@ for i, (r, f) in enumerate(zip(ranked, filled), 1):
     if f.get('ready'):
         cmd = f['command'][:120]
         print(f'    \`{cmd}\`')
-    mech = r.get('mechanism','')[:100]
-    if mech:
-        print(f'    Mechanism: {mech}')
+
+    # Inject mechanism from HackTricks (for top-3 only, to save tokens)
+    if has_knowledge and i <= 3:
+        try:
+            brief = advisor.get_mechanism_brief(name)
+            if brief:
+                # Cap at 150 chars
+                brief = brief[:150]
+                if len(brief) == 150:
+                    brief = brief[:brief.rfind(' ')] + '...'
+                print(f'    Mechanism: {brief}')
+        except Exception:
+            mech = r.get('mechanism','')[:100]
+            if mech:
+                print(f'    Mechanism: {mech}')
+    else:
+        mech = r.get('mechanism','')[:100]
+        if mech:
+            print(f'    Mechanism: {mech}')
     print()
 " 2>/dev/null || echo '## TAR: planner-context error')
 

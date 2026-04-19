@@ -2,15 +2,18 @@ name: systemd_timer
 category: privesc
 description: Systemd timer/service exploitation
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "systemctl list-timers --all && find /etc/systemd -writable 2>/dev/null"
+command_template: systemctl list-timers --all && find /etc/systemd -writable 2>/dev/null
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If systemd service/timer file is writable, modify ExecStart to execute payload. Triggers on next timer fire or service restart."
+mechanism: 'To enable a timer you need root privileges and to execute: sudo systemctl
+  enable backu2.timer Created symlink /etc/systemd/system/multi-user.target.wants/backu2.timer
+  → /lib/systemd/system/backu2.timer.'
+hacktricks_ref: linux-hardening/privilege-escalation/README.md

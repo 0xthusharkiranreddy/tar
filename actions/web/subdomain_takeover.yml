@@ -2,15 +2,17 @@ name: subdomain_takeover
 category: web
 description: Subdomain takeover check
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "dig CNAME subdomain.{domain} && curl -s http://subdomain.{domain}"
+command_template: dig CNAME subdomain.{domain} && curl -s http://subdomain.{domain}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If DNS CNAME points to unclaimed resource (S3, Heroku, Azure, GitHub Pages), claim it to serve content on target domain. Enables cookie stealing for parent domain."
+mechanism: If DNS CNAME points to unclaimed resource (S3, Heroku, Azure, GitHub Pages),
+  claim it to serve content on target domain. Enables cookie stealing for parent domain.
+hacktricks_ref: pentesting-web/domain-subdomain-takeover.md

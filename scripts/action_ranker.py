@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-action_ranker.py — Ranks applicable TAR actions by contextual relevance.
+action_ranker.py — v2: Knowledge-driven action ranking for TAR.
 
-Scoring signals:
-  1. Phase relevance   — How often this action appears in current phase (walkthrough-learned)
-  2. Service specificity — How many service-specific preconditions are satisfied
-  3. Transition score  — P(this_action | last_action, phase) from walkthrough data
-  4. Information gain   — Enumeration before exploitation preference
-  5. Failure penalty    — Already-failed actions get suppressed
+Scoring signals (v2):
+  1. Phase relevance    (25 pts) — Phase-appropriate action selection
+  2. Knowledge match    (30 pts) — HackTricks/PAT prerequisite + product-version matching
+  3. Service specificity (20 pts) — How many service-specific preconditions match
+  4. Information gain    (15 pts) — Enumeration before exploitation preference
+  5. Transition hint     (10 pts) — Walkthrough P(next|last) as tiebreaker only
 
 Usage:
     python3 action_ranker.py <world_model.db> [--last-action ACTION] [--top N]
@@ -31,6 +31,24 @@ LEDGER_DB = Path("/home/kali/knowledge/predicate_ledger.db")
 # Transition model cache (built once, reused)
 _transition_cache = None
 _phase_freq_cache = None
+
+# Knowledge layer cache (lazy-loaded)
+_knowledge_index = None
+_technique_advisor = None
+
+
+def _get_knowledge():
+    """Lazy-load knowledge index and technique advisor."""
+    global _knowledge_index, _technique_advisor
+    if _knowledge_index is None:
+        try:
+            from knowledge_index import get_index
+            from technique_advisor import get_advisor
+            _knowledge_index = get_index()
+            _technique_advisor = get_advisor()
+        except Exception:
+            pass
+    return _knowledge_index, _technique_advisor
 
 
 def _build_walkthrough_model():
@@ -195,11 +213,19 @@ def score_action(
     last_action: Optional[str],
     failed_actions: set[str],
     ledger_blocked: set[str],
+    services_info: Optional[list] = None,
 ) -> float:
     """
-    Score an action. Higher = more relevant.
+    Score an action (v2: knowledge-driven). Higher = more relevant.
 
     Returns -1.0 for actions that should be excluded.
+
+    Scoring signals:
+      1. Phase relevance    (0-25 pts) — Phase-appropriate via walkthrough + category
+      2. Knowledge match    (0-30 pts) — HackTricks prerequisite depth + product-version
+      3. Service specificity (0-20 pts) — Precondition coverage
+      4. Information gain    (0-15 pts) — Enum before exploit
+      5. Transition hint     (0-10 pts) — Walkthrough P(next|last) as tiebreaker
     """
     name = action["name"]
 
@@ -207,62 +233,31 @@ def score_action(
     if name in failed_actions:
         return -1.0
     if name in ledger_blocked:
-        return -0.5  # Soft penalty, not hard block
+        return -0.5
 
-    # Precondition check
+    # Precondition check (YAML preconditions)
     if not check_preconditions(action, predicates):
         return -1.0
 
     _build_walkthrough_model()
+    ki, advisor = _get_knowledge()
     score = 0.0
 
-    # 1. Phase relevance (0-30 points)
+    # ── 1. Phase relevance (0-25 points) ──
+    # Combines walkthrough frequency + category bonus
     phase_probs = _phase_freq_cache.get(phase, {})
     phase_prob = phase_probs.get(name, 0.0)
-    # Log-scale to avoid domination by curl_request
     if phase_prob > 0:
-        score += 30.0 * (1.0 + math.log10(phase_prob * 100 + 1)) / 3.0
+        score += 15.0 * (1.0 + math.log10(phase_prob * 100 + 1)) / 3.0
     # Small bonus for actions in adjacent phases
     phase_idx = PHASE_ORDER.get(phase, 0)
     for adj_phase, adj_idx in PHASE_ORDER.items():
         if abs(adj_idx - phase_idx) == 1:
             adj_prob = _phase_freq_cache.get(adj_phase, {}).get(name, 0.0)
             if adj_prob > 0:
-                score += 3.0
+                score += 2.0
 
-    # 2. Service specificity (0-20 points)
-    specificity = count_specific_preconditions(action)
-    score += min(specificity * 5.0, 20.0)
-
-    # 3. Transition score (0-25 points)
-    if last_action:
-        key = f"{phase}:{last_action}"
-        trans_probs = _transition_cache.get(key, {})
-        trans_prob = trans_probs.get(name, 0.0)
-        if trans_prob > 0:
-            trans_score = 25.0 * min(trans_prob * 3.0, 1.0)
-            # Penalize self-transitions (same action again) — diversity matters
-            if name == last_action:
-                trans_score *= 0.4
-            score += trans_score
-        # Also check cross-phase transitions
-        for p in PHASE_ORDER:
-            alt_key = f"{p}:{last_action}"
-            alt_prob = _transition_cache.get(alt_key, {}).get(name, 0.0)
-            if alt_prob > 0.1:
-                score += 5.0
-                break
-
-    # 4. Information gain preference (0-15 points)
-    phase_idx = PHASE_ORDER.get(phase, 0)
-    if name in ENUM_ACTIONS:
-        # Enum actions get bonus in early phases, less in late phases
-        score += max(15.0 - phase_idx * 3.0, 3.0)
-    elif name in EXPLOIT_ACTIONS:
-        # Exploit actions get bonus in later phases
-        score += min(phase_idx * 3.0, 12.0)
-
-    # 5. Category relevance (0-10 points)
+    # Category relevance within phase (0-10 points, part of phase relevance)
     category = action.get("category", "")
     phase_category_bonus = {
         "recon": {"recon": 10, "smb": 5, "web": 3, "services": 3},
@@ -273,6 +268,81 @@ def score_action(
     }
     cat_bonuses = phase_category_bonus.get(phase, {})
     score += cat_bonuses.get(category, 0)
+
+    # ── 2. Knowledge match (0-30 points) ──
+    if ki is not None and advisor is not None:
+        knowledge_pts = 0.0
+
+        # 2a. Product-version matching (0-15 points)
+        # Only for exploit-type actions — enum actions don't benefit from vuln matching
+        if services_info and name in EXPLOIT_ACTIONS:
+            for svc in services_info[:6]:
+                port = svc.get('port', 0)
+                product = svc.get('product', '')
+                version = svc.get('version', '')
+                action_preconds = action.get("preconditions", [])
+                port_match = any(f"service.port=={port}" in p for p in action_preconds)
+                if port_match and product and version:
+                    vulns = ki.get_version_vulns(product, version)
+                    if vulns:
+                        knowledge_pts += 15.0
+                        break
+                elif port_match and product:
+                    knowledge_pts += 5.0
+                    break
+
+        # 2b. HackTricks technique depth (0-10 points)
+        # Actions with dedicated HackTricks pages get a bonus
+        try:
+            ctx = ki.get_technique_context(name, max_chars=100)
+            if ctx:
+                knowledge_pts += 5.0
+                # Extra bonus if context is from a dedicated page (not a passing mention)
+                if len(ctx) > 80:
+                    knowledge_pts += 5.0
+        except Exception:
+            pass
+
+        # 2c. Prerequisite confidence (0-5 points)
+        # Actions with curated prerequisites in technique_advisor get a bonus
+        # (we've validated they're well-understood techniques)
+        from technique_advisor import PREREQUISITES
+        if name in PREREQUISITES:
+            knowledge_pts += 5.0
+
+        score += min(knowledge_pts, 30.0)
+    else:
+        # Fallback: give a small bonus to actions with mechanism descriptions
+        if action.get("mechanism"):
+            score += 5.0
+
+    # ── 3. Service specificity (0-20 points) ──
+    specificity = count_specific_preconditions(action)
+    score += min(specificity * 5.0, 20.0)
+
+    # ── 4. Information gain preference (0-15 points) ──
+    phase_idx = PHASE_ORDER.get(phase, 0)
+    if name in ENUM_ACTIONS:
+        score += max(15.0 - phase_idx * 3.0, 3.0)
+    elif name in EXPLOIT_ACTIONS:
+        score += min(phase_idx * 3.0, 12.0)
+
+    # ── 5. Transition hint (0-10 points) — demoted from v1's 25 ──
+    if last_action:
+        key = f"{phase}:{last_action}"
+        trans_probs = _transition_cache.get(key, {})
+        trans_prob = trans_probs.get(name, 0.0)
+        if trans_prob > 0:
+            trans_score = 10.0 * min(trans_prob * 3.0, 1.0)
+            if name == last_action:
+                trans_score *= 0.4
+            score += trans_score
+        for p in PHASE_ORDER:
+            alt_key = f"{p}:{last_action}"
+            alt_prob = _transition_cache.get(alt_key, {}).get(name, 0.0)
+            if alt_prob > 0.1:
+                score += 3.0
+                break
 
     return round(score, 2)
 
@@ -332,9 +402,21 @@ def rank_actions(
     ledger_blocked = get_ledger_blocked(db_path)
     all_actions = load_all_actions()
 
+    # Get service info for knowledge-driven scoring
+    services_info = None
+    try:
+        sys.path.insert(0, str(SCRIPTS_DIR))
+        from world_model import WorldModel
+        wm = WorldModel(db_path)
+        services_info = wm.get_services()
+        wm.close()
+    except Exception:
+        pass
+
     scored = []
     for action in all_actions:
-        s = score_action(action, phase, predicates, last_action, failed, ledger_blocked)
+        s = score_action(action, phase, predicates, last_action, failed, ledger_blocked,
+                        services_info=services_info)
         if s < 0:
             continue
         scored.append({

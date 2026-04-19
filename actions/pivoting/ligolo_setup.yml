@@ -2,15 +2,17 @@ name: ligolo_setup
 category: pivoting
 description: Ligolo-ng tunnel setup for transparent pivoting
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "ligolo-ng -selfcert -laddr 0.0.0.0:11601"
+command_template: ligolo-ng -selfcert -laddr 0.0.0.0:11601
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Ligolo-ng creates TUN interface — no proxychains needed. Start proxy on attacker, run agent on target. Add routes: ip route add 10.0.0.0/24 dev ligolo."
+mechanism: 'Ligolo-ng creates TUN interface — no proxychains needed. Start proxy on
+  attacker, run agent on target. Add routes: ip route add 10.0.0.0/24 dev ligolo.'
+hacktricks_ref: generic-hacking/tunneling-and-port-forwarding.md

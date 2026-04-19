@@ -2,17 +2,19 @@ name: nmap_targeted
 category: recon
 description: Targeted nmap scan on specific ports with scripts
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
   ports: from_engagement.ports
-command_template: "nmap -p {ports} -sV --script=default,vuln {target_ip}"
+command_template: nmap -p {ports} -sV --script=default,vuln {target_ip}
 parser: nmap_parser
 expected_effects:
-  - service_versions_identified
-  - vulns_detected
+- service_versions_identified
+- vulns_detected
 falsifier:
-  pattern: "0 hosts up"
+  pattern: 0 hosts up
   timeout: 120
 model_tier: haiku
-mechanism: "Focused scan on known open ports with vulnerability scripts. --script=vuln runs CVE checks. Use after full port scan to deep-dive specific services."
+mechanism: Focused scan on known open ports with vulnerability scripts. --script=vuln
+  runs CVE checks. Use after full port scan to deep-dive specific services.
+hacktricks_ref: network-services-pentesting/43-pentesting-whois.md

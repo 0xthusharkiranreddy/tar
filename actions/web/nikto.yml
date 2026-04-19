@@ -2,16 +2,19 @@ name: nikto
 category: web
 description: Web server vulnerability scanner
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_engagement.target_url
-command_template: "nikto -h {target_url} -o /tmp/nikto_output.txt"
+command_template: nikto -h {target_url} -o /tmp/nikto_output.txt
 parser: null
 expected_effects:
-  - web_vulns_discovered
-  - server_info_obtained
+- web_vulns_discovered
+- server_info_obtained
 falsifier:
-  pattern: "0 host(s) tested|ERROR"
+  pattern: 0 host(s) tested|ERROR
   timeout: 300
 model_tier: haiku
-mechanism: "Scans for dangerous files/CGIs, outdated software, server misconfigs, default credentials. Noisy but comprehensive. Identifies server headers, allowed methods, interesting directories."
+mechanism: Scans for dangerous files/CGIs, outdated software, server misconfigs, default
+  credentials. Noisy but comprehensive. Identifies server headers, allowed methods,
+  interesting directories.
+hacktricks_ref: network-services-pentesting/pentesting-postgresql.md

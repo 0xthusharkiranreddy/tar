@@ -2,15 +2,18 @@ name: struts_rce
 category: cms
 description: Apache Struts RCE
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 struts_exploit.py {target_url}"
+command_template: python3 struts_exploit.py {target_url}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Struts OGNL injection: S2-045 (Content-Type header), S2-046 (multipart filename), S2-057 (namespace). All allow RCE via OGNL expression injection."
+mechanism: 'At this point we have a ton of hints to look at Struts: There were a bunch
+  of high profile vulnerabilities in Struts recently, several of which provide RCE:
+  https://www.cvedetails.com/vulnerability-list/vendor_id-45/product_id-6117/Apache-Struts.html'
+hacktricks_ref: generic-methodologies-and-resources/python/bypass-python-sandboxes/README.md

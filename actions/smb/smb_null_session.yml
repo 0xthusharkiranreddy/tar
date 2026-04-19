@@ -2,16 +2,19 @@ name: smb_null_session
 category: smb
 description: Attempt null session RPC enumeration via rpcclient
 preconditions:
-  - service.port==445
+- service.port==445
 parameters:
   target_ip: from_service.host_ip
-command_template: "rpcclient -U '' -N {target_ip} -c 'enumdomusers;enumdomgroups;getdompwinfo' 2>&1"
+command_template: rpcclient -U '' -N {target_ip} -c 'enumdomusers;enumdomgroups;getdompwinfo'
+  2>&1
 parser: smbclient_parser
-parser_args: "--tool enum4linux --host {target_ip}"
+parser_args: --tool enum4linux --host {target_ip}
 expected_effects:
-  - has_users
+- has_users
 falsifier:
-  pattern: "NT_STATUS_ACCESS_DENIED|NT_STATUS_LOGON_FAILURE|Could not connect"
+  pattern: NT_STATUS_ACCESS_DENIED|NT_STATUS_LOGON_FAILURE|Could not connect
   timeout: 30
 model_tier: haiku
-mechanism: "Null session binds to SAMR pipe anonymously. enumdomusers returns RID-username pairs. Works when RestrictAnonymous=0."
+mechanism: Null session binds to SAMR pipe anonymously. enumdomusers returns RID-username
+  pairs. Works when RestrictAnonymous=0.
+hacktricks_ref: generic-hacking/brute-force.md

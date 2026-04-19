@@ -2,16 +2,19 @@ name: ssh_tunnel
 category: pivoting
 description: SSH port forwarding and SOCKS proxy
 preconditions:
-  - service.port==22
-  - has_cred
+- service.port==22
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "ssh -L {local_port}:{internal_ip}:{internal_port} {username}@{target_ip} -N"
+command_template: ssh -L {local_port}:{internal_ip}:{internal_port} {username}@{target_ip}
+  -N
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Local forward: -L lport:rhost:rport. Remote forward: -R rport:lhost:lport. Dynamic SOCKS: -D 1080. Use ProxyCommand for multi-hop."
+mechanism: 'Local forward: -L lport:rhost:rport. Remote forward: -R rport:lhost:lport.
+  Dynamic SOCKS: -D 1080. Use ProxyCommand for multi-hop.'
+hacktricks_ref: network-services-pentesting/1080-pentesting-socks.md

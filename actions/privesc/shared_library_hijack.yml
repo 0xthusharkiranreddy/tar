@@ -2,15 +2,18 @@ name: shared_library_hijack
 category: privesc
 description: Shared library hijacking (LD_PRELOAD/RPATH)
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "gcc -shared -fPIC -o /tmp/evil.so evil.c; LD_PRELOAD=/tmp/evil.so {target_binary}"
+command_template: gcc -shared -fPIC -o /tmp/evil.so evil.c; LD_PRELOAD=/tmp/evil.so
+  {target_binary}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If SUID binary has RPATH to writable directory, or sudo preserves LD_PRELOAD, compile malicious .so that spawns shell in constructor."
+mechanism: If SUID binary has RPATH to writable directory, or sudo preserves LD_PRELOAD,
+  compile malicious .so that spawns shell in constructor.
+hacktricks_ref: macos-hardening/macos-auto-start-locations.md

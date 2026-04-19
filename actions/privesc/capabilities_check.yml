@@ -2,15 +2,18 @@ name: capabilities_check
 category: privesc
 description: Find binaries with Linux capabilities set
 preconditions:
-  - os==linux
+- os==linux
 parameters: {}
-command_template: "getcap -r / 2>/dev/null"
-parser: null
+command_template: getcap -r / 2>/dev/null
+parser: linpeas_parser
 expected_effects:
-  - capabilities_found
-  - privesc_vector_found
+- capabilities_found
+- privesc_vector_found
 falsifier:
-  pattern: ""
+  pattern: ''
   timeout: 30
 model_tier: haiku
-mechanism: "Linux capabilities grant specific root-like privileges without full SUID. Key caps: cap_setuid (change UID), cap_dac_override (bypass file permissions), cap_net_raw (packet capture), cap_sys_admin (mount). Python with cap_setuid: os.setuid(0);os.system('/bin/bash')."
+mechanism: 'Linux capabilities grant specific root-like privileges without full SUID.
+  Key caps: cap_setuid (change UID), cap_dac_override (bypass file permissions), cap_net_raw
+  (packet capture), cap_sys_admin (mount). Python with cap_setuid: os.setuid(0);os.system(''/bin/bash'').'
+hacktricks_ref: linux-hardening/linux-privilege-escalation-checklist.md

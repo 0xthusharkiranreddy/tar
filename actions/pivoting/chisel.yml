@@ -2,17 +2,20 @@ name: chisel
 category: pivoting
 description: TCP tunneling over HTTP for port forwarding and pivoting
 preconditions:
-  - has_target
+- has_target
 parameters:
   listen_port: from_engagement.lport
   target_port: from_engagement.target_port
-command_template: "chisel server -p {listen_port} --reverse"
+command_template: chisel server -p {listen_port} --reverse
 parser: null
 expected_effects:
-  - tunnel_established
-  - internal_port_accessible
+- tunnel_established
+- internal_port_accessible
 falsifier:
-  pattern: "Address already in use|error"
+  pattern: Address already in use|error
   timeout: 30
 model_tier: haiku
-mechanism: "HTTP-based tunnel. Server on attacker, client on target. Reverse port forward: client connects out, forwards attacker port to internal target. Bypasses most egress filtering since it uses HTTP/HTTPS."
+mechanism: 'HTTP-based tunnel. Server on attacker, client on target. Reverse port
+  forward: client connects out, forwards attacker port to internal target. Bypasses
+  most egress filtering since it uses HTTP/HTTPS.'
+hacktricks_ref: network-services-pentesting/1080-pentesting-socks.md

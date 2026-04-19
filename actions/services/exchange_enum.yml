@@ -2,15 +2,17 @@ name: exchange_enum
 category: services
 description: Microsoft Exchange enumeration
 preconditions:
-  - service.port==443
+- service.port==443
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 ruler -domain {domain} --autodiscover"
+command_template: python3 ruler -domain {domain} --autodiscover
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 120
 model_tier: haiku
-mechanism: "Exchange exposes OWA, EWS, MAPI, Autodiscover. ProxyLogon (CVE-2021-26855) and ProxyShell (CVE-2021-34473) for unauthenticated RCE on unpatched servers."
+mechanism: Exchange exposes OWA, EWS, MAPI, Autodiscover. ProxyLogon (CVE-2021-26855)
+  and ProxyShell (CVE-2021-34473) for unauthenticated RCE on unpatched servers.
+hacktricks_ref: todo/online-platforms-with-api.md

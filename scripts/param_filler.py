@@ -76,7 +76,7 @@ def get_fill_context(db_path: str) -> dict:
             ctx["dc_ip"] = ctx["target_ip"]
             ctx["dc_name"] = ctx["hostname"] or ctx["domain"].split(".")[0]
 
-    # Best credential (prefer verified, then password over hash)
+    # ── Credential selection (technique-aware) ──
     creds = wm.get_creds()
     if creds:
         # Sort: verified first, then password > hash
@@ -95,6 +95,27 @@ def get_fill_context(db_path: str) -> dict:
 
         # Also provide all unique usernames for spray
         ctx["userlist"] = list({c["username"] for c in creds if c.get("username")})
+
+        # Technique-aware credential pools for specialized selection
+        # Admin creds (for psexec, secretsdump, dcsync)
+        admin_creds = [c for c in creds if c.get("is_admin") or
+                       any(kw in (c.get("source") or "").lower() for kw in ("admin", "dcsync", "ntds"))]
+        if admin_creds:
+            ctx["admin_username"] = admin_creds[0].get("username", "")
+            ctx["admin_password"] = admin_creds[0].get("password", "")
+            ctx["admin_hash"] = admin_creds[0].get("hash", "")
+
+        # Domain creds (for kerberoast, asreproast, bloodhound — any domain user works)
+        domain_creds = [c for c in creds if c.get("domain")]
+        if domain_creds:
+            ctx["domain_username"] = domain_creds[0].get("username", "")
+            ctx["domain_password"] = domain_creds[0].get("password", "")
+
+        # Hash-only creds (for pass-the-hash actions)
+        hash_creds = [c for c in creds if c.get("hash") and not c.get("password")]
+        if hash_creds:
+            ctx["pth_username"] = hash_creds[0].get("username", "")
+            ctx["pth_hash"] = hash_creds[0].get("hash", "")
 
     # Services — find specific ports
     services = wm.get_services()
@@ -139,6 +160,21 @@ def get_fill_context(db_path: str) -> dict:
 
     # hash_file: default location for captured hashes
     ctx.setdefault("hash_file", "/tmp/hashes.txt")
+
+    # ── Wordlist intelligence ──
+    # Match wordlist to context (web dirs vs passwords vs usernames)
+    seclists = Path("/usr/share/seclists")
+    wordlists = Path("/usr/share/wordlists")
+    if seclists.exists():
+        ctx.setdefault("wordlist", str(seclists / "Discovery/Web-Content/raft-medium-directories.txt"))
+        ctx.setdefault("dir_wordlist", str(seclists / "Discovery/Web-Content/raft-medium-directories.txt"))
+        ctx.setdefault("file_wordlist", str(seclists / "Discovery/Web-Content/raft-medium-files.txt"))
+        ctx.setdefault("user_wordlist", str(seclists / "Usernames/xato-net-10-million-usernames.txt"))
+        ctx.setdefault("subdomain_wordlist", str(seclists / "Discovery/DNS/subdomains-top1million-5000.txt"))
+        ctx.setdefault("password_wordlist", str(wordlists / "rockyou.txt") if wordlists.exists() else str(seclists / "Passwords/Common-Credentials/10-million-password-list-top-1000000.txt"))
+    elif wordlists.exists():
+        ctx.setdefault("wordlist", str(wordlists / "dirbuster/directory-list-2.3-medium.txt"))
+        ctx.setdefault("password_wordlist", str(wordlists / "rockyou.txt"))
 
     # Shares
     shares = wm.get_shares()

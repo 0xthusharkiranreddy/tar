@@ -2,15 +2,18 @@ name: smb_signing
 category: services
 description: Check SMB signing requirement for relay attacks
 preconditions:
-  - service.port==445
+- service.port==445
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "netexec smb {target_ip} --gen-relay-list /tmp/relay_targets.txt"
-parser: null
+command_template: netexec smb {target_ip} --gen-relay-list /tmp/relay_targets.txt
+parser: smbclient_parser
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "SMB signing not required = relay target. Generate list of relay-able hosts for ntlmrelayx. Most workstations have signing disabled by default; DCs require it."
+mechanism: SMB signing not required = relay target. Generate list of relay-able hosts
+  for ntlmrelayx. Most workstations have signing disabled by default; DCs require
+  it.
+hacktricks_ref: generic-hacking/brute-force.md

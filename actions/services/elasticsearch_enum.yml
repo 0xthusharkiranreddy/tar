@@ -2,15 +2,17 @@ name: elasticsearch_enum
 category: services
 description: Elasticsearch enumeration
 preconditions:
-  - service.port==9200
+- service.port==9200
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s 'http://{target_ip}:9200/_cat/indices?v'"
+command_template: curl -s 'http://{target_ip}:9200/_cat/indices?v'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 120
 model_tier: haiku
-mechanism: "Elasticsearch often unauthenticated. /_cat/indices for index list, /_search for data, /_cluster/health for cluster info. Look for sensitive indices."
+mechanism: Elasticsearch often unauthenticated. /_cat/indices for index list, /_search
+  for data, /_cluster/health for cluster info. Look for sensitive indices.
+hacktricks_ref: network-services-pentesting/9200-pentesting-elasticsearch.md

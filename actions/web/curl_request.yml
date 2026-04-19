@@ -2,17 +2,21 @@ name: curl_request
 category: web
 description: HTTP request to target web service for manual inspection or exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
   url: from_finding.url
-command_template: "curl -s -k {url}"
+command_template: curl -s -k {url}
 parser: null
 expected_effects:
-  - web_response_obtained
-  - potential_finding_discovered
+- web_response_obtained
+- potential_finding_discovered
 falsifier:
-  pattern: "Connection refused|couldn't connect"
+  pattern: Connection refused|couldn't connect
   timeout: 30
 model_tier: haiku
-mechanism: "Direct HTTP request. Used for probing endpoints, downloading files, triggering SSRF/LFI, or interacting with APIs."
+mechanism: 'request|attr(request.headers.c) #Send a header like "c: __class__" (any
+  trick using get params can be used with headers also) request|attr(request.args.c)
+  #Send a param like "?c=__class__ request|attr(request.query_string[2:16].decode()
+  #Send a param'
+hacktricks_ref: pentesting-web/ssti-server-side-template-injection/jinja2-ssti.md

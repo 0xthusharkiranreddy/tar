@@ -2,17 +2,19 @@ name: nmap_full
 category: recon
 description: Full TCP port scan to discover all open services
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "nmap -p- --min-rate 5000 -oX /tmp/nmap_full_{target_ip}.xml {target_ip}"
+command_template: nmap -p- --min-rate 5000 -oX /tmp/nmap_full_{target_ip}.xml {target_ip}
 parser: nmap_parser
-parser_args: "--format xml"
+parser_args: --format xml
 expected_effects:
-  - service.port discovered
-  - service.state populated
+- service.port discovered
+- service.state populated
 falsifier:
-  pattern: "0 hosts up|Failed to resolve"
+  pattern: 0 hosts up|Failed to resolve
   timeout: 300
 model_tier: haiku
-mechanism: "SYN scan all 65535 ports. High min-rate for speed on HTB VPN. XML output for structured parsing."
+mechanism: SYN scan all 65535 ports. High min-rate for speed on HTB VPN. XML output
+  for structured parsing.
+hacktricks_ref: network-services-pentesting/43-pentesting-whois.md

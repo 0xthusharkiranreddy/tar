@@ -2,15 +2,19 @@ name: cron_enum
 category: privesc
 description: Enumerate cron jobs and scheduled tasks for privesc
 preconditions:
-  - os==linux
+- os==linux
 parameters: {}
-command_template: "cat /etc/crontab; ls -la /etc/cron.d/; for user in $(cut -f1 -d: /etc/passwd); do crontab -u $user -l 2>/dev/null; done"
+command_template: 'cat /etc/crontab; ls -la /etc/cron.d/; for user in $(cut -f1 -d:
+  /etc/passwd); do crontab -u $user -l 2>/dev/null; done'
 parser: null
 expected_effects:
-  - cron_jobs_found
-  - privesc_vector_found
+- cron_jobs_found
+- privesc_vector_found
 falsifier:
-  pattern: "no crontab"
+  pattern: no crontab
   timeout: 15
 model_tier: haiku
-mechanism: "Cron privesc: writable script in cron entry, wildcard injection (tar --checkpoint), path hijack if relative path in cron. Use pspy to monitor processes without root — detects cron jobs that don't appear in crontab."
+mechanism: 'Cron privesc: writable script in cron entry, wildcard injection (tar --checkpoint),
+  path hijack if relative path in cron. Use pspy to monitor processes without root
+  — detects cron jobs that don''t appear in crontab.'
+hacktricks_ref: network-services-pentesting/pentesting-smtp/README.md

@@ -2,16 +2,19 @@ name: tunnel
 category: pivoting
 description: SOCKS proxy tunneling via ligolo-ng or proxychains
 preconditions:
-  - has_target
+- has_target
 parameters:
   interface: from_engagement.tun_interface
-command_template: "ligolo-ng -selfcert"
+command_template: ligolo-ng -selfcert
 parser: null
 expected_effects:
-  - socks_proxy_established
-  - internal_network_accessible
+- socks_proxy_established
+- internal_network_accessible
 falsifier:
-  pattern: "error|bind failed"
+  pattern: error|bind failed
   timeout: 30
 model_tier: haiku
-mechanism: "Ligolo-ng creates TUN interface for transparent pivoting (no proxychains needed). Agent on target connects to proxy on attacker. Alternative: SSH -D for SOCKS, then proxychains for tool routing."
+mechanism: 'Ligolo-ng creates TUN interface for transparent pivoting (no proxychains
+  needed). Agent on target connects to proxy on attacker. Alternative: SSH -D for
+  SOCKS, then proxychains for tool routing.'
+hacktricks_ref: generic-hacking/tunneling-and-port-forwarding.md

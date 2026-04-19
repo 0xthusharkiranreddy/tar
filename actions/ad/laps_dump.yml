@@ -2,16 +2,18 @@ name: laps_dump
 category: ad
 description: Dump LAPS passwords from AD
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "netexec ldap {target_ip} -u '{username}' -p '{password}' -M laps"
+command_template: netexec ldap {target_ip} -u '{username}' -p '{password}' -M laps
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "LAPS stores local admin passwords in AD attribute ms-Mcs-AdmPwd. Readable by authorized users/groups. LAPSv2 uses ms-LAPS-Password."
+mechanism: LAPS stores local admin passwords in AD attribute ms-Mcs-AdmPwd. Readable
+  by authorized users/groups. LAPSv2 uses ms-LAPS-Password.
+hacktricks_ref: mobile-pentesting/android-app-pentesting/frida-tutorial/objection-tutorial.md

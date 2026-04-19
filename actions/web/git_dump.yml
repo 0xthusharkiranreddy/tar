@@ -2,16 +2,19 @@ name: git_dump
 category: web
 description: Dump exposed .git directory from web server
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_url: from_engagement.target_url
-command_template: "git-dumper {target_url}/.git /tmp/git_dump"
+command_template: git-dumper {target_url}/.git /tmp/git_dump
 parser: null
 expected_effects:
-  - source_code_obtained
-  - credentials_found
+- source_code_obtained
+- credentials_found
 falsifier:
-  pattern: "404|not found|error"
+  pattern: 404|not found|error
   timeout: 120
 model_tier: haiku
-mechanism: "Exposed .git/ directory leaks full source code and commit history. Check git log for removed credentials, config files, API keys. Also check .git/config for remote URLs revealing internal infrastructure."
+mechanism: Exposed .git/ directory leaks full source code and commit history. Check
+  git log for removed credentials, config files, API keys. Also check .git/config
+  for remote URLs revealing internal infrastructure.
+hacktricks_ref: mobile-pentesting/android-app-pentesting/frida-tutorial/objection-tutorial.md

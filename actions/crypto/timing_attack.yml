@@ -2,15 +2,18 @@ name: timing_attack
 category: crypto
 description: Timing-based side channel attack
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 timing_attack.py"
+command_template: python3 timing_attack.py
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Byte-by-byte comparison leaks correct prefix via timing difference. Requires: string comparison (not hash), measurable timing, many requests. Use statistical analysis."
+mechanism: 'Byte-by-byte comparison leaks correct prefix via timing difference. Requires:
+  string comparison (not hash), measurable timing, many requests. Use statistical
+  analysis.'
+hacktricks_ref: pentesting-web/xs-search.md

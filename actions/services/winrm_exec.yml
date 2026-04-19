@@ -2,20 +2,23 @@ name: winrm_exec
 category: services
 description: Execute commands via WinRM using PowerShell remoting
 preconditions:
-  - service.port==5985
-  - has_cred
-  - os==windows
+- service.port==5985
+- has_cred
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
   username: from_cred.username
   password: from_cred.password
   command: from_engagement.exec_command
-command_template: "netexec winrm {target_ip} -u '{username}' -p '{password}' -X '{command}'"
+command_template: netexec winrm {target_ip} -u '{username}' -p '{password}' -X '{command}'
 parser: null
 expected_effects:
-  - command_executed
+- command_executed
 falsifier:
-  pattern: "STATUS_LOGON_FAILURE|-"
+  pattern: STATUS_LOGON_FAILURE|-
   timeout: 30
 model_tier: haiku
-mechanism: "WinRM command execution via PowerShell remoting. -x for cmd commands, -X for PowerShell. Requires Remote Management Users membership. Use for quick command execution without full shell."
+mechanism: WinRM command execution via PowerShell remoting. -x for cmd commands, -X
+  for PowerShell. Requires Remote Management Users membership. Use for quick command
+  execution without full shell.
+hacktricks_ref: windows-hardening/active-directory-methodology/password-spraying.md

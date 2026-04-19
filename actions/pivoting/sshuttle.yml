@@ -2,16 +2,19 @@ name: sshuttle
 category: pivoting
 description: sshuttle VPN over SSH
 preconditions:
-  - service.port==22
-  - has_cred
+- service.port==22
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "sshuttle -r {username}@{target_ip} {internal_network}/24"
+command_template: sshuttle -r {username}@{target_ip} {internal_network}/24
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Transparent VPN through SSH. Routes all traffic to internal network via SSH tunnel. No SOCKS proxy needed. Requires Python on target."
+mechanism: You can **tunnel** via **ssh** all the **traffic** to a **subnetwork**
+  through a host.\ For example, forwarding all the traffic going to 10.10.10.0/24
+  pip install sshuttle sshuttle -r user@host 10.10.10.10/24
+hacktricks_ref: generic-hacking/tunneling-and-port-forwarding.md

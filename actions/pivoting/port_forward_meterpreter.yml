@@ -2,15 +2,17 @@ name: port_forward_meterpreter
 category: pivoting
 description: Meterpreter port forwarding
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "portfwd add -l {local_port} -p {remote_port} -r {internal_ip}"
+command_template: portfwd add -l {local_port} -p {remote_port} -r {internal_ip}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Meterpreter portfwd: local (-l) listens on attacker, forwards to internal target. autoroute adds internal network routes through session."
+mechanism: 'Meterpreter portfwd: local (-l) listens on attacker, forwards to internal
+  target. autoroute adds internal network routes through session.'
+hacktricks_ref: generic-hacking/tunneling-and-port-forwarding.md

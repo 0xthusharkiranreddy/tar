@@ -2,15 +2,17 @@ name: rpc_enum
 category: services
 description: RPC endpoint enumeration
 preconditions:
-  - service.port==135
+- service.port==135
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "rpcdump.py {target_ip}"
+command_template: rpcdump.py {target_ip}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 120
 model_tier: haiku
-mechanism: "Enumerates RPC interfaces. Reveals services like Task Scheduler (ATSVC), Print Spooler (MS-RPRN), DFS (MS-DFSNM). Useful for finding coercion targets."
+mechanism: Enumerates RPC interfaces. Reveals services like Task Scheduler (ATSVC),
+  Print Spooler (MS-RPRN), DFS (MS-DFSNM). Useful for finding coercion targets.
+hacktricks_ref: windows-hardening/windows-local-privilege-escalation/README.md

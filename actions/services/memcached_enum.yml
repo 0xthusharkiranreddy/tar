@@ -2,15 +2,17 @@ name: memcached_enum
 category: services
 description: Memcached enumeration
 preconditions:
-  - service.port==11211
+- service.port==11211
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "echo 'stats' | nc {target_ip} 11211"
+command_template: echo 'stats' | nc {target_ip} 11211
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Memcached often unauthenticated. 'stats' for info, 'stats slabs/items' for keys, 'get <key>' for values. May contain session tokens, cached credentials."
+mechanism: Memcached often unauthenticated. 'stats' for info, 'stats slabs/items'
+  for keys, 'get <key>' for values. May contain session tokens, cached credentials.
+hacktricks_ref: network-services-pentesting/11211-memcache/README.md

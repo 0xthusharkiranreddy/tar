@@ -2,15 +2,17 @@ name: request_smuggling
 category: web
 description: HTTP request smuggling
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 smuggler.py -u '{target_url}'"
+command_template: python3 smuggler.py -u '{target_url}'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "CL.TE or TE.CL desync between frontend and backend. Smuggle requests to: bypass access controls, poison cache, steal credentials from other users' requests."
+mechanism: 'CL.TE or TE.CL desync between frontend and backend. Smuggle requests to:
+  bypass access controls, poison cache, steal credentials from other users'' requests.'
+hacktricks_ref: pentesting-web/http-request-smuggling/README.md

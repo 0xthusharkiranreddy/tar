@@ -2,15 +2,18 @@ name: gtfobins
 category: privesc
 description: GTFOBins exploitation for SUID/sudo/capabilities
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "# Check https://gtfobins.github.io/ for binary"
+command_template: '# Check https://gtfobins.github.io/ for binary'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Database of Unix binaries that can be exploited for privesc. Categories: sudo, SUID, capabilities, file-read, file-write, shell. Common: python, vim, find, nmap, less, awk."
+mechanism: 'Database of Unix binaries that can be exploited for privesc. Categories:
+  sudo, SUID, capabilities, file-read, file-write, shell. Common: python, vim, find,
+  nmap, less, awk.'
+hacktricks_ref: linux-hardening/privilege-escalation/escaping-from-limited-bash.md

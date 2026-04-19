@@ -2,18 +2,22 @@ name: snmp_enum
 category: services
 description: SNMP enumeration for system info, users, processes, network
 preconditions:
-  - service.port==161
+- service.port==161
 parameters:
   target_ip: from_engagement.target_ip
-  community: "public"
-command_template: "snmpwalk -v2c -c {community} {target_ip}"
+  community: public
+command_template: snmpwalk -v2c -c {community} {target_ip}
 parser: null
 expected_effects:
-  - system_info_obtained
-  - users_found
-  - processes_found
+- system_info_obtained
+- users_found
+- processes_found
 falsifier:
-  pattern: "Timeout|No Response"
+  pattern: Timeout|No Response
   timeout: 60
 model_tier: haiku
-mechanism: "SNMP v1/v2c uses community strings (default: public, private). Leaks: system description, running processes (may reveal passwords in command lines), network interfaces, installed software, user accounts. OID 1.3.6.1.2.1.25.4.2.1.5 = running processes with arguments."
+mechanism: 'SNMP v1/v2c uses community strings (default: public, private). Leaks:
+  system description, running processes (may reveal passwords in command lines), network
+  interfaces, installed software, user accounts. OID 1.3.6.1.2.1.25.4.2.1.5 = running
+  processes with arguments.'
+hacktricks_ref: windows-hardening/basic-cmd-for-pentesters.md

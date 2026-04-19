@@ -2,19 +2,23 @@ name: find_delegation
 category: ad
 description: Find accounts with delegation rights in AD
 preconditions:
-  - has_cred
-  - domain_joined
+- has_cred
+- domain_joined
 parameters:
   target_ip: from_engagement.target_ip
   domain: from_engagement.domain
   username: from_cred.username
   password: from_cred.password
-command_template: "impacket-findDelegation '{domain}/{username}:{password}' -dc-ip {target_ip}"
+command_template: impacket-findDelegation '{domain}/{username}:{password}' -dc-ip
+  {target_ip}
 parser: null
 expected_effects:
-  - delegation_rights_found
+- delegation_rights_found
 falsifier:
-  pattern: "No entries found|error"
+  pattern: No entries found|error
   timeout: 30
 model_tier: haiku
-mechanism: "Enumerates unconstrained, constrained, and resource-based constrained delegation. Unconstrained delegation hosts store TGTs — compromise them to capture DA TGT. Constrained delegation allows S4U2proxy to specific SPNs."
+mechanism: Enumerates unconstrained, constrained, and resource-based constrained delegation.
+  Unconstrained delegation hosts store TGTs — compromise them to capture DA TGT. Constrained
+  delegation allows S4U2proxy to specific SPNs.
+hacktricks_ref: windows-hardening/active-directory-methodology/kerberos-double-hop-problem.md

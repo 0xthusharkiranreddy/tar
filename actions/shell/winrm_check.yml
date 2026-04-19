@@ -2,18 +2,21 @@ name: winrm_check
 category: shell
 description: Check WinRM access with credentials via netexec
 preconditions:
-  - service.port==5985
-  - has_cred
+- service.port==5985
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
   username: from_cred.username
   password: from_cred.password
-command_template: "netexec winrm {target_ip} -u '{username}' -p '{password}'"
+command_template: netexec winrm {target_ip} -u '{username}' -p '{password}'
 parser: crackmapexec_parser
 expected_effects:
-  - winrm_access_verified
+- winrm_access_verified
 falsifier:
-  pattern: "STATUS_LOGON_FAILURE|-"
+  pattern: STATUS_LOGON_FAILURE|-
   timeout: 30
 model_tier: haiku
-mechanism: "Tests WinRM (port 5985) authentication. (Pwn3d!) in output means user is in Remote Management Users group and can get a shell via evil-winrm. Without Pwn3d, auth works but no shell access."
+mechanism: Tests WinRM (port 5985) authentication. (Pwn3d!) in output means user is
+  in Remote Management Users group and can get a shell via evil-winrm. Without Pwn3d,
+  auth works but no shell access.
+hacktricks_ref: windows-hardening/basic-powershell-for-pentesters/README.md

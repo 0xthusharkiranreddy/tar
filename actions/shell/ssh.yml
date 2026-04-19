@@ -2,18 +2,20 @@ name: ssh
 category: shell
 description: SSH login with credentials or key to obtain shell access
 preconditions:
-  - service.port==22
+- service.port==22
 parameters:
   target_ip: from_engagement.target_ip
   username: from_cred.username
   password: from_cred.password
-command_template: "ssh {username}@{target_ip}"
+command_template: ssh {username}@{target_ip}
 parser: null
 expected_effects:
-  - shell_obtained
-  - phase_advance
+- shell_obtained
+- phase_advance
 falsifier:
-  pattern: "Permission denied|Connection refused|No route to host"
+  pattern: Permission denied|Connection refused|No route to host
   timeout: 30
 model_tier: haiku
-mechanism: "SSH authentication with password or key. On success, provides interactive shell. Check authorized_keys, id_rsa files for key-based auth."
+mechanism: Some common ssh credentials [here ](https://github.com/danielmiessler/SecLists/blob/master/Passwords/Default-Credentials/ssh-betterdefaultpasslist.txt)and
+  [here](https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/top-
+hacktricks_ref: network-services-pentesting/pentesting-smb/README.md

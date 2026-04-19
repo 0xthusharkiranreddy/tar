@@ -2,16 +2,18 @@ name: trusts_enum
 category: ad
 description: Enumerate AD trust relationships
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "netexec ldap {target_ip} -u '{username}' -p '{password}' -M enum_trusts"
+command_template: netexec ldap {target_ip} -u '{username}' -p '{password}' -M enum_trusts
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 120
 model_tier: haiku
-mechanism: "Enumerate domain/forest trusts. Bidirectional trusts enable cross-domain attacks. SID history injection allows privilege escalation across trust boundaries."
+mechanism: Enumerate domain/forest trusts. Bidirectional trusts enable cross-domain
+  attacks. SID history injection allows privilege escalation across trust boundaries.
+hacktricks_ref: network-services-pentesting/pentesting-smtp/README.md

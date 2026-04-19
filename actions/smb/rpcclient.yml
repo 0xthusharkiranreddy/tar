@@ -2,17 +2,21 @@ name: rpcclient
 category: smb
 description: RPC enumeration via rpcclient for users, groups, SIDs
 preconditions:
-  - service.port==445
+- service.port==445
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "rpcclient -U '' -N {target_ip} -c 'enumdomusers; enumdomgroups; querygroupmem 0x200'"
+command_template: rpcclient -U '' -N {target_ip} -c 'enumdomusers; enumdomgroups;
+  querygroupmem 0x200'
 parser: null
 expected_effects:
-  - users_enumerated
-  - groups_enumerated
-  - sids_obtained
+- users_enumerated
+- groups_enumerated
+- sids_obtained
 falsifier:
-  pattern: "NT_STATUS_ACCESS_DENIED|Connection refused"
+  pattern: NT_STATUS_ACCESS_DENIED|Connection refused
   timeout: 30
 model_tier: haiku
-mechanism: "MSRPC enumeration via null session. Key commands: enumdomusers (user list), enumdomgroups (groups), querygroupmem 0x200 (Domain Admins), queryuser <rid> (user details), lookupnames <user> (SID lookup). RID 0x200=DA, 0x1f4=Administrator."
+mechanism: 'MSRPC enumeration via null session. Key commands: enumdomusers (user list),
+  enumdomgroups (groups), querygroupmem 0x200 (Domain Admins), queryuser <rid> (user
+  details), lookupnames <user> (SID lookup). RID 0x200=DA, 0x1f4=Administrator.'
+hacktricks_ref: windows-hardening/active-directory-methodology/password-spraying.md

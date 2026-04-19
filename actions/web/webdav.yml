@@ -2,15 +2,17 @@ name: webdav
 category: web
 description: WebDAV exploitation for file upload
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "cadaver '{target_url}'"
+command_template: cadaver '{target_url}'
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "WebDAV (PROPFIND/PUT/MKCOL) enables file upload to web server. Test: OPTIONS request for allowed methods, PUT to upload web shell. IIS default: aspx/asp shells."
+mechanism: 'WebDAV (PROPFIND/PUT/MKCOL) enables file upload to web server. Test: OPTIONS
+  request for allowed methods, PUT to upload web shell. IIS default: aspx/asp shells.'
+hacktricks_ref: network-services-pentesting/pentesting-web/put-method-webdav.md

@@ -2,15 +2,19 @@ name: nmap_udp
 category: recon
 description: UDP port scan for SNMP, TFTP, DNS, and other UDP services
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "nmap -sU --top-ports 50 --min-rate 1000 -oN /tmp/nmap_udp_{target_ip}.txt {target_ip}"
+command_template: nmap -sU --top-ports 50 --min-rate 1000 -oN /tmp/nmap_udp_{target_ip}.txt
+  {target_ip}
 parser: nmap_parser
 expected_effects:
-  - udp_services_discovered
+- udp_services_discovered
 falsifier:
-  pattern: "0 hosts up"
+  pattern: 0 hosts up
   timeout: 120
 model_tier: haiku
-mechanism: "UDP scan sends empty or protocol-specific probes. Much slower than TCP — closed ports may not respond, requiring timeout per port. Key UDP services: 53(DNS), 69(TFTP), 123(NTP), 161(SNMP), 500(IKE)."
+mechanism: 'UDP scan sends empty or protocol-specific probes. Much slower than TCP
+  — closed ports may not respond, requiring timeout per port. Key UDP services: 53(DNS),
+  69(TFTP), 123(NTP), 161(SNMP), 500(IKE).'
+hacktricks_ref: network-services-pentesting/ipsec-ike-vpn-pentesting.md

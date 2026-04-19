@@ -2,16 +2,18 @@ name: http_server
 category: creds
 description: Start local HTTP server for file transfer to target
 preconditions:
-  - has_target
+- has_target
 parameters:
-  port: "8000"
+  port: '8000'
   directory: from_engagement.tools_dir
-command_template: "python3 -m http.server {port} -d {directory}"
+command_template: python3 -m http.server {port} -d {directory}
 parser: null
 expected_effects:
-  - file_server_started
+- file_server_started
 falsifier:
-  pattern: "Address already in use"
+  pattern: Address already in use
   timeout: 10
 model_tier: haiku
-mechanism: "Serves files over HTTP for target download via wget/curl/certutil/Invoke-WebRequest. Use port 80 if target has egress filtering. Check ss -tlnp for port conflicts first."
+mechanism: Serves files over HTTP for target download via wget/curl/certutil/Invoke-WebRequest.
+  Use port 80 if target has egress filtering. Check ss -tlnp for port conflicts first.
+hacktricks_ref: binary-exploitation/chrome-exploiting.md

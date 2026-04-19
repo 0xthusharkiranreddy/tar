@@ -2,15 +2,17 @@ name: php_object_injection
 category: web
 description: PHP object injection via unserialize
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 phpggc.py {framework}/{chain} system 'id' -u"
+command_template: python3 phpggc.py {framework}/{chain} system 'id' -u
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "PHP unserialize() with gadget chains. PHPGGC generates payloads for Laravel, Symfony, WordPress, Magento, etc. __destruct/__wakeup methods trigger the chain."
+mechanism: PHP unserialize() with gadget chains. PHPGGC generates payloads for Laravel,
+  Symfony, WordPress, Magento, etc. __destruct/__wakeup methods trigger the chain.
+hacktricks_ref: pentesting-web/open-redirect.md

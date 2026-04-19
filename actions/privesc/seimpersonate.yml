@@ -2,15 +2,18 @@ name: seimpersonate
 category: privesc
 description: SeImpersonatePrivilege exploitation (PrintSpoofer/GodPotato)
 preconditions:
-  - os==windows
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "PrintSpoofer64.exe -i -c cmd.exe"
+command_template: PrintSpoofer64.exe -i -c cmd.exe
 parser: null
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "PrintSpoofer: simpler than JuicyPotato, works on all Windows versions. GodPotato: works on .NET 4+. SweetPotato: combined approach. All exploit SeImpersonatePrivilege → SYSTEM."
+mechanism: 'PrintSpoofer: simpler than JuicyPotato, works on all Windows versions.
+  GodPotato: works on .NET 4+. SweetPotato: combined approach. All exploit SeImpersonatePrivilege
+  → SYSTEM.'
+hacktricks_ref: windows-hardening/windows-local-privilege-escalation/README.md
