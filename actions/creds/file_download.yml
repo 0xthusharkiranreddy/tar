@@ -1,0 +1,17 @@
+name: file_download
+category: creds
+description: Download files from target using wget/curl
+preconditions:
+  - has_target
+parameters:
+  url: from_finding.url
+  output: from_engagement.loot_dir
+command_template: "wget -q '{url}' -O /tmp/downloaded_file"
+parser: null
+expected_effects:
+  - file_downloaded
+falsifier:
+  pattern: "failed|404 Not Found|Connection refused"
+  timeout: 60
+model_tier: haiku
+mechanism: "HTTP file download for loot retrieval, tool staging, or exploit delivery. Check file type with 'file' command after download."

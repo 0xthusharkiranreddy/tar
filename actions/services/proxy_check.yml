@@ -1,0 +1,16 @@
+name: proxy_check
+category: services
+description: SOCKS proxy and internal network access
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "proxychains nmap -sT -Pn -p 22,80,445,3389 {internal_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Access internal network through SOCKS proxy (chisel, ligolo, SSH -D). proxychains wraps any TCP tool. Scan internal ranges for pivot targets."

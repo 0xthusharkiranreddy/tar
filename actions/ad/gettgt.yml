@@ -1,0 +1,17 @@
+name: gettgt
+category: ad
+description: Request TGT with known credentials
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-getTGT '{domain}/{username}:{password}' -dc-ip {target_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Requests Kerberos TGT. Useful for pass-the-ticket, S4U attacks, or when NTLM is blocked. Exports .ccache file."

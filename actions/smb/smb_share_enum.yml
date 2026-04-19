@@ -1,0 +1,19 @@
+name: smb_share_enum
+category: smb
+description: Enumerate SMB shares with credentials via netexec/crackmapexec
+preconditions:
+  - service.port==445
+parameters:
+  target_ip: from_engagement.target_ip
+  username: from_cred.username
+  password: from_cred.password
+command_template: "netexec smb {target_ip} -u '{username}' -p '{password}' --shares"
+parser: crackmapexec_parser
+expected_effects:
+  - shares_enumerated
+  - share_access_levels_known
+falsifier:
+  pattern: "STATUS_LOGON_FAILURE|Authentication failed"
+  timeout: 30
+model_tier: haiku
+mechanism: "Lists SMB shares and access permissions (READ/WRITE) using authenticated session. Identifies writable shares for payload drop and readable shares for data exfil."

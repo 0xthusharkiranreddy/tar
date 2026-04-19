@@ -1,0 +1,16 @@
+name: hash_length_extension
+category: crypto
+description: Hash length extension attack
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "hash_extender --data '{known_data}' --secret-min 8 --secret-max 32 --append '{payload}' --signature '{hash}' --format sha256"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "If MAC = hash(secret || message) using MD5/SHA1/SHA256, extend message without knowing secret. Append arbitrary data and compute valid hash."

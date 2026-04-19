@@ -1,0 +1,18 @@
+name: xss
+category: web
+description: Cross-Site Scripting detection and exploitation
+preconditions:
+  - service.port==80
+parameters:
+  target_url: from_finding.url
+  parameter: from_finding.parameter
+command_template: "curl -s '{target_url}?{parameter}=<script>alert(1)</script>'"
+parser: null
+expected_effects:
+  - xss_confirmed
+  - cookie_theft_possible
+falsifier:
+  pattern: "encoded|stripped|not reflected"
+  timeout: 30
+model_tier: haiku
+mechanism: "Reflected: input echoed in response. Stored: persisted in DB (comments, profiles). DOM-based: client-side JS processing. HTB context: XSS typically used to steal admin cookies via webhook.site or requestcatcher.com, leading to admin panel access."

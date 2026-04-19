@@ -1,0 +1,16 @@
+name: netcat
+category: shell
+description: Netcat listener or connection for reverse/bind shells
+preconditions:
+  - has_target
+parameters:
+  port: from_engagement.lport
+command_template: "nc -lvnp {port}"
+parser: null
+expected_effects:
+  - shell_obtained
+falsifier:
+  pattern: "Connection refused"
+  timeout: 300
+model_tier: haiku
+mechanism: "Listens for incoming reverse shell connections or connects to bind shells. Requires a payload execution on target to trigger the callback."

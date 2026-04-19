@@ -1,0 +1,16 @@
+name: buffer_overflow_detect
+category: binary
+description: Buffer overflow detection via pattern
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 -c "from pwn import *; p=cyclic(500); print(p.decode())""
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Send cyclic pattern to detect overflow offset. Check crash EIP/RIP against pattern to find exact offset. Use checksec to identify protections (NX, ASLR, canary, PIE)."

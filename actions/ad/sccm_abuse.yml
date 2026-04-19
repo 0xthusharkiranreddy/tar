@@ -1,0 +1,17 @@
+name: sccm_abuse
+category: ad
+description: SCCM/MECM exploitation
+preconditions:
+  - os==windows
+  - domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "SharpSCCM.exe get secrets"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "SCCM stores NAA (Network Access Account) credentials. Extract with SharpSCCM. SCCM also enables application deployment to managed clients for code execution."

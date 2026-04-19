@@ -1,0 +1,19 @@
+name: evil_winrm
+category: shell
+description: Interactive PowerShell shell via WinRM
+preconditions:
+  - service.port==5985
+  - has_cred
+  - has_password
+parameters:
+  target_ip: from_service.host_ip
+  username: from_cred.username
+  password: from_cred.password
+command_template: "evil-winrm -i {target_ip} -u '{username}' -p '{password}' 2>&1"
+expected_effects:
+  - shell_obtained
+falsifier:
+  pattern: "WinRM::WinRMAuthorizationError|Connection refused|connection timed out|401"
+  timeout: 30
+model_tier: haiku
+mechanism: "WinRM (HTTP on 5985, HTTPS on 5986) provides PowerShell Remoting. User must be in Remote Management Users group or be local admin. Returns full interactive PS session — can run scripts, upload/download files."

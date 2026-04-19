@@ -1,0 +1,16 @@
+name: efspotato
+category: privesc
+description: EfsPotato privilege escalation
+preconditions:
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "EfsPotato.exe 'cmd /c whoami'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Exploits MS-EFSR (Encrypting File System Remote) for token impersonation. Works on Windows Server 2016/2019/2022. Requires SeImpersonatePrivilege."

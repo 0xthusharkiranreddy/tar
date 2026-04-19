@@ -1,0 +1,23 @@
+name: ldapdomaindump
+category: ad
+description: Dump domain information via LDAP into structured files
+preconditions:
+  - service.port==389
+  - has_cred
+  - domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: "ldapdomaindump -u '{domain}\\{username}' -p '{password}' ldap://{target_ip} -o /tmp/ldapdump"
+parser: null
+expected_effects:
+  - domain_dumped
+  - users_enumerated
+  - groups_enumerated
+falsifier:
+  pattern: "error|Connection refused"
+  timeout: 60
+model_tier: haiku
+mechanism: "Dumps domain users, groups, computers, policies, and trusts into HTML/JSON/grep files. Quick overview of domain structure. Check domain_users.grep for admin groups, password policies, account status."

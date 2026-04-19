@@ -1,0 +1,16 @@
+name: websocket_attack
+category: web
+description: WebSocket exploitation
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "websocat ws://{target_ip}:{port}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "WebSockets bypass CORS, may skip auth checks applied to HTTP. Test: CSWSH (cross-site WebSocket hijacking), injection in WS messages, auth bypass."

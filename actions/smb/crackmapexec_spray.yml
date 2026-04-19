@@ -1,0 +1,19 @@
+name: crackmapexec_spray
+category: smb
+description: Password spray discovered creds against SMB
+preconditions:
+  - service.port==445
+parameters:
+  target_ip: from_service.host_ip
+  username: from_cred.username
+  password: from_cred.password
+  domain: from_cred.domain
+command_template: "netexec smb {target_ip} -u '{username}' -p '{password}' -d '{domain}' 2>&1"
+parser: crackmapexec_parser
+expected_effects:
+  - cred.verified
+falsifier:
+  pattern: "STATUS_LOGON_FAILURE|STATUS_ACCOUNT_DISABLED|[-]"
+  timeout: 30
+model_tier: haiku
+mechanism: "Validates creds against SMB. (Pwn3d!) means local admin — can PSExec. Otherwise valid user for further enum."

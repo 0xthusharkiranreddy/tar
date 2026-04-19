@@ -1,0 +1,19 @@
+name: mssql_check
+category: services
+description: Check MSSQL access and enumerate via netexec
+preconditions:
+  - service.port==1433
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+  username: from_cred.username
+  password: from_cred.password
+command_template: "netexec mssql {target_ip} -u '{username}' -p '{password}'"
+parser: crackmapexec_parser
+expected_effects:
+  - mssql_access_verified
+falsifier:
+  pattern: "LOGIN_FAILED|Connection refused"
+  timeout: 30
+model_tier: haiku
+mechanism: "Tests MSSQL authentication. (Pwn3d!) means sysadmin role — can enable xp_cmdshell for OS command execution. Without sysadmin, can still query databases and potentially escalate via impersonation."

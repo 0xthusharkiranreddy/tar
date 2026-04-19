@@ -1,0 +1,20 @@
+name: ldapsearch
+category: ad
+description: Raw LDAP queries for targeted AD object enumeration
+preconditions:
+  - service.port==389
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+  base_dn: from_engagement.base_dn
+command_template: "ldapsearch -x -H ldap://{target_ip} -D '{username}@{domain}' -w '{password}' -b '{base_dn}'"
+parser: null
+expected_effects:
+  - ldap_objects_enumerated
+falsifier:
+  pattern: "Invalid credentials|Can't contact"
+  timeout: 60
+model_tier: haiku
+mechanism: "Direct LDAP query. Useful for targeted searches: (servicePrincipalName=*) for SPN users, (userAccountControl:1.2.840.113556.1.4.803:=4194304) for no-preauth, (msDS-AllowedToDelegateTo=*) for delegation."

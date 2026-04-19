@@ -1,0 +1,16 @@
+name: weak_rsa
+category: crypto
+description: Weak RSA key exploitation
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 RsaCtfTool.py -n {n} -e {e} --attack all"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Attack weak RSA: small e (cube root), common factor (batch GCD), Fermat factoring (close p,q), Wiener (large e), Hastad broadcast. RsaCtfTool automates all."

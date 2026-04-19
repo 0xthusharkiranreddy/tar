@@ -1,0 +1,16 @@
+name: bloodhound_analysis
+category: ad
+description: BloodHound shortest path analysis
+preconditions:
+  - domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 bloodhound_custom_queries.py --db neo4j://localhost -q 'shortest_path_to_da'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Key queries: shortest path to DA, Kerberoastable high-value, AS-REP roastable, owned to DA path, ACL abuse chains, unconstrained delegation hosts."

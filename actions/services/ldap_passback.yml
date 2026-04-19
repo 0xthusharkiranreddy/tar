@@ -1,0 +1,16 @@
+name: ldap_passback
+category: services
+description: LDAP passback attack on printers/devices
+preconditions:
+  - service.port==389
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "# Reconfigure device LDAP server to attacker → capture creds"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Printers/network devices with LDAP auth: change LDAP server to attacker IP. Device sends stored credentials in bind request. Works on: HP, Canon, Xerox printers, etc."

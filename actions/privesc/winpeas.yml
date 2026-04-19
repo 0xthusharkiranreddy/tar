@@ -1,0 +1,17 @@
+name: winpeas
+category: privesc
+description: Windows privilege escalation automated enumeration
+preconditions:
+  - os==windows
+parameters: {}
+command_template: "winpeas.exe"
+parser: winpeas_parser
+expected_effects:
+  - privesc_vectors_enumerated
+  - service_misconfigs_found
+  - unquoted_paths_found
+falsifier:
+  pattern: "not recognized"
+  timeout: 300
+model_tier: haiku
+mechanism: "Comprehensive Windows privesc enum: service misconfigs, unquoted paths, AlwaysInstallElevated, stored creds (cmdkey), autologon, SeImpersonatePrivilege (potato attacks), writable PATH dirs, scheduled tasks, installed software versions."

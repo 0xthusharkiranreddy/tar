@@ -1,0 +1,16 @@
+name: idor
+category: web
+description: Insecure Direct Object Reference
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}/api/user/1' -H 'Authorization: Bearer {token}'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Change numeric/UUID identifiers to access other users' data. Test: increment IDs, use admin's ID (often 1), enumerate via sequential IDs. Check both GET and POST/PUT/DELETE."

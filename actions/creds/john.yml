@@ -1,0 +1,18 @@
+name: john
+category: creds
+description: John the Ripper hash cracking with format auto-detection
+preconditions:
+  - has_hash
+parameters:
+  hash_file: from_finding.hash_file
+  wordlist: "/usr/share/wordlists/rockyou.txt"
+command_template: "john {hash_file} --wordlist={wordlist}"
+parser: hashcat_parser
+expected_effects:
+  - password_cracked
+  - cred_obtained
+falsifier:
+  pattern: "No password hashes loaded"
+  timeout: 600
+model_tier: haiku
+mechanism: "CPU-based hash cracking with auto-format detection. Useful when hashcat fails or for formats hashcat doesn't support (e.g., zip2john, ssh2john output). Use --show to display already-cracked results."

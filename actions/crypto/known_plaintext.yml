@@ -1,0 +1,16 @@
+name: known_plaintext
+category: crypto
+description: Known plaintext attack on XOR/stream cipher
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 -c "known = b'known'; cipher = bytes.fromhex('...'); key = bytes(a^b for a,b in zip(known, cipher)); print(key)""
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "XOR cipher: ciphertext XOR known_plaintext = key. Reused key/nonce in stream ciphers: c1 XOR c2 = p1 XOR p2. Many-time pad attack recoverable."

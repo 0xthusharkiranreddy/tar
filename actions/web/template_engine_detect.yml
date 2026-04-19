@@ -1,0 +1,16 @@
+name: template_engine_detect
+category: web
+description: Template engine detection for SSTI
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}' -d '{parameter}=${{7*7}}'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Detection: {{7*7}}=49 (Jinja2/Twig), ${7*7}=49 (Freemarker/Velocity), #{7*7}=49 (Thymeleaf), {{=7*7}}=49 (Angular). Each engine has different RCE gadgets."

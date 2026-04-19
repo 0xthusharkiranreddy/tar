@@ -1,0 +1,20 @@
+name: certipy
+category: ad
+description: AD Certificate Services enumeration and exploitation (ESC1-ESC8)
+preconditions:
+  - domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: "certipy find -u {username}@{domain} -p '{password}' -dc-ip {target_ip} -vulnerable"
+parser: null
+expected_effects:
+  - adcs_templates_enumerated
+  - vulnerable_templates_found
+falsifier:
+  pattern: "Got error|Connection refused|authentication failed"
+  timeout: 60
+model_tier: haiku
+mechanism: "Enumerates AD CS templates via LDAP. Checks for ESC1 (enrollee supplies SAN), ESC2 (any-purpose EKU), ESC3 (enrollment agent), ESC4 (template ACL write), ESC6 (EDITF_ATTRIBUTESUBJECTALTNAME2), ESC7 (CA officer approval bypass), ESC8 (HTTP enrollment). Exploitable templates allow forging certs for domain admin."

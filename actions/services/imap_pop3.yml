@@ -1,0 +1,19 @@
+name: imap_pop3
+category: services
+description: IMAP/POP3 email enumeration and access
+preconditions:
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+  username: from_cred.username
+  password: from_cred.password
+command_template: "curl -s 'imap://{target_ip}' -u '{username}:{password}' --request 'LIST \"\" *'"
+parser: null
+expected_effects:
+  - mailboxes_listed
+  - emails_read
+falsifier:
+  pattern: "Authentication failed|Connection refused"
+  timeout: 30
+model_tier: haiku
+mechanism: "IMAP (143/993) and POP3 (110/995) give access to mailboxes. Look for password resets, internal communications with credentials, attachments with configs. IMAP allows folder browsing; POP3 is inbox-only."

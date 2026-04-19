@@ -1,0 +1,16 @@
+name: hash_collision
+category: crypto
+description: Hash collision exploitation
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 -c "from hashpumpy import hashpump; print(hashpump('{hash}', '{original}', '{append}', {secret_len}))""
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "MD5/SHA1/SHA256 length extension: append data to hash(secret||msg) without knowing secret. hashpump/hash_extender tools. Different from collision (two messages, same hash)."

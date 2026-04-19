@@ -1,0 +1,16 @@
+name: writable_files
+category: privesc
+description: Find writable files and directories for privilege escalation
+preconditions:
+  - os==linux
+parameters: {}
+command_template: "find / -writable -type f 2>/dev/null | grep -vE '/proc|/sys|/dev'"
+parser: null
+expected_effects:
+  - writable_files_found
+  - privesc_vector_found
+falsifier:
+  pattern: ""
+  timeout: 30
+model_tier: haiku
+mechanism: "Writable files owned by root or in privileged paths enable privesc. Key targets: /etc/passwd (add root user), /etc/shadow, cron scripts, service configs, .bashrc of privileged users, authorized_keys, sudoers include directory."

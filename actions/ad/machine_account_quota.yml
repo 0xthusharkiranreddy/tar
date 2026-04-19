@@ -1,0 +1,17 @@
+name: machine_account_quota
+category: ad
+description: Check MachineAccountQuota for computer creation
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 -c "import ldap3; ..."  # query ms-DS-MachineAccountQuota"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Default MAQ=10 allows any auth user to add computer accounts. Required for: RBCD attacks, sAMAccountName spoofing, relay to LDAP with machine account."

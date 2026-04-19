@@ -1,0 +1,17 @@
+name: wmi_enum
+category: services
+description: WMI enumeration for system information
+preconditions:
+  - os==windows
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-wmiexec '{domain}/{username}:{password}@{target_ip}' 'systeminfo'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 120
+model_tier: haiku
+mechanism: "WMI provides system info, process list, installed software. Semi-interactive shell via wmiexec. Stealthier than psexec (no service creation)."

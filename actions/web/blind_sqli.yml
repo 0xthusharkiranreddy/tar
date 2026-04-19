@@ -1,0 +1,16 @@
+name: blind_sqli
+category: web
+description: Blind SQL injection exploitation
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "sqlmap -u '{target_url}' --technique=BT --batch"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Boolean-based: different response for TRUE/FALSE. Time-based: SLEEP(5) for TRUE. Extract data char-by-char. sqlmap --technique=BT for boolean+time."

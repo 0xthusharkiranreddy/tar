@@ -1,0 +1,16 @@
+name: checksec
+category: binary
+description: Binary protection analysis
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "checksec --file {binary}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Check NX (no-execute), ASLR, stack canary, PIE (position-independent), RELRO. Determines which exploitation techniques are viable."

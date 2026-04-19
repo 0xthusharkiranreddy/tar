@@ -1,0 +1,16 @@
+name: django_debug
+category: cms
+description: Django debug mode exploitation
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}/nonexistent/'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Django DEBUG=True exposes: URL patterns, settings, SQL queries, file paths. SECRET_KEY in settings enables session forgery."

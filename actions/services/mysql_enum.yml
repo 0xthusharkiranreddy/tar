@@ -1,0 +1,20 @@
+name: mysql_enum
+category: services
+description: MySQL enumeration with credentials
+preconditions:
+  - service.port==3306
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+  username: from_cred.username
+  password: from_cred.password
+command_template: "mysql -h {target_ip} -u {username} -p'{password}' -e 'show databases; select user,host,authentication_string from mysql.user;'"
+parser: null
+expected_effects:
+  - databases_enumerated
+  - mysql_users_dumped
+falsifier:
+  pattern: "Access denied|Connection refused"
+  timeout: 30
+model_tier: haiku
+mechanism: "MySQL enumeration: show databases, use <db>, show tables, select * from <table>. UDF RCE if FILE privilege: load shared library for os_exec(). LOAD_FILE() for local file read. INTO OUTFILE for file write (webshell)."

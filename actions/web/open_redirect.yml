@@ -1,0 +1,16 @@
+name: open_redirect
+category: web
+description: Open redirect exploitation
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}/redirect?url=http://attacker.com'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Redirect users to attacker-controlled site. Chain with SSRF (redirect to internal), OAuth token theft (redirect_uri manipulation), or phishing."

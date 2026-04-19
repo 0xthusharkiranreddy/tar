@@ -1,0 +1,16 @@
+name: registry_autorun
+category: privesc
+description: Registry autorun exploitation
+preconditions:
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "If autorun entry points to writable binary, replace for persistence/privesc. Check both HKLM (all users) and HKCU (current user) Run/RunOnce keys."

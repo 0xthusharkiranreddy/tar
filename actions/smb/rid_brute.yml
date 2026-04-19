@@ -1,0 +1,17 @@
+name: rid_brute
+category: smb
+description: RID cycling to enumerate users via null or guest session
+preconditions:
+  - service.port==445
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "netexec smb {target_ip} -u 'guest' -p '' --rid-brute 4000"
+parser: crackmapexec_parser
+expected_effects:
+  - users_enumerated
+  - has_users
+falsifier:
+  pattern: "STATUS_LOGON_FAILURE|Could not connect"
+  timeout: 60
+model_tier: haiku
+mechanism: "RID cycling enumerates users by querying SIDs from RID 500 to N. Works even when null sessions are blocked if guest account is enabled. RID 500=Administrator, 1000+=custom users."

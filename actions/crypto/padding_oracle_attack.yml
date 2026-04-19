@@ -1,0 +1,16 @@
+name: padding_oracle_attack
+category: crypto
+description: CBC padding oracle exploitation
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "padbuster '{target_url}' '{ciphertext}' {block_size} -encoding 0"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Decrypt/encrypt arbitrary CBC-mode data by exploiting padding validation oracle. Each byte requires up to 256 requests. padbuster/PadBuster automates."

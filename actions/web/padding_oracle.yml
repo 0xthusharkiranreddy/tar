@@ -1,0 +1,16 @@
+name: padding_oracle
+category: web
+description: Padding oracle attack on encrypted cookies/tokens
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "padbuster '{target_url}' '{encrypted_value}' {block_size}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Exploit CBC padding validation to decrypt/encrypt arbitrary data. Used against: ASP.NET ViewState, encrypted cookies, custom crypto. padbuster automates the attack."

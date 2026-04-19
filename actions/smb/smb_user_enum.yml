@@ -1,0 +1,20 @@
+name: smb_user_enum
+category: smb
+description: Enumerate domain users via netexec/crackmapexec --users
+preconditions:
+  - service.port==445
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+  username: from_cred.username
+  password: from_cred.password
+command_template: "netexec smb {target_ip} -u '{username}' -p '{password}' --users"
+parser: crackmapexec_parser
+expected_effects:
+  - users_enumerated
+  - has_users
+falsifier:
+  pattern: "STATUS_LOGON_FAILURE|Authentication failed"
+  timeout: 30
+model_tier: haiku
+mechanism: "Queries SAM or LDAP for domain user list using authenticated SMB session. Provides usernames for password spraying, Kerberoasting, and AS-REP roasting."

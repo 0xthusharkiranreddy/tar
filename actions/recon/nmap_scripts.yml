@@ -1,0 +1,20 @@
+name: nmap_scripts
+category: recon
+description: Version detection and default scripts on discovered open ports
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+  ports: from_services.open_ports_csv
+command_template: "nmap -sCV -p {ports} -oX /tmp/nmap_sCV_{target_ip}.xml {target_ip}"
+parser: nmap_parser
+parser_args: "--format xml"
+expected_effects:
+  - service.product populated
+  - service.version populated
+  - service.scripts populated
+falsifier:
+  pattern: "0 hosts up"
+  timeout: 180
+model_tier: haiku
+mechanism: "Version probes (-sV) fingerprint services. Default scripts (-sC) run safe NSE scripts for banners, auth checks, known vulns."

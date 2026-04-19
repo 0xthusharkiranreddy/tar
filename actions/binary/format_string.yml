@@ -1,0 +1,16 @@
+name: format_string
+category: binary
+description: Format string vulnerability exploitation
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 -c "print('%p.' * 20)""
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Send %p to leak stack values, %n to write. Common in C printf(user_input). Leak canary, libc addresses, or overwrite GOT entries for code execution."

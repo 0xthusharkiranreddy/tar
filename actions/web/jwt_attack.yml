@@ -1,0 +1,17 @@
+name: jwt_attack
+category: web
+description: JWT token manipulation (none algorithm, key confusion, weak secret)
+preconditions:
+  - service.port==80
+parameters:
+  token: from_finding.jwt_token
+command_template: "python3 jwt_tool.py '{token}' -M at"
+parser: null
+expected_effects:
+  - jwt_forged
+  - auth_bypass_achieved
+falsifier:
+  pattern: "No vulnerabilities found"
+  timeout: 60
+model_tier: haiku
+mechanism: "JWT attacks: alg:none (remove signature), RS256→HS256 confusion (sign with public key as HMAC secret), weak secret brute-force (hashcat -m 16500), kid injection (path traversal or SQL injection in kid header)."

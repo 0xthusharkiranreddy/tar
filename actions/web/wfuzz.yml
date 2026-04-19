@@ -1,0 +1,18 @@
+name: wfuzz
+category: web
+description: Web fuzzer for parameters, headers, and payloads
+preconditions:
+  - service.port==80
+parameters:
+  target_url: from_engagement.target_url
+  wordlist: "/usr/share/seclists/Discovery/Web-Content/common.txt"
+command_template: "wfuzz -c -z file,{wordlist} --hc 404 {target_url}/FUZZ"
+parser: null
+expected_effects:
+  - web_directories_discovered
+  - parameters_discovered
+falsifier:
+  pattern: "0 results"
+  timeout: 180
+model_tier: haiku
+mechanism: "FUZZ keyword marks injection point. --hc/--hl/--hw/--hh filters by code/lines/words/chars. Useful for parameter fuzzing (-d 'param=FUZZ'), header injection (-H 'X-Custom: FUZZ'), subdomain enum."

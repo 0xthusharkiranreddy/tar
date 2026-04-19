@@ -1,0 +1,16 @@
+name: prng_predict
+category: crypto
+description: PRNG state prediction
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 randcrack.py"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Mersenne Twister (Python random, PHP mt_rand, Ruby rand): predict future outputs from 624 observed 32-bit values. randcrack automates for Python."

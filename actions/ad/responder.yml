@@ -1,0 +1,17 @@
+name: responder
+category: ad
+description: LLMNR/NBT-NS/mDNS poisoner for credential capture
+preconditions:
+  - has_target
+parameters:
+  interface: from_engagement.interface
+command_template: "responder -I {interface} -dwPv"
+parser: responder_parser
+expected_effects:
+  - ntlm_hashes_captured
+  - has_hash
+falsifier:
+  pattern: "Error starting|Cannot bind"
+  timeout: 600
+model_tier: haiku
+mechanism: "Poisons LLMNR/NBT-NS/mDNS name resolution — when a host fails DNS lookup, Responder answers and captures NTLMv2 hashes. Only captures hashes when target initiates name resolution. Use with coercion (PrinterBug, PetitPotam) for targeted capture."

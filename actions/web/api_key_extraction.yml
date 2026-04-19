@@ -1,0 +1,16 @@
+name: api_key_extraction
+category: web
+description: API key and secret extraction
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "trufflehog git --repo '{target_url}/.git'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Scan for exposed secrets: .env files, JavaScript source maps, API documentation, git history, error pages, backup files. trufflehog for automated scanning."

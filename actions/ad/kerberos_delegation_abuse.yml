@@ -1,0 +1,17 @@
+name: kerberos_delegation_abuse
+category: ad
+description: Kerberos delegation full chain
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "# S4U2self → S4U2proxy → impersonate admin"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Full delegation attack: (1) Get TGT for compromised service account, (2) S4U2self for ticket to self, (3) S4U2proxy to target SPN as impersonated user."

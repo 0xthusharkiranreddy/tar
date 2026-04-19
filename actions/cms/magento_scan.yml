@@ -1,0 +1,16 @@
+name: magento_scan
+category: cms
+description: Magento vulnerability scanning
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 magescan {target_url}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 120
+model_tier: haiku
+mechanism: "Magento: /downloader/ for Connect manager, admin panel path in database. Common vulns: Magento Shoplift (add admin), SQL injection in filters."

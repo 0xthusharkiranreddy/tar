@@ -1,0 +1,21 @@
+name: mssqlclient
+category: services
+description: Interactive MSSQL client with command execution capability
+preconditions:
+  - service.port==1433
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: "impacket-mssqlclient '{domain}/{username}:{password}@{target_ip}' -windows-auth"
+parser: null
+expected_effects:
+  - mssql_shell_obtained
+  - xp_cmdshell_available
+falsifier:
+  pattern: "Login failed|Connection refused"
+  timeout: 30
+model_tier: haiku
+mechanism: "Interactive MSSQL session. As sysadmin: enable_xp_cmdshell then xp_cmdshell 'whoami' for OS commands. As non-sysadmin: try EXECUTE AS LOGIN for impersonation, or link traversal via OPENQUERY for linked server pivoting."

@@ -1,0 +1,16 @@
+name: struts_rce
+category: cms
+description: Apache Struts RCE
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 struts_exploit.py {target_url}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Struts OGNL injection: S2-045 (Content-Type header), S2-046 (multipart filename), S2-057 (namespace). All allow RCE via OGNL expression injection."

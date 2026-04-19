@@ -1,0 +1,17 @@
+name: sudo_check
+category: privesc
+description: Check sudo permissions for current user
+preconditions:
+  - os==linux
+  - has_cred
+parameters: {}
+command_template: "sudo -l"
+parser: null
+expected_effects:
+  - sudo_permissions_known
+  - privesc_vector_found
+falsifier:
+  pattern: "not allowed to run sudo|no tty present"
+  timeout: 15
+model_tier: haiku
+mechanism: "Lists commands the current user can run via sudo. NOPASSWD entries are direct privesc. GTFOBins maps sudo-allowed binaries to shell escapes. (ALL) NOPASSWD: ALL = instant root."

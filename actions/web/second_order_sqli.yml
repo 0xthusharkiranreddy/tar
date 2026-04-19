@@ -1,0 +1,16 @@
+name: second_order_sqli
+category: web
+description: Second-order SQL injection
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "# Register with payload username, trigger on profile view"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Payload stored in DB via safe INSERT, triggered when retrieved and used in unsafe query elsewhere. Common in: username→profile display, search→saved searches."

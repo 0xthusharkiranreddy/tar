@@ -1,0 +1,16 @@
+name: aes_ecb_oracle
+category: crypto
+description: AES-ECB byte-at-a-time oracle
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 ecb_oracle.py"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "AES-ECB: encrypt chosen prefix + unknown suffix. Brute-force one byte at a time by comparing blocks. Requires: chosen plaintext, ECB mode (detect via repeated blocks)."

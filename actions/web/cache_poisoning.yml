@@ -1,0 +1,16 @@
+name: cache_poisoning
+category: web
+description: Web cache poisoning
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}' -H 'X-Forwarded-Host: attacker.com'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Inject cached response with malicious content. Unkeyed headers (X-Forwarded-Host, X-Original-URL) may be reflected but not part of cache key."

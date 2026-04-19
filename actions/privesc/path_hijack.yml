@@ -1,0 +1,16 @@
+name: path_hijack
+category: privesc
+description: PATH hijacking for SUID/cron/service privilege escalation
+preconditions:
+  - os==linux
+parameters: {}
+command_template: "echo $PATH; find / -perm -4000 2>/dev/null; strings /usr/local/bin/target_binary | grep -E '^[a-z]'"
+parser: null
+expected_effects:
+  - path_hijack_achieved
+  - root_shell_obtained
+falsifier:
+  pattern: ""
+  timeout: 30
+model_tier: haiku
+mechanism: "If SUID binary or cron job calls a command without full path (e.g., 'cat' instead of '/usr/bin/cat'), create malicious binary with same name in writable PATH directory. export PATH=/tmp:$PATH; then execute the SUID binary."

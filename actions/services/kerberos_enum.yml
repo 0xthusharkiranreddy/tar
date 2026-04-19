@@ -1,0 +1,16 @@
+name: kerberos_enum
+category: services
+description: Kerberos user enumeration without credentials
+preconditions:
+  - service.port==88
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "kerbrute userenum --dc {target_ip} -d {domain} /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 120
+model_tier: haiku
+mechanism: "Kerberos pre-auth timing difference reveals valid usernames. No credentials needed. Valid user: KDC_ERR_PREAUTH_REQUIRED. Invalid: KDC_ERR_C_PRINCIPAL_UNKNOWN."

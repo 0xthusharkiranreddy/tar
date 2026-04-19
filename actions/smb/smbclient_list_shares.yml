@@ -1,0 +1,17 @@
+name: smbclient_list_shares
+category: smb
+description: List SMB shares with null session
+preconditions:
+  - service.port==445
+parameters:
+  target_ip: from_service.host_ip
+command_template: "smbclient -N -L //{target_ip} 2>&1"
+parser: smbclient_parser
+parser_args: "--tool smbclient --host {target_ip}"
+expected_effects:
+  - has_shares
+falsifier:
+  pattern: "NT_STATUS_ACCESS_DENIED|NT_STATUS_LOGON_FAILURE|Connection refused"
+  timeout: 30
+model_tier: haiku
+mechanism: "Null session (-N) attempts anonymous bind to IPC$ and lists available shares. Many legacy/misconfigured hosts allow this."

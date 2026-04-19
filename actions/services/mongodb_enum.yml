@@ -1,0 +1,17 @@
+name: mongodb_enum
+category: services
+description: MongoDB enumeration for databases and collections
+preconditions:
+  - service.port==27017
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "mongosh --host {target_ip} --eval 'db.adminCommand({listDatabases:1})'"
+parser: null
+expected_effects:
+  - databases_enumerated
+  - data_obtained
+falsifier:
+  pattern: "Authentication failed|Connection refused"
+  timeout: 30
+model_tier: haiku
+mechanism: "MongoDB without auth: list databases, use <db>, db.getCollectionNames(), db.<collection>.find(). Look for user collections with passwords, config collections with API keys. Old versions allow command injection via $where."

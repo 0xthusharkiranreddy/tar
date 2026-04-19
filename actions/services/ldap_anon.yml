@@ -1,0 +1,16 @@
+name: ldap_anon
+category: services
+description: LDAP anonymous bind enumeration
+preconditions:
+  - service.port==389
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "ldapsearch -x -H ldap://{target_ip} -b '' -s base namingContexts"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Anonymous LDAP bind may reveal base DN, naming contexts. Full anon enum: ldapsearch -x -H ldap://target -b 'DC=domain,DC=com' '(objectClass=*)'"

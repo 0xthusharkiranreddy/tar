@@ -1,0 +1,16 @@
+name: ghidra_decompile
+category: binary
+description: Binary decompilation with Ghidra
+preconditions:
+  - has_target
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "ghidra_headless /tmp/project analysis -import {binary} -postScript DecompileAll.java"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Headless Ghidra decompilation for reverse engineering. Analyze: main function, input handling, buffer sizes, format strings, use-after-free patterns."

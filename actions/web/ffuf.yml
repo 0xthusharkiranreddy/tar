@@ -1,0 +1,18 @@
+name: ffuf
+category: web
+description: Web fuzzer for directories, vhosts, parameters, and values
+preconditions:
+  - service.port==80
+parameters:
+  target_url: from_engagement.target_url
+  wordlist: "/usr/share/seclists/Discovery/Web-Content/common.txt"
+command_template: "ffuf -u {target_url}/FUZZ -w {wordlist} -mc all -fc 404"
+parser: gobuster_parser
+expected_effects:
+  - web_directories_discovered
+  - vhosts_discovered
+falsifier:
+  pattern: "No results|0 results"
+  timeout: 180
+model_tier: haiku
+mechanism: "Fast web fuzzer. FUZZ keyword marks injection point. Use -H 'Host: FUZZ.domain' for vhost enum, -d 'param=FUZZ' for POST fuzzing, -fw to filter by word count."

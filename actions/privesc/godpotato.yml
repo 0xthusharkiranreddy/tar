@@ -1,0 +1,16 @@
+name: godpotato
+category: privesc
+description: GodPotato privilege escalation
+preconditions:
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "GodPotato.exe -cmd 'cmd /c whoami'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Universal potato exploit for .NET 4+. Works on all modern Windows versions. Requires SeImpersonatePrivilege. Most reliable of the potato family."

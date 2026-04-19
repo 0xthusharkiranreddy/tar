@@ -1,0 +1,19 @@
+name: smbclient_connect
+category: smb
+description: Connect to a specific SMB share to browse and download files
+preconditions:
+  - service.port==445
+  - has_shares
+parameters:
+  target_ip: from_engagement.target_ip
+  share_name: from_share.name
+command_template: "smbclient //{target_ip}/{share_name} -N"
+parser: smbclient_parser
+expected_effects:
+  - share_contents_listed
+  - files_downloaded
+falsifier:
+  pattern: "NT_STATUS_ACCESS_DENIED|NT_STATUS_LOGON_FAILURE"
+  timeout: 30
+model_tier: haiku
+mechanism: "Interactive SMB share access. Use 'ls' to list, 'get' to download, 'put' to upload. -N for null session, or -U user%pass for authenticated. recurse + prompt + mget * for bulk download."

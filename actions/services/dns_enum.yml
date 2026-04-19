@@ -1,0 +1,18 @@
+name: dns_enum
+category: services
+description: DNS zone transfer and subdomain enumeration
+preconditions:
+  - service.port==53
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+command_template: "dig axfr @{target_ip} {domain}"
+parser: null
+expected_effects:
+  - zone_transfer_obtained
+  - subdomains_found
+falsifier:
+  pattern: "Transfer failed|connection timed out"
+  timeout: 30
+model_tier: haiku
+mechanism: "AXFR zone transfer reveals all DNS records. If blocked, use brute-force: gobuster dns -d domain -w wordlist -r target_ip. Check for internal hostnames, service records (SRV), and mail records (MX)."

