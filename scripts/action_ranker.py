@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-action_ranker.py — v2: Knowledge-driven action ranking for TAR.
+action_ranker.py — v2.1: Knowledge-driven action ranking for TAR.
 
-Scoring signals (v2):
-  1. Phase relevance    (25 pts) — Phase-appropriate action selection
-  2. Knowledge match    (30 pts) — HackTricks/PAT prerequisite + product-version matching
-  3. Service specificity (20 pts) — How many service-specific preconditions match
-  4. Information gain    (15 pts) — Enumeration before exploitation preference
-  5. Transition hint     (10 pts) — Walkthrough P(next|last) as tiebreaker only
+Scoring signals (v2.1):
+  1. Phase relevance      (25 pts) — Phase-appropriate action selection
+  2. Knowledge match      (30 pts) — HackTricks/PAT prerequisite + product-version matching
+  3. Service specificity  (20 pts) — How many service-specific preconditions match
+  4. Information gain     (15 pts) — Enumeration before exploitation preference
+  5. Transition hint      (10 pts) — Walkthrough P(next|last) as tiebreaker only
+  6. Profile modifier     (variable, can be negative) — Engagement profile noise/destructive penalty
+  7. Redundancy penalty   (-15 pts) — Down-rank repeated tool-class actions in same phase
 
 Usage:
     python3 action_ranker.py <world_model.db> [--last-action ACTION] [--top N]
@@ -27,6 +29,48 @@ ACTIONS_DIR = Path("/home/kali/knowledge/actions")
 WALKTHROUGHS_DIR = Path("/home/kali/knowledge/walkthroughs")
 SCRIPTS_DIR = Path("/home/kali/.claude/scripts")
 LEDGER_DB = Path("/home/kali/knowledge/predicate_ledger.db")
+
+# Tool-class groupings for redundancy down-rank (gap 7: web enum loop)
+TOOL_CLASS = {
+    "gobuster": "web_content_enum",
+    "ffuf": "web_content_enum",
+    "feroxbuster": "web_content_enum",
+    "dirb": "web_content_enum",
+    "wfuzz": "web_content_enum",
+    "nikto": "web_vuln_scan",
+    "whatweb": "web_tech_detect",
+    "nmap_full": "port_scan",
+    "nmap_targeted": "port_scan",
+    "nmap_scripts": "port_scan",
+    "nmap_udp": "port_scan",
+    "kerbrute_spray": "credential_spray",
+    "hydra": "credential_spray",
+    "crackmapexec_spray": "credential_spray",
+    "kerberoast": "kerberos_attack",
+    "asreproast": "kerberos_attack",
+    "blind_kerberoast": "kerberos_attack",
+    "targeted_kerberoast": "kerberos_attack",
+    "timeroast": "kerberos_attack",
+    "responder": "poisoning",
+    "mitm6": "poisoning",
+    "ntlm_theft_file_drop": "poisoning",
+    "enum4linux_ng": "smb_enum",
+    "smb_null_session": "smb_enum",
+    "smb_share_enum": "smb_enum",
+    "smb_user_enum": "smb_enum",
+    "rid_brute": "smb_enum",
+    "ldap_anon": "ldap_enum",
+    "ldapsearch": "ldap_enum",
+    "ldapdomaindump": "ldap_enum",
+    "ldap_enum": "ldap_enum",
+    "bloodhound": "bloodhound_enum",
+    "bloodhound_analysis": "bloodhound_enum",
+    "lsass_procdump": "lsass_dump",
+    "lsass_comsvcs": "lsass_dump",
+    "secretsdump": "cred_dump",
+    "sam_offline_dump": "cred_dump",
+    "mscache2_dump": "cred_dump",
+}
 
 # Transition model cache (built once, reused)
 _transition_cache = None
@@ -235,18 +279,22 @@ def score_action(
     failed_actions: set[str],
     ledger_blocked: set[str],
     services_info: Optional[list] = None,
+    profile=None,
+    recent_same_class: Optional[set] = None,
 ) -> float:
     """
-    Score an action (v2: knowledge-driven). Higher = more relevant.
+    Score an action (v2.1: knowledge-driven + profile-aware). Higher = more relevant.
 
     Returns -1.0 for actions that should be excluded.
 
     Scoring signals:
-      1. Phase relevance    (0-25 pts) — Phase-appropriate via walkthrough + category
-      2. Knowledge match    (0-30 pts) — HackTricks prerequisite depth + product-version
-      3. Service specificity (0-20 pts) — Precondition coverage
-      4. Information gain    (0-15 pts) — Enum before exploit
-      5. Transition hint     (0-10 pts) — Walkthrough P(next|last) as tiebreaker
+      1. Phase relevance      (0-25 pts) — Phase-appropriate via walkthrough + category
+      2. Knowledge match      (0-30 pts) — HackTricks prerequisite depth + product-version
+      3. Service specificity  (0-20 pts) — Precondition coverage
+      4. Information gain     (0-15 pts) — Enum before exploit
+      5. Transition hint      (0-10 pts) — Walkthrough P(next|last) as tiebreaker
+      6. Profile modifier     (variable) — Engagement noise/destructive penalty
+      7. Redundancy penalty   (-15 pts)  — Down-rank repeated tool-class in same phase
     """
     name = action["name"]
 
@@ -365,6 +413,21 @@ def score_action(
                 score += 3.0
                 break
 
+    # ── 6. Engagement profile modifier (variable) ──
+    # Applies noise penalty and destructive-action blocking from engagement_profile.yml
+    if profile is not None:
+        modifier = profile.action_score_modifier(name)
+        if modifier <= -100:
+            return -1.0  # hard block (destructive in non-destructive profile)
+        score += modifier
+
+    # ── 7. Redundancy penalty (-15 pts) ──
+    # Down-rank if the same tool class was run recently (prevents web-enum loops)
+    if recent_same_class and TOOL_CLASS.get(name):
+        my_class = TOOL_CLASS[name]
+        if my_class in recent_same_class:
+            score -= 15.0
+
     return round(score, 2)
 
 
@@ -434,10 +497,48 @@ def rank_actions(
     except Exception:
         pass
 
+    # Load engagement profile for signal 6
+    profile = None
+    try:
+        import os
+        sys.path.insert(0, str(SCRIPTS_DIR))
+        from engagement_profile import EngagementProfile
+        engagement_dir = os.path.dirname(db_path)
+        profile = EngagementProfile(engagement_dir=engagement_dir)
+    except Exception:
+        pass
+
+    # Build recent_same_class for signal 7 (redundancy down-rank)
+    # Look at the last 6 completed actions in WM failed+succeeded list
+    recent_same_class: set[str] = set()
+    try:
+        from world_model import WorldModel
+        wm2 = WorldModel(db_path)
+        # Use failed actions + last_action as proxy for recently-run tool classes
+        recent_actions = list(failed)
+        if last_action:
+            recent_actions.append(last_action)
+        # Also pull from attack_paths (completed action sequence)
+        rows = wm2.conn.execute(
+            "SELECT action FROM attack_paths ORDER BY id DESC LIMIT 8"
+        ).fetchall()
+        recent_actions += [r[0] for r in rows if r[0]]
+        wm2.close()
+        for act_name in recent_actions:
+            tc = TOOL_CLASS.get(act_name)
+            if tc:
+                recent_same_class.add(tc)
+    except Exception:
+        pass
+
     scored = []
     for action in all_actions:
-        s = score_action(action, phase, predicates, last_action, failed, ledger_blocked,
-                        services_info=services_info)
+        s = score_action(
+            action, phase, predicates, last_action, failed, ledger_blocked,
+            services_info=services_info,
+            profile=profile,
+            recent_same_class=recent_same_class,
+        )
         if s < 0:
             continue
         scored.append({

@@ -1,0 +1,43 @@
+name: honeypot_detect
+category: services
+description: Fingerprint honeypot indicators — tool signatures, too-easy credential pages, canary tokens, suspicious service patterns
+mechanism: >
+  Checks a target for honeypot characteristics a human operator would instinctively notice:
+  (1) Tool signatures in banners/body — Kippo, Cowrie, Glastopf, ConPot, Dionaea, HFish,
+  OpenCanary, Thinkst — pattern-matched against HTTP body, SSH banner, SMB dialect list.
+  (2) SSH banner too old — real servers running 2003 OpenSSH are rare; it's usually Cowrie.
+  (3) FTP that accepts any credential — most honeypots do; real servers do not.
+  (4) SMB that has every share name a CTF wants — Users, C$, ADMIN$, IPC$ perfectly readable.
+  (5) CanaryTokens canary files — files with known token patterns that exfil on open.
+  (6) JARM fingerprint mismatch — if SSL handshake JARM hash matches known honeypot frameworks.
+  (7) Overly uniform nmap scan — every expected port open, banner exactly as a tool would inject.
+  A human operator who smells a honeypot stops and investigates before running any exploit.
+preconditions:
+  - has_target
+parameters:
+  target:
+    description: IP or hostname to fingerprint
+    required: true
+  ports:
+    description: Comma-separated ports to probe (default 22,80,445,21,8080)
+    required: false
+    default: "22,80,445,21,8080"
+command_template: >
+  bash -c "
+  TARGET='{target}';
+  echo '=== SSH banner ===' && timeout 4 nc -w3 $TARGET 22 2>/dev/null | head -3;
+  echo '=== FTP banner ===' && timeout 4 nc -w3 $TARGET 21 2>/dev/null | head -3;
+  echo '=== HTTP server header ===' && curl -sk -I --max-time 5 http://$TARGET/ 2>/dev/null | grep -iE '(server|x-powered-by|x-honeypot|x-canary)';
+  echo '=== HTTP body snippet ===' && curl -sk --max-time 5 http://$TARGET/ 2>/dev/null | head -30;
+  echo '=== SMB share enum (anonymous) ===' && smbclient -L //$TARGET -N --option='client min protocol=NT1' 2>/dev/null | head -15;
+  echo '=== Kippo/Cowrie check ===' && curl -sk --max-time 5 http://$TARGET/kippo/ http://$TARGET/cowrie/ 2>/dev/null | head -5;
+  echo '=== Known honeypot UA response check ===' && curl -skA 'Mozilla/5.0 (compatible; Googlebot/2.1)' --max-time 5 http://$TARGET/ 2>/dev/null | grep -i 'honeypot\|canary\|cowrie\|kippo\|glastopf\|dionaea' | head -5;
+  "
+expected_effects:
+  - honeypot_detected
+  - target_fingerprinted
+falsifier: "Connection refused|No route to host|timed out|no honeypot indicators"
+parser: generic_parser
+references:
+  hacktricks: /generic-methodologies-and-resources/pentesting-network/
+  ocd_mindmap: "Recon > Target Validation"

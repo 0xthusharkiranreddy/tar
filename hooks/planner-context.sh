@@ -138,6 +138,51 @@ if failed_list:
         except Exception:
             pass
 
+# ── Engagement Profile ──
+try:
+    import os as _os, sys as _sys
+    _sys.path.insert(0, '$SCRIPTS_DIR')
+    from engagement_profile import EngagementProfile
+    ep = EngagementProfile(engagement_dir=_os.path.dirname(db))
+    print()
+    print('## Engagement Profile')
+    print(ep.summary())
+    if not ep.allow_destructive:
+        print('[!] Destructive actions BLOCKED — set allow_destructive: true in engagement_profile.yml to enable them')
+except Exception:
+    pass
+
+# ── Visual Perception (auto-capture web targets not yet screenshotted) ──
+# Guard: only import perception_engine (which loads playwright) if web services exist
+_web_svc_ports = {80, 443, 8080, 8443, 8000, 8888, 3000, 5000}
+_web_services = [s for s in services if s.get('port') in _web_svc_ports]
+if _web_services:
+    try:
+        import os as _os2, re as _re2, pathlib as _pathlib
+        from perception_engine import perceive_web_target
+        screenshots_dir = _pathlib.Path(_os2.path.dirname(db)) / 'screenshots'
+        already_shot = set(f.stem for f in screenshots_dir.iterdir()) if screenshots_dir.exists() else set()
+        from world_model import WorldModel as _WM2
+        _wm2 = _WM2(db)
+        _hosts = _wm2.get_hosts()
+        _wm2.close()
+        if _hosts:
+            ip = _hosts[0].get('ip', '')
+            for svc in _web_services[:2]:
+                port = svc.get('port', 80)
+                scheme = 'https' if port in (443, 8443) else 'http'
+                url = f'{scheme}://{ip}:{port}/'
+                safe_key = _re2.sub(r'[^\w]', '_', url)[:60]
+                print()
+                if safe_key in already_shot:
+                    print(f'## Visual Perception — {url}')
+                    print(f'Screenshot on file → \`{screenshots_dir}/{safe_key}.png\` (use Read tool to view image)')
+                else:
+                    block = perceive_web_target(url, db, screenshots_dir)
+                    print(block)
+    except Exception:
+        pass
+
 # ── Ranked Action Table with Technique Context ──
 print()
 print(f'## Top Actions (phase={phase}, last={last or \"none\"})')

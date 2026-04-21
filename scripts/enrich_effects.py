@@ -347,6 +347,12 @@ EFFECT_RULES = {
     "mscache2_dump": ["mscache2_hashes_obtained", "offline_crack_seed", "has_hash"],
     "dpapi_masterkey": ["dpapi_masterkey_decrypted", "browser_creds_decryptable", "cert_private_keys_decryptable", "has_cred"],
     "sam_offline_dump": ["local_admin_nthash", "has_hash"],
+    # Perception gap fixes (v2.2)
+    "playwright_screenshot": ["web_visual_captured", "web_recon_done"],
+    "playwright_crawl": ["web_visual_captured", "dom_xss_sink_present", "login_form_found", "spa_routes_discovered", "auth_endpoint_known", "honeypot_detected", "js_secret_exposed"],
+    "timing_probe": ["timebased_injection_confirmed", "timing_differential_marginal", "timing_anomaly_detected"],
+    "js_secrets_scan": ["js_secret_exposed", "web_recon_done"],
+    "honeypot_detect": ["honeypot_detected", "target_fingerprinted"],
 }
 
 

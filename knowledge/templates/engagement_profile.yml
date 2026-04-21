@@ -1,0 +1,17 @@
+# TAR Engagement Profile
+# Copy to your engagement directory as engagement_profile.yml
+# Profile controls: noise, destructive-action gating, scope, lockout thresholds
+
+profile: lab          # ctf | lab | internal | external | production
+allow_destructive: true   # set false for internal/external/production
+lockout_threshold: 20     # max spray attempts before abort
+noise_tolerance: high     # low | medium | high
+engagement_goal: "Obtain domain admin and exfiltrate proof.txt"
+
+# Scope (leave empty to allow all — NOT recommended for real engagements)
+scope_cidrs:
+  # - "10.0.0.0/8"
+scope_domains:
+  # - "lab.internal"
+out_of_scope:
+  # - "10.0.0.1"   # gateway — do not touch

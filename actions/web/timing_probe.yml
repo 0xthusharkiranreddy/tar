@@ -1,0 +1,41 @@
+name: timing_probe
+category: web
+description: Response-time differential analysis — detect time-based blind SQLi / SSTI / command injection and auth-vs-noauth timing leaks
+mechanism: >
+  Fires N baseline requests to the target URL via curl, recording time_total per request.
+  Then fires a set of time-delay payloads appended as query parameters:
+  - SLEEP(5) variants for MySQL/MSSQL time-based blind SQLi
+  - pg_sleep(5) for PostgreSQL
+  - sleep 5 via shell metacharacter injection
+  A response that is ≥4s above baseline means the payload executed on the server — this
+  is blind time-based injection confirmed without needing any output. Also fires a Jinja2
+  SSTI probe to detect template-engine execution via response-length differential.
+  A human tester always times responses with Burp's timing view before concluding "no SQLi";
+  this action codifies that discipline.
+preconditions:
+  - service.port in [80, 443, 8080, 8443, 8000, 3000, 5000]
+parameters:
+  url:
+    description: Full URL to probe (query params will be appended)
+    required: true
+  n:
+    description: Number of baseline requests
+    required: false
+    default: "5"
+command_template: >
+  python3 -c "
+  import sys; sys.path.insert(0, '/home/kali/.claude/scripts')
+  from perception_engine import timing_probe
+  import json
+  result = timing_probe('{url}', n={n})
+  print(json.dumps(result, indent=2))
+  "
+expected_effects:
+  - timebased_injection_confirmed
+  - timing_differential_marginal
+  - timing_anomaly_detected
+falsifier: "curl baseline failed|connect-timeout|Operation timed out|no timing signal"
+parser: timing_parser
+references:
+  hacktricks: /pentesting-web/sql-injection/blind-sql-injection
+  ocd_mindmap: "Web > Injection"

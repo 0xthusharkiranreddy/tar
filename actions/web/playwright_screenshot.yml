@@ -1,0 +1,34 @@
+name: playwright_screenshot
+category: web
+description: Render web target in headless Chromium, capture full screenshot, extract title/headings for visual reconnaissance
+mechanism: >
+  Launches headless Chromium via playwright, navigates to the target URL, waits 1.5s for
+  deferred JS to settle, then saves a full-page PNG screenshot. Also extracts rendered
+  page title and h1/h2/h3 headings from the live DOM (post-JS execution) — surfacing
+  content that dirb/gobuster/whatweb miss entirely because they only see raw HTML.
+  The screenshot path is returned so the operator can Read it in Claude Code and see
+  exactly what an attacker's browser would see: login pages, admin panels, error
+  messages with stack traces, framework fingerprints in rendered UI, etc.
+preconditions:
+  - service.port in [80, 443, 8080, 8443, 8000, 8888, 3000, 5000]
+parameters:
+  url:
+    description: Full URL to screenshot (e.g. https://10.10.11.1/)
+    required: true
+  output_dir:
+    description: Directory to save PNG (default /tmp/tar_screenshots)
+    required: false
+    default: /tmp/tar_screenshots
+command_template: >
+  python3 /home/kali/.claude/scripts/perception_engine.py
+  --url {url}
+  --screenshot-dir {output_dir}
+  --json
+expected_effects:
+  - web_visual_captured
+  - web_recon_done
+falsifier: "playwright not available|chromium.*not found|TimeoutError|net::ERR"
+parser: playwright_parser
+references:
+  hacktricks: /pentesting-web/
+  ocd_mindmap: "Web > Initial Recon"

@@ -1,0 +1,37 @@
+name: playwright_crawl
+category: web
+description: Deep client-side analysis — extract forms, DOM-XSS sinks, hardcoded JS secrets, SPA routes, intercepted auth requests
+mechanism: >
+  Renders the target in headless Chromium with request interception enabled. Extracts:
+  (1) All form definitions — action, method, input names/types — revealing the full
+  submit-endpoint surface including dynamically-rendered forms injected by JS frameworks.
+  (2) DOM-XSS sinks in inline scripts — innerHTML=, document.write(), eval(), location.href=
+  assignments — that only appear in the rendered DOM.
+  (3) Hardcoded secrets/API keys matching patterns like apiKey=, token=, secret= in JS.
+  (4) SPA route definitions from frameworks like React Router, Vue Router, Angular router.
+  (5) Authentication endpoints intercepted at the network layer while the page loads.
+  (6) Honeypot indicators — known honeypot tool signatures, credential-canary HTML comments,
+  near-empty pages that look suspiciously like minimal responders.
+  A human tester always opens the browser before firing Burp; this action is that step.
+preconditions:
+  - service.port in [80, 443, 8080, 8443, 8000, 8888, 3000, 5000]
+parameters:
+  url:
+    description: Full URL to crawl
+    required: true
+command_template: >
+  python3 /home/kali/.claude/scripts/perception_engine.py
+  --url {url}
+  --json
+expected_effects:
+  - web_visual_captured
+  - dom_xss_sink_present
+  - login_form_found
+  - spa_routes_discovered
+  - auth_endpoint_known
+  - honeypot_detected
+falsifier: "playwright not available|chromium.*not found|TimeoutError|net::ERR|No forms|No sinks"
+parser: playwright_parser
+references:
+  hacktricks: /pentesting-web/
+  ocd_mindmap: "Web > Client-Side Analysis"
