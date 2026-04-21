@@ -4,6 +4,8 @@ An honest enumeration of what TAR does *not* do yet, and how each gap will close
 
 This file is deliberately front-loaded with limitations. If you are evaluating TAR for adoption or investment, you should read this before the README.
 
+> For the **present-tense** picture of what does not work today — destructive actions, rabbit holes, perception gaps, domain-specific weaknesses — see [../AUDIT.md](../AUDIT.md). ROADMAP.md is forward-looking; AUDIT.md is a brutal snapshot of the current state.
+
 ## Shipped in v2.1 (Apr 2026)
 
 - Orange Cyberdefense 2025.03 AD mindmap integrated as a fourth canonical knowledge source (weight 1.1× on methodology queries).

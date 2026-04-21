@@ -4,6 +4,8 @@
 
 TAR is a knowledge-grounded offensive-security agent that composes Claude (the LLM) with a deterministic runtime of parsers, a SQLite world model, an action library, and hooks that inject HackTricks/PayloadsAllTheThings/OCD-mindmap mechanism knowledge at every decision point. The design goal: root a HackTheBox Easy/Medium machine in ≤2 hours with the same discipline a human operator applies — hypothesis, mechanism, falsifier — rather than hallucinated command sequences or statistical walkthrough replay.
 
+> **Before you read further: [AUDIT.md](AUDIT.md) is the brutal-honest gap analysis — what TAR cannot do yet, the destructive actions it will fire without a safety net, and the rabbit holes it falls into. Read it before the rest of this README if you are evaluating TAR for adoption or live use.**
+
 ## What's new in v2.1
 
 - **Fourth knowledge source**: the Orange Cyberdefense 2025.03 AD Red Teaming Mindmap is indexed as a first-class methodology reference. See `docs/AD_METHODOLOGY.md` for the operator-facing walkthrough.
