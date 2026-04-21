@@ -104,8 +104,26 @@ def _build_walkthrough_model():
     _phase_freq_cache = phase_prob
 
 
+_actions_cache = None
+_actions_cache_mtime = 0
+
+
 def load_all_actions() -> list[dict]:
-    """Load all action YAML definitions."""
+    """Load all action YAML definitions. Cached across calls within the process."""
+    global _actions_cache, _actions_cache_mtime
+
+    # Check mtime of actions dir — cheap invalidation
+    try:
+        mtime = max(
+            (f.stat().st_mtime for f in ACTIONS_DIR.rglob("*.yml")),
+            default=0,
+        )
+    except Exception:
+        mtime = 0
+
+    if _actions_cache is not None and mtime == _actions_cache_mtime:
+        return _actions_cache
+
     actions = []
     for yml_file in sorted(ACTIONS_DIR.rglob("*.yml")):
         try:
@@ -116,6 +134,9 @@ def load_all_actions() -> list[dict]:
                 actions.append(action)
         except Exception:
             continue
+
+    _actions_cache = actions
+    _actions_cache_mtime = mtime
     return actions
 
 

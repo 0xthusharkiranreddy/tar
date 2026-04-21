@@ -6,9 +6,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: diskshadow.exe /s shadow_script.txt
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- backup_abused
+- system_shell
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

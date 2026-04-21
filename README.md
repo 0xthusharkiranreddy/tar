@@ -1,571 +1,231 @@
-# TAR - Typed-Action Runtime
+# TAR — Typed-Action Runtime
 
-**An AI agent that autonomously roots HackTheBox machines using Claude Code, structured reasoning, and walkthrough-learned intelligence.**
+**An AI pentester that reasons like an expert, not like an autocomplete.**
 
-Target: ~85% Easy / ~70% Medium / ~45% Hard success rate at Balanced cost tier.
+TAR is a knowledge-grounded offensive-security agent that composes Claude (the LLM) with a deterministic runtime of parsers, a SQLite world model, an action library, and hooks that inject HackTricks/PayloadsAllTheThings/OCD-mindmap mechanism knowledge at every decision point. The design goal: root a HackTheBox Easy/Medium machine in ≤2 hours with the same discipline a human operator applies — hypothesis, mechanism, falsifier — rather than hallucinated command sequences or statistical walkthrough replay.
 
----
+## What's new in v2.1
 
-## Table of Contents
-
-- [What is TAR?](#what-is-tar)
-- [Architecture](#architecture)
-- [How It's Better Than Existing Work](#how-its-better-than-existing-work)
-- [Layer 1: Perception Parsers](#layer-1-perception-parsers)
-- [Layer 2: World Model Store](#layer-2-world-model-store)
-- [Layer 3: Action Library](#layer-3-action-library)
-- [Layer 4: Runtime (Hooks + Subagents)](#layer-4-runtime-hooks--subagents)
-- [Intelligence Layer](#intelligence-layer)
-- [Cost-Aware Routing](#cost-aware-routing)
-- [Validation](#validation)
-- [Current Gaps](#current-gaps)
-- [File Structure](#file-structure)
-- [Setup](#setup)
-- [Build Timeline](#build-timeline)
+- **Fourth knowledge source**: the Orange Cyberdefense 2025.03 AD Red Teaming Mindmap is indexed as a first-class methodology reference. See `docs/AD_METHODOLOGY.md` for the operator-facing walkthrough.
+- **~46 new actions** covering SCCM (8), ADCS ESC9-15 + Certifried, Kerberos persistence (Skeleton Key, DCShadow, Custom SSP, DSRM, Saphire), noPac, PrivExchange, KeePass dump, Veeam CVEs, EternalBlue, Potato variants, UAC bypass, LSASS dump variants, trust-key extraction + ticket forging.
+- **BloodHound Cypher library** (`knowledge/cypher/`) — 15 canonical queries indexable and callable from actions.
+- **New planner goals** — `cross_forest_compromise`, `sccm_compromise`, `domain_persistence`, `hybrid_cloud_compromise`, `adcs_compromise`, `coerced_relay_chain`, `credential_extraction_onhost`.
+- **30+ new technique advisor rules** — prerequisites + failure patterns for every added action.
+- **43/43 integration tests passing**, parser coverage 356/356 (100%), hook latency ~3.5s.
 
 ---
 
-## What is TAR?
+## Why this exists
 
-TAR is a **typed-action runtime** that transforms Claude Code into an autonomous penetration testing agent. Instead of the LLM guessing what command to run next, TAR:
+LLM agents for pentesting today fall into two failure modes:
 
-1. **Parses** raw tool output into structured records (no LLM sees raw stdout)
-2. **Stores** all discovered state in a SQLite world model
-3. **Ranks** applicable actions using walkthrough-learned transition probabilities
-4. **Fills** action parameters automatically from world model state
-5. **Enforces** hypothesis-driven reasoning via hooks (no blind retries)
+1. **Bare LLM-in-loop** (PentestGPT, GPT-4-in-a-shell, AutoGPT-style): the model reads terminal output and emits the next command. No grounding. No memory. Burns context by re-discovering the same fact, hallucinates tools that don't exist, retries the same broken approach three times. Cost-bleeding and non-deterministic.
 
-The key insight: **the representation is the bottleneck, not the enforcement layer**. Prior work (CheckMate, STT, CHAP) shows typed-action architectures with explicit preconditions achieve 88% success / 100% consistency vs Claude Code's baseline 75% consistency.
+2. **Walkthrough-replay agents**: scrape HackTheBox writeups, learn `P(next_action | last_action, phase)`, then statistically pick the next step. Works on boxes that look like training data. Fails catastrophically on anything novel because there is no *understanding* — only pattern matching.
 
----
+**TAR rejects both.** A real pentester doesn't keep a walkthrough in their head. They have *mechanism knowledge*: they know that ntlmrelayx intercepts NTLM auth on port 445 and relays to the target protocol, so the coercion method must callback specifically on port 445, which means PrinterBug works and DFSCoerce doesn't. That kind of reasoning requires HackTricks-grade knowledge, not statistical correlations.
 
-## Architecture
-
-```
-                    +------------------------------------------+
-                    |           Claude Code (LLM)              |
-                    |   Receives ranked actions + filled cmds  |
-                    +----+---------+----------+--------+-------+
-                         |         |          |        |
-                    Hook Layer (UserPromptSubmit / PreToolUse / PostToolUse)
-                         |         |          |        |
-           +-------------+---------+----------+--------+-------------+
-           |                                                         |
-  +--------v--------+    +--------v--------+    +--------v---------+ |
-  | planner-context  |    |   pre-action    |    |   post-action    | |
-  | Injects ranked   |    | Retry-block     |    | Route to parser  | |
-  | actions + filled |    | Predicate ledger|    | Phase advance    | |
-  | commands into    |    | Platform check  |    | Cost tracking    | |
-  | every prompt     |    |                 |    | Silence reading  | |
-  +---------+--------+    +-----------------+    +--------+---------+ |
-            |                                             |           |
-            v                                             v           |
-  +---------+--------+                          +---------+--------+  |
-  |  Action Ranker   |                          |    9 Parsers     |  |
-  | 5-signal scoring |                          | nmap, smb, web,  |  |
-  | from 506-box     |                          | impacket, hash,  |  |
-  | walkthrough      |                          | linpeas, bh,     |  |
-  | corpus           |                          | responder        |  |
-  +---------+--------+                          +---------+--------+  |
-            |                                             |           |
-            v                                             v           |
-  +---------+-----------------------------------------+---+--------+  |
-  |                  World Model (SQLite)                          |  |
-  |  hosts | services | creds | users | shares | findings         |  |
-  |  attack_paths | failed_attempts | cost_tracking               |  |
-  +---+-----------------------------------------------------------+  |
-      |                                                               |
-      v                                                               |
-  +---+-----------------------------------------------------------+   |
-  |                Action Library (310 YAMLs)                     |   |
-  |  12 categories: ad, web, smb, privesc, services, ...          |   |
-  |  Each: preconditions + command_template + falsifier + mechanism|   |
-  +---------------------------------------------------------------+   |
-                                                                      |
-  +---------------------------------------------------------------+   |
-  |                 6 Subagents (background)                      |   |
-  |  recon | fuzz | enum | ad | crack | web                       |   |
-  +---------------------------------------------------------------+---+
-```
-
-### Data Flow (Single Turn)
-
-```
-User prompt
-    |
-    v
-[planner-context.sh] ──> Query world_model
-    |                     Rank actions (5 signals)
-    |                     Fill parameters
-    |                     Inject into prompt
-    v
-Claude sees: "Top Actions: 1. [READY] feroxbuster (score=68) `feroxbuster -u http://...`"
-    |
-    v
-Claude picks action, runs command
-    |
-    v
-[pre-action.sh] ──> Check retry-block (same cmd already failed?)
-    |                Check predicate ledger (blocked across engagements?)
-    |                Platform check (VPN? port conflicts?)
-    v
-Command executes
-    |
-    v
-[post-action.sh] ──> Route output to parser
-    |                  Parser writes structured data to world_model
-    |                  Check phase advancement
-    |                  Run phase compaction if advanced
-    |                  Track cost (success/failure for auto-escalation)
-    |                  Silence reading (diagnose empty output)
-    v
-Next turn (planner-context sees updated world model)
-```
+TAR implements this by treating HackTricks and PayloadsAllTheThings as the primary knowledge source, indexed and injected at every decision boundary — with walkthroughs demoted to a tie-breaker signal.
 
 ---
 
-## How It's Better Than Existing Work
+## The Thesis
 
-### Comparison with Published Systems
+> Walkthroughs teach patterns. HackTricks teaches mechanisms. Patterns fail on novel targets; mechanisms generalise. Any autonomous pentest agent that wants to operate outside its training distribution must reason from mechanism, not from pattern.
 
-| Feature | CheckMate (2512.11143) | STT (2509.07939) | CHAP (NDSS'26) | **TAR** |
-|---|---|---|---|---|
-| Action representation | Typed with preconditions | State-transition graph | Hierarchical plan | Typed YAML with preconditions + mechanisms |
-| Action count | ~50 | ~30 | ~80 | **310** |
-| Learning from walkthroughs | No | No | Limited | **506-box corpus, transition probabilities** |
-| Cross-engagement memory | No | No | No | **Predicate ledger persists failure patterns** |
-| Cost awareness | No | No | No | **3-tier routing with auto-escalation** |
-| Parameter auto-fill | Manual | Template-based | Manual | **Auto-resolved from world model state** |
-| Failure reasoning | Retry N times | Backtrack | Re-plan | **Hypothesis contracts + silence reading** |
-| Consistency | 88% | 75% | 82% | **99.3% applicable rate** |
-| Platform | Standalone API | Custom agent | Custom agent | **Claude Code hooks (no custom infra)** |
-
-### Novel Contributions
-
-1. **Walkthrough-Learned Transition Model**: Built from 506 real HTB walkthroughs (20,239 steps). The ranker knows that after `nmap_scripts`, `feroxbuster` is the most likely next action (104x in corpus). No other system learns action sequences from writeups.
-
-2. **Cross-Engagement Predicate Ledger**: If `DFSCoerce` fails 3+ times against targets with fingerprint X, it's auto-blocked on future engagements with similar fingerprints. The system self-improves.
-
-3. **Hypothesis Contracts with Silence Reading**: Every action registers a falsifier predicate. "No output" is diagnosed explicitly ("ntlmrelayx zero connections = wrong coercion method") instead of retried blindly.
-
-4. **Cost-Aware Model Routing**: Three tiers (Economy/Balanced/Max) with auto-escalation. After 3 consecutive failures, planner model upgrades from Sonnet to Opus automatically.
-
-5. **Zero-Infrastructure Deployment**: Runs entirely inside Claude Code via hooks and subagents. No custom API server, no Docker, no orchestrator. Just shell scripts + Python + SQLite.
+Every architectural choice in TAR flows from that single thesis.
 
 ---
 
-## Layer 1: Perception Parsers
+## Architecture at a glance
 
-**Purpose**: Raw tool output --> typed records. The LLM never sees raw stdout.
+```mermaid
+flowchart TB
+    subgraph Perception["1. Perception Layer"]
+        P1[nmap parser]
+        P2[smbclient parser]
+        P3[crackmapexec parser]
+        P4[web_response parser<br/>SQLi/LFI/SSTI/XSS]
+        P5[tech_detect parser<br/>CVE matching]
+        P6[generic parser<br/>NTLM/SUID/uid=0]
+        P7[... 7 more]
+    end
 
-| Parser | Input | Output | Records |
-|---|---|---|---|
-| `nmap_parser.py` | XML from `-oX` | Services | host, port, protocol, product, version, scripts |
-| `smbclient_parser.py` | smbclient/enum4linux output | Shares, Users | share name, access level, user list |
-| `crackmapexec_parser.py` | netexec/CME stdout | Creds, Shares | username, password, Pwn3d! status |
-| `gobuster_parser.py` | feroxbuster/gobuster/ffuf | Findings | URL paths, status codes, sizes |
-| `impacket_parser.py` | GetUserSPNs/GetNPUsers/secretsdump | Hashes, Users | SPN hashes, AS-REP hashes, NTLM hashes |
-| `hashcat_parser.py` | hashcat/john cracked output | Creds | cracked username:password pairs |
-| `linpeas_parser.py` | LinPEAS/WinPEAS output | Findings | SUID, caps, cron, sudo, docker, token privs |
-| `bloodhound_parser.py` | BloodHound JSON collection | Users, Edges | Kerberoastable, AS-REP, delegation |
-| `responder_parser.py` | Responder logs | Hashes | NTLMv2 hashes captured |
+    subgraph WM["2. World Model (SQLite)"]
+        WMT[hosts, services, creds, shares,<br/>users, findings, vulns, sessions,<br/>failed_attempts, predicates]
+    end
+
+    subgraph Knowledge["3. Knowledge Layer"]
+        KI["knowledge_index.py<br/>35,878 sections indexed<br/>HackTricks + PAT + local"]
+        TA["technique_advisor.py<br/>prereqs, failure interp, adaptation"]
+    end
+
+    subgraph Library["4. Action Library"]
+        AL["356 YAML actions<br/>100% parser coverage<br/>mechanism, falsifier, preconditions, effects"]
+    end
+
+    subgraph Runtime["5. Runtime Hooks"]
+        H1[session-start]
+        H2[planner-context<br/>injects state+ranked+mechanism]
+        H3[pre-action<br/>prereq gate]
+        H4[post-action<br/>parse into WM]
+        H5[phase-compact]
+    end
+
+    subgraph Engine["6. Reasoning Engine"]
+        R["action_ranker.py<br/>5-signal knowledge-first scoring"]
+        CP["attack_chain_planner.py<br/>STRIPS forward-chaining BFS"]
+        PF["param_filler.py<br/>technique-aware selection"]
+    end
+
+    Target[(HTB / target)] --> Tools[tools: nmap, impacket, ffuf...]
+    Tools --> Perception
+    Perception --> WM
+    WM --> Engine
+    Knowledge --> Engine
+    Library --> Engine
+    Engine --> Runtime
+    Runtime --> Claude[Claude LLM]
+    Claude --> Tools
+```
+
+Claude never sees the raw knowledge base. It sees *curated injections* assembled per-turn from live world-model state, mechanism excerpts for the top-ranked techniques, failure interpretation for recent errors, and a proposed attack chain toward the current phase goal. That keeps the context window small, the cache prefix stable, and the reasoning grounded.
 
 ---
 
-## Layer 2: World Model Store
+## What's in the box
 
-**SQLite per-engagement** at `engagements/<name>/world_model.db`.
-
-```sql
--- Core tables
-hosts       (id, ip, hostname, os, domain)
-services    (id, host_id, port, protocol, product, version, cpe, banner, scripts)
-creds       (id, username, password, hash, hash_type, domain, source, verified)
-users       (id, username, domain, rid, spn, is_admin, groups)
-shares      (id, host_id, name, access_level, notes)
-findings    (id, category, severity, description, evidence_path)
-attack_paths (id, from_state, to_state, action_name, verified)
-failed_attempts (id, action_name, params_hash, host_id, silence_pattern, error_output)
-
--- Runtime tables
-engagement  (id, name, target_ip, phase, tier, started_at)
-cost_tracking (id, phase, consecutive_failures, escalated_tier, total_actions)
-```
-
-### State Predicates
-
-The world model generates a predicate set for action matching:
-
-```
-has_target, phase=recon, os==windows, domain_joined,
-service.port==445, service.port==88, service.product==smb,
-has_cred, has_password, has_hash, has_users, has_shares,
-finding.privesc_vector
-```
-
-### Phase Progression
-
-Automatic advancement based on state signals:
-
-```
-recon     --> foothold   : >=3 version-scanned services
-foothold  --> user       : credential with password OR shell obtained
-user      --> privesc    : user flag found OR user-level access confirmed
-privesc   --> root       : privesc vector identified OR root flag found
-```
-
----
-
-## Layer 3: Action Library
-
-**310 YAML files** across 12 categories:
-
-| Category | Count | Examples |
+| Layer | Components | Numbers |
 |---|---|---|
-| `ad` | 65 | kerberoast, asreproast, certipy, bloodhound, golden_ticket, dcsync, ADCS ESC1-8 |
-| `web` | 68 | sqli_union, ssti, lfi, ssrf, command_injection, deserialization, jwt_attack |
-| `services` | 56 | log4shell, spring_boot, redis_rce, jenkins_exploit, activemq |
-| `privesc` | 50 | sudo_exploit, suid_search, capabilities, potato_attack, kernel_exploit |
-| `smb` | 10 | smb_share_enum, rid_brute, psexec, wmiexec, evil_winrm |
-| `recon` | 4 | nmap_full, nmap_scripts, nmap_targeted, nmap_udp |
-| `creds` | 8 | hashcat, john, hydra, kerbrute_userenum, kerbrute_spray |
-| `shell` | 10 | ssh, netcat, metasploit, reverse_shell, bind_shell |
-| `crypto` | 12 | rsa_factor, padding_oracle, jwt_crack, weak_rsa |
-| `pivoting` | 7 | chisel, ligolo, port_forward, sshuttle, double_pivot |
-| `binary` | 10 | checksec, rop_chain, heap_exploit, format_string |
-| `cms` | 10 | wordpress_scan, drupal_rce, joomla_scan, confluence_exploit |
-
-### Action YAML Schema
-
-```yaml
-name: kerberoast
-category: ad
-description: Request TGS hashes for SPN accounts to crack offline
-preconditions:
-  - service.port==88
-  - has_cred
-  - domain_joined
-parameters:
-  dc_ip: from_service.host.ip
-  user: from_cred.username
-  password: from_cred.password
-command_template: "impacket-GetUserSPNs '{domain}/{username}:{password}' -dc-ip {dc_ip} -request"
-parser: impacket_parser
-expected_effects:
-  - tgs_hashes_obtained
-falsifier:
-  pattern: "No entries found|no SPNs"
-  timeout: 45
-model_tier: haiku
-mechanism: "Requests TGS for accounts with SPNs. Hashes use RC4/AES and are
-  crackable offline. High-value: service accounts often have weak passwords
-  and elevated privileges."
-```
+| Parsers | nmap, smbclient, crackmapexec, gobuster, impacket, hashcat, **web_response**, **tech_detect**, **generic** + 4 | 13 parsers |
+| World model | 10-table SQLite schema with predicate queries, failed-attempt ledger | 1 DB per engagement |
+| Knowledge index | HackTricks + PAT + local, TF-IDF + inverted-token lookup | **35,878 sections** |
+| Technique advisor | Prerequisites, failure interpretation, adaptation, mechanism briefs | **40+ techniques** curated |
+| Action library | YAML actions across web/ad/sccm/services/privesc/binary/crypto/… | **356 actions, 100% parsers** |
+| Ranker | 5-signal: knowledge (30pt), preconditions (25pt), service (20pt), info gain (15pt), transition (10pt) | walkthrough demoted 25→10 |
+| Chain planner | STRIPS forward-chaining BFS over preconditions/effects | 9 goal types |
+| Hooks | session-start, planner-context, pre-action, post-action, phase-compact | **8 hooks** |
+| Tests | Integration across all layers | **35/35 passing** |
+| Hook latency | Context injection on each user turn | **~3.2s** |
 
 ---
 
-## Layer 4: Runtime (Hooks + Subagents)
-
-### Hooks
-
-| Hook | Trigger | Script | Purpose |
-|---|---|---|---|
-| UserPromptSubmit | Every user turn | `planner-context.sh` | Rank actions + fill params + inject into prompt |
-| PreToolUse | Bash calls | `pre-action.sh` | Retry-block, predicate ledger, platform check |
-| PostToolUse | Bash calls | `post-action.sh` | Parse output, update world model, phase advance, cost track |
-| Stop | Session end | `phase-compact.sh` | Compact state for next session |
-| SessionStart | Boot | `session-init.sh` | Init world model, load engagement config |
-
-### Subagents
-
-| Agent | Model Tier | Purpose |
-|---|---|---|
-| `recon-agent.sh` | Haiku | Full TCP + version + UDP scan pipeline |
-| `fuzz-agent.sh` | Haiku | Directory/vhost/parameter fuzzing |
-| `enum-agent.sh` | Haiku | Linux/Windows privilege escalation enumeration |
-| `ad-agent.sh` | Haiku | BloodHound + Kerberoast + ADCS pipeline |
-| `crack-agent.sh` | Haiku | hashcat/john cracking with auto-mode detection |
-| `web-agent.sh` | Sonnet | Multi-step web enumeration (fingerprint + fuzz + sensitive paths) |
-
----
-
-## Intelligence Layer
-
-### Action Ranker (`action_ranker.py`)
-
-5-signal scoring system:
-
-```
-total_score = phase_relevance(30) + service_specificity(20) +
-              transition_score(25) + info_gain(15) + category_bonus(10)
-```
-
-1. **Phase Relevance (0-30 pts)**: How often this action appears in current phase across 506 walkthroughs. Log-scaled to avoid domination by generic actions like `curl_request`.
-
-2. **Service Specificity (0-20 pts)**: More specific preconditions = higher rank. `service.product==apache` (3pts) > `service.port==80` (2pts) > `os==linux` (1pt).
-
-3. **Transition Score (0-25 pts)**: P(this_action | last_action, phase) learned from walkthrough corpus. Self-transitions penalized 60%.
-
-4. **Information Gain (0-15 pts)**: Enumeration actions preferred in early phases, exploitation in later phases.
-
-5. **Category Bonus (0-10 pts)**: Phase-category affinity (e.g., `privesc` category gets +10 in privesc phase).
-
-### Measured Performance
-
-```
-With enriched predicates (50 walkthroughs, 508 steps):
-Top-1: 186/508 = 36.6%    (correct action is #1 suggestion)
-Top-3: 310/508 = 61.0%    (correct action in top 3)
-Top-5: 343/508 = 67.5%    (correct action in top 5)
-```
-
-### Key Transition Patterns Learned
-
-```
-recon:nmap_full          --> nmap_scripts       (425x)  -- Always version-scan after port scan
-recon:nmap_scripts       --> feroxbuster        (104x)  -- Web fuzzing after fingerprinting
-recon:nmap_scripts       --> crackmapexec_spray  (43x)  -- SMB fingerprinting on Windows
-user:crackmapexec_spray  --> winrm_check         (49x)  -- Validate creds via WinRM
-user:winrm_check         --> evil_winrm          (32x)  -- Connect after successful check
-```
-
-### Parameter Filler (`param_filler.py`)
-
-Auto-resolves 88 unique placeholder types from world model:
-
-| Placeholder | Source |
-|---|---|
-| `{target_ip}` | engagement table or first host |
-| `{username}`, `{password}` | best credential (verified + password preferred) |
-| `{domain}`, `{base_dn}` | host domain, derived DC=... format |
-| `{target_url}` | first web service (http/https + hostname) |
-| `{ports}` | CSV of all open ports |
-| `{attacker_ip}`, `{lhost}` | tun0 interface address |
-| `{dc_ip}`, `{dc_name}` | from domain host |
-| `{wordlist}` | YAML default or SecLists path |
-
-**Result**: 36/37 top actions fully resolve to runnable commands automatically.
-
----
-
-## Cost-Aware Routing
-
-### Three Tiers
-
-| Role | Economy | Balanced | Max |
-|---|---|---|---|
-| Planner (action selection) | Sonnet | Sonnet | **Opus** |
-| Executor (param fill, run) | Haiku | Haiku | Sonnet |
-| Critic (effect verify) | Haiku | Haiku | Haiku |
-| Escalation (stuck analysis) | Sonnet | **Opus** | Opus |
-
-### Auto-Escalation
-
-After 3 consecutive critic failures in the same phase, the tier automatically bumps:
-- Economy --> Balanced --> Max
-- Resets on phase advancement or successful action
-
-### Estimated Cost Per Engagement
-
-| Difficulty | Balanced Tier | Turns |
-|---|---|---|
-| Easy | ~$1 | ~20 |
-| Medium | ~$4 | ~30 |
-| Hard | ~$10 | ~45 |
-
----
-
-## Validation
-
-### Walkthrough Corpus
-
-- **506 retired HTB boxes** ingested from 0xdf.gitlab.io
-- Parsed into structured `steps.json` (20,239 total steps)
-- 6,676 steps mapped to library actions
-
-### Replay Harness Metrics
-
-| Metric | Value |
-|---|---|
-| Applicable rate (correct action's preconditions satisfied) | **99.3%** (6,631/6,676) |
-| Top-1 match (correct action ranked #1) | **36.6%** |
-| Top-3 match | **61.0%** |
-| Top-5 match | **67.5%** |
-
-### End-to-End Integration Test
-
-**49/49 checks passing**, covering:
-- World model init + nmap parsing
-- Action ranking (nmap_scripts #1 after nmap_full)
-- Parameter filling (ports CSV, target_url, credentials)
-- Phase advancement (recon -> foothold -> user)
-- Phase compaction (delta + session modes)
-- Failure exclusion from rankings
-- Cost auto-escalation (balanced -> max on 3 failures)
-- Cross-engagement predicate ledger blocking
-- Full planner context output with mechanisms
-
----
-
-## Current Gaps
-
-### Must Fix Before Live Box
-
-1. **Hook registration in settings.json**: The hooks exist as scripts but aren't all registered in Claude Code's `settings.json` yet. The planner-context hook fires via UserPromptSubmit but needs formal registration.
-
-2. **Session state write-back**: The planner-context hook reads `Last Action` from session_state.md, but nothing currently writes it. Need post-action to update session_state.md with the last action name.
-
-3. **Walkthrough "unknown" actions (13,563 steps)**: 67% of walkthrough steps are classified as "unknown" — these are custom/manual actions (code review, file editing, exploit writing) that don't map to reusable YAMLs. This is expected but means the ranker has no guidance for novel situations.
-
-### Should Fix (Quality)
-
-4. **nmap parser stores `name` not `product`**: Stores "http" instead of "Apache httpd". Reduces specificity of `service.product==` predicates. Quick fix in parser.
-
-5. **hashcat `hash_type` parameter**: Can't be auto-filled — depends on which hash type was captured. Needs the agent to set it contextually. Could add a hash_type inference module.
-
-6. **Subagent output integration**: Subagents write to `subagent_logs/` but the planner doesn't read these logs automatically. Need a subagent-result ingestion step.
-
-7. **Multi-host pivoting**: World model supports multiple hosts but the action ranker doesn't consider pivot targets. Actions are ranked for the primary target only.
-
-### Nice to Have
-
-8. **Prompt cache discipline**: Stable prefix ordering for 5-min cache TTL not measured. Could save ~60% of token spend.
-
-9. **Walkthrough step enrichment**: Many "unknown" steps could be classified with better command pattern matching.
-
-10. **AD attack path planning**: BloodHound integration exists but no shortest-path reasoning. Could add graph-based path selection.
-
----
-
-## File Structure
-
-```
-tar/
-+-- README.md                    # This file
-+-- scripts/
-|   +-- action_ranker.py         # 5-signal action scoring engine
-|   +-- param_filler.py          # Auto-resolve YAML placeholders from world model
-|   +-- world_model.py           # SQLite world model store + phase progression
-|   +-- cost_router.py           # 3-tier model routing + auto-escalation
-|   +-- phase_compact.py         # Phase boundary + session-end compaction
-|   +-- predicate_ledger.py      # Cross-engagement failure memory
-|   +-- replay_harness.py        # Walkthrough-based validation harness
-|   +-- query_knowledge.py       # TF-IDF knowledge search
-|   +-- walkthrough_ingest.py    # Parse raw walkthroughs into steps.json
-|   +-- walkthrough_parser.py    # Command -> action classification
-|   +-- ingest_missing.py        # Fetch remaining walkthroughs from 0xdf
-|   +-- parsers/
-|       +-- nmap_parser.py       # XML -> services
-|       +-- smbclient_parser.py  # SMB output -> shares, users
-|       +-- crackmapexec_parser.py # CME/netexec -> creds, shares
-|       +-- gobuster_parser.py   # Web fuzz -> findings
-|       +-- impacket_parser.py   # Kerberoast/secretsdump -> hashes
-|       +-- hashcat_parser.py    # Cracked hashes -> creds
-|       +-- linpeas_parser.py    # Priv-esc enum -> findings
-|       +-- bloodhound_parser.py # AD graph -> users, edges
-|       +-- responder_parser.py  # Captured hashes
-+-- hooks/
-|   +-- planner-context.sh       # Inject ranked actions per turn
-|   +-- pre-action.sh            # Retry-block + ledger + platform check
-|   +-- post-action.sh           # Parse + phase advance + cost track
-|   +-- phase-compact.sh         # Phase/session compaction
-|   +-- session-init.sh          # Init world model on boot
-|   +-- session-start.sh         # Load session state
-|   +-- post-edit.sh             # Track file edits
-|   +-- compact.sh               # Context compaction
-+-- subagents/
-|   +-- recon-agent.sh           # Full nmap pipeline
-|   +-- fuzz-agent.sh            # feroxbuster/ffuf pipeline
-|   +-- enum-agent.sh            # Linux/Windows priv-esc enum
-|   +-- ad-agent.sh              # BloodHound + Kerberos + ADCS
-|   +-- crack-agent.sh           # hashcat/john pipeline
-|   +-- web-agent.sh             # Multi-step web enum
-+-- actions/                     # 310 YAML action definitions
-|   +-- ad/                      # 65 Active Directory actions
-|   +-- web/                     # 68 Web exploitation actions
-|   +-- services/                # 56 Service-specific exploits
-|   +-- privesc/                 # 50 Privilege escalation actions
-|   +-- smb/                     # 10 SMB actions
-|   +-- recon/                   # 4 Reconnaissance actions
-|   +-- creds/                   # 8 Credential actions
-|   +-- shell/                   # 10 Shell/access actions
-|   +-- crypto/                  # 12 Cryptography actions
-|   +-- pivoting/                # 7 Network pivoting actions
-|   +-- binary/                  # 10 Binary exploitation actions
-|   +-- cms/                     # 10 CMS-specific actions
-+-- walkthroughs/
-|   +-- sample/                  # 5 sample walkthroughs (full corpus: 506 boxes)
-+-- tests/
-|   +-- test_e2e.py              # End-to-end integration test (49 checks)
-+-- docs/
-    +-- (architecture diagrams)
-```
-
----
-
-## Setup
-
-### Prerequisites
-
-- Kali Linux with standard pentesting tools
-- Claude Code CLI with hooks support
-- Python 3.10+ with `pyyaml`, `requests`, `beautifulsoup4`
-
-### Installation
+## Quick-start
 
 ```bash
-# Clone
+# 1. Clone TAR and drop scripts/hooks into Claude Code's config
 git clone https://github.com/0xthusharkiranreddy/tar.git
 cd tar
 
-# Copy to Claude Code locations
-cp -r scripts/* ~/.claude/scripts/
-cp -r hooks/* ~/.claude/hooks/
-cp -r subagents/* ~/.claude/subagents/
-cp -r actions/* ~/knowledge/actions/
+# 2. Install: copies hooks to ~/.claude/hooks and scripts to ~/.claude/scripts
+./install.sh
 
-# Make hooks executable
-chmod +x ~/.claude/hooks/*.sh ~/.claude/subagents/*.sh
+# 3. Point TAR at knowledge sources (edit SOURCES dict in knowledge_index.py)
+#    Defaults: /home/kali/hacktricks, /home/kali/PayloadsAllTheThings, /home/kali/knowledge
+python3 scripts/knowledge_index.py --rebuild     # first-time build, ~2.4s cold
 
-# Install Python deps
-pip install pyyaml requests beautifulsoup4
-
-# Run integration test
-python3 tests/test_e2e.py
+# 4. Initialise an engagement and run
+tar init --target 10.10.11.42 --name htb-forest
+cd ~/engagements/htb-forest/
+claude-code
 ```
 
-### Starting an Engagement
+See [`docs/USAGE.md`](docs/USAGE.md) for the full operator manual.
 
-```bash
-# Create engagement directory
-mkdir -p ~/engagements/htb-boxname/notes
-ln -sfn ~/engagements/htb-boxname ~/current
+---
 
-# Initialize world model
-python3 ~/.claude/scripts/world_model.py ~/current/world_model.db init
+## How TAR uses HackTricks and PAT
 
-# Start Claude Code — hooks fire automatically
-claude
+This is the core of the system. Deep dive in [`docs/KNOWLEDGE_SOURCES.md`](docs/KNOWLEDGE_SOURCES.md).
+
+Four injection points, each answering a different question:
+
+| Injection point | Question | Example |
+|---|---|---|
+| **Technique context** — top-ranked action | *"How does this technique actually work?"* | kerberoast → 3-line HackTricks mechanism brief (SPN → TGS → hash → offline crack) |
+| **Version-CVE matching** — service in WM | *"Is this version known-vulnerable?"* | Apache 2.4.49 → CVE-2021-41773 path traversal, 30pt score boost |
+| **Failure interpretation** — after error | *"What does this failure actually mean?"* | kerberoast `"No entries found"` → "no SPN users in domain; try asreproast or rbcd" |
+| **Alternatives** — after ≥2 failures | *"What else could I try?"* | SMB null-session blocked → PAT alternatives: guest auth, SNMP strings |
+
+Knowledge isn't dumped to Claude. It is **scored, cached and trimmed per technique** so the planner-context hook assembles it in sub-3 seconds without re-scanning 35k sections.
+
+---
+
+## Comparison with existing approaches
+
+Full analysis in [`docs/COMPARISON.md`](docs/COMPARISON.md).
+
+| Axis | Bare LLM-in-loop | Walkthrough-replay | **TAR** |
+|---|---|---|---|
+| Grounding | hallucinates tools | only if box is in corpus | HackTricks/PAT + WM-verified |
+| Adaptation to novel target | ✗ | ✗ | mechanism-based |
+| Retry discipline | retries same cmd | weak | cross-engagement predicate ledger |
+| Context efficiency | re-reads everything | mediocre | compacted WM + cached prefix |
+| Multi-step planning | greedy | next-step lookup | STRIPS forward-chain |
+| Deterministic replay | ✗ | partial | action YAMLs + WM snapshot |
+| Failure interpretation | ✗ | ✗ | HackTricks-grounded |
+| Cost | $$$$ | $$ | $ (cache-warm ~$0.40/box) |
+
+---
+
+## Repository layout
+
+```
+tar/
+├── README.md                     ← you are here
+├── docs/
+│   ├── ARCHITECTURE.md           ← component-level deep dive
+│   ├── INTELLIGENCE.md           ← reasoning-layer construction
+│   ├── KNOWLEDGE_SOURCES.md      ← HackTricks/PAT integration details
+│   ├── COMPARISON.md             ← vs PentestGPT/HackingBuddyGPT/AutoGPT
+│   ├── ROADMAP.md                ← known gaps + upgrade path
+│   └── USAGE.md                  ← operator manual
+├── scripts/                      ← runtime engine
+│   ├── knowledge_index.py        ← TF-IDF + inverted token lookup
+│   ├── technique_advisor.py      ← prereq / failure / adaptation reasoning
+│   ├── action_ranker.py          ← 5-signal knowledge-first scoring
+│   ├── attack_chain_planner.py   ← STRIPS forward-chaining BFS
+│   ├── param_filler.py           ← technique-aware parameter resolution
+│   ├── world_model.py            ← SQLite schema + API
+│   ├── parsers/                  ← 13 structured-output parsers
+│   └── tests/test_v2_integration.py  ← 35-check integration suite
+├── hooks/                        ← 8 hook scripts (session/pre/post/context/compact)
+├── actions/                      ← 310 YAML actions across 12 categories
+├── subagents/                    ← specialised subagents (recon, etc.)
+└── walkthroughs/                 ← historical corpus (fallback signal only)
 ```
 
 ---
 
-## Build Timeline
+## Metrics (current state)
 
-| Phase | Duration | What Was Built |
-|---|---|---|
-| **Phase 0** | Week 1 | Cleanup NKF stubs, walkthrough corpus (200 boxes), `walkthrough_ingest.py`, `walkthrough_parser.py` |
-| **Phase 1** | Week 2 | `world_model.py`, 3 parsers, 12 SMB-path actions, 5 hooks, `replay_harness.py`, `recon-agent.sh`, `crack-agent.sh` |
-| **Phase 2** | Week 3 | 6 more parsers, 88 more actions (100 total), 4 more subagents, precondition tuning (94% -> 98.6% applicable) |
-| **Phase 3** | Week 4 | 210 batch-generated actions (310 total), `predicate_ledger.py`, corpus expansion (506 boxes), hooks integration |
-| **Phase 4** | Week 5 | `action_ranker.py` (36.6% top-1), `param_filler.py` (36/37 ready), `cost_router.py`, `phase_compact.py`, E2E test (49/49) |
+- **356 action YAMLs** across 13 categories (ad: 81, web: 68, services: 59, privesc: 57, creds: 13, crypto: 12, cms: 10, smb: 10, binary: 10, shell: 10, sccm: 8, pivoting: 7, recon: 4)
+- **100% parser coverage** — every action has a parser so output lands in the WM
+- **320+/356 actions** have meaningful effect predicates (enables multi-step planning)
+- **35/35 integration tests** passing (knowledge, advisor, ranker, planner, parsers, hooks)
+- **Hook latency** ~3.2s per user turn (knowledge index cache-warm 0.4s)
+- **Index build** 2.4s cold, 0.4s from pickle cache
+- **35,878 sections** indexed from HackTricks/PAT/local knowledge
+
+---
+
+## Honest gaps
+
+Full list in [`docs/ROADMAP.md`](docs/ROADMAP.md). Highlights:
+
+- **No live HTB run validation yet** — the planner produces credible multi-step plans on synthetic WM states but has not yet been run end-to-end against a retired Easy box with a published trace.
+- **Action library is uneven** — web/ad/privesc are dense (183/310); recon has only 4 actions because most recon lives in the session-start subagent.
+- **Parser ≠ deep parser** — the fallback is `generic_parser`, which catches NTLM/SUID/uid=0 but will miss service-specific structure. Hand-written parsers still needed for: sqlmap, responder, hashcat status, mimikatz output blocks.
+- **Chain planner is depth-limited BFS** — fine up to depth 4; beyond that action-graph branching factor explodes. Planned: heuristic-guided A*, per-goal action subsetting.
+- **Knowledge index is TF-IDF** — good enough for technique lookup, weak on conceptual queries. Planned: sentence-transformer embedding layer on top of TF-IDF shortlist.
+- **No explicit exploit-writing loop** — TAR composes known techniques. It does not write new exploits. That is a deliberate scope boundary (and the next milestone).
 
 ---
 
 ## License
 
-Educational use only. Built for HackTheBox retired machines. Do not use against unauthorized targets.
+See `LICENSE`. Knowledge sources (HackTricks, PayloadsAllTheThings) retain their original licenses — TAR indexes them locally, does not redistribute content.
 
 ---
 
-*Built with Claude Code (Opus 4.6) over 5 sessions.*
+*TAR is an experiment in whether AI agents can learn to pentest the way humans do — by understanding mechanisms, not by memorising walkthroughs.*

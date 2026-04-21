@@ -2,16 +2,21 @@ name: postgres_enum
 category: services
 description: PostgreSQL enumeration and exploitation
 preconditions:
-  - service.port==5432
-  - has_cred
+- service.port==5432
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "psql -h {target_ip} -U {username} -c '\l; SELECT * FROM pg_shadow;'"
-parser: null
+command_template: 'psql -h {target_ip} -U {username} -c ''\l; SELECT * FROM pg_shadow;''
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- postgres_access
+- has_cred
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 120
 model_tier: haiku
-mechanism: "PostgreSQL: \l for databases, \dt for tables, pg_shadow for hashes. RCE: COPY TO PROGRAM, large object functions, or UDF via C extension."
+mechanism: msf> use auxiliary/scanner/postgres/postgres_hashdump msf> use auxiliary/scanner/postgres/postgres_schemadump
+  msf> use auxiliary/admin/postgres/postgres_readfile msf> use exploit/linux/postgres/postgres_payload
+hacktricks_ref: network-services-pentesting/pentesting-postgresql.md

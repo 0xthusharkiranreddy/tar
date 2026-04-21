@@ -8,9 +8,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: certipy req -u '{username}@{domain}' -p '{password}' -ca '{ca_name}'
   -template '{template}' -dc-ip {target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- adcs_findings
+- certificate_obtained
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

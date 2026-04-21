@@ -7,7 +7,7 @@ parameters:
   target_url: from_engagement.target_url
 command_template: ffuf -u {target_url}/api/FUZZ -w /usr/share/seclists/Discovery/Web-Content/api/api-endpoints.txt
   -mc all -fc 404
-parser: null
+parser: gobuster_parser
 expected_effects:
 - api_endpoints_discovered
 - api_docs_found

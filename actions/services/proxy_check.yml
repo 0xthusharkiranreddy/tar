@@ -6,9 +6,9 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: proxychains nmap -sT -Pn -p 22,80,445,3389 {internal_ip}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- proxy_validated
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

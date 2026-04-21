@@ -6,7 +6,7 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: mongosh --host {target_ip} --eval 'db.adminCommand({listDatabases:1})'
-parser: null
+parser: generic_parser
 expected_effects:
 - databases_enumerated
 - data_obtained

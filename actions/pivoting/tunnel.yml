@@ -6,7 +6,7 @@ preconditions:
 parameters:
   interface: from_engagement.tun_interface
 command_template: ligolo-ng -selfcert
-parser: null
+parser: generic_parser
 expected_effects:
 - socks_proxy_established
 - internal_network_accessible

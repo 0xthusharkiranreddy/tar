@@ -183,6 +183,55 @@ except:
             [ -n "$PARSED" ] && printf '[TAR] NXC parsed: %s\n' "$PARSED"
         fi
         ;;
+    *curl*|*wget*|*sqlmap*|*nikto*|*whatweb*|*wpscan*|*droopescan*|*joomscan*)
+        # Web tool output → web_response_parser + tech_detect_parser
+        TOOL_OUTPUT=$(echo "$INPUT" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    print(data.get('tool_response', data.get('response', '')))
+except:
+    print('')
+" 2>/dev/null || echo '')
+        if [ -n "$TOOL_OUTPUT" ] && [ ${#TOOL_OUTPUT} -gt 10 ]; then
+            PARSED=$(echo "$TOOL_OUTPUT" | python3 "$PARSERS_DIR/web_response_parser.py" --db "$WM_DB" 2>&1 || echo '')
+            [ -n "$PARSED" ] && printf '[TAR] Web parsed: %s\n' "$PARSED"
+            # Also run tech detection
+            TECH=$(echo "$TOOL_OUTPUT" | python3 "$PARSERS_DIR/tech_detect_parser.py" --db "$WM_DB" --full-body 2>&1 || echo '')
+            [ -n "$TECH" ] && printf '[TAR] Tech: %s\n' "$TECH"
+        fi
+        ;;
+    *hydra*|*kerbrute*|*crackmapexec*|*netexec*|*evil-winrm*|*psexec*|*wmiexec*|*ssh*|*ftp*|*redis-cli*|*mysql*|*mssql*|*ldapsearch*|*rpcclient*|*dig*|*snmpwalk*)
+        # Service tools → generic_parser
+        TOOL_OUTPUT=$(echo "$INPUT" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    print(data.get('tool_response', data.get('response', '')))
+except:
+    print('')
+" 2>/dev/null || echo '')
+        if [ -n "$TOOL_OUTPUT" ] && [ ${#TOOL_OUTPUT} -gt 10 ]; then
+            TOOL_NAME=$(echo "$COMMAND" | grep -oP '^\S+' | sed 's|.*/||' || echo 'unknown')
+            PARSED=$(echo "$TOOL_OUTPUT" | python3 "$PARSERS_DIR/generic_parser.py" --db "$WM_DB" --tool "$TOOL_NAME" 2>&1 || echo '')
+            [ -n "$PARSED" ] && printf '[TAR] Parsed: %s\n' "$PARSED"
+        fi
+        ;;
+    *linpeas*|*winpeas*|*sudo*-l*|*find*-perm*|*getcap*|*whoami*|*id\ *|*cat\ /etc/passwd*|*type\ *|*net\ user*|*systeminfo*)
+        # Privesc enum → generic_parser
+        TOOL_OUTPUT=$(echo "$INPUT" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    print(data.get('tool_response', data.get('response', '')))
+except:
+    print('')
+" 2>/dev/null || echo '')
+        if [ -n "$TOOL_OUTPUT" ] && [ ${#TOOL_OUTPUT} -gt 10 ]; then
+            PARSED=$(echo "$TOOL_OUTPUT" | python3 "$PARSERS_DIR/generic_parser.py" --db "$WM_DB" --tool privesc_enum 2>&1 || echo '')
+            [ -n "$PARSED" ] && printf '[TAR] Privesc parsed: %s\n' "$PARSED"
+        fi
+        ;;
 esac
 
 # ── Predicate Ledger: record success/failure for cross-engagement learning ──

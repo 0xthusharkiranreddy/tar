@@ -1,0 +1,34 @@
+name: sccm_find
+category: sccm
+description: Locate SCCM infrastructure (MPs, DPs, site codes) from domain context
+preconditions:
+- domain_joined
+- has_cred
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: sccmhunter find -u {username} -p '{password}' -d {domain} -dc-ip
+  {target_ip}
+parser: generic_parser
+expected_effects:
+- sccm_infrastructure_mapped
+- sccm_site_code_found
+- sccm_mp_identified
+- sccm_dp_identified
+falsifier:
+  pattern: no SCCM|not found|ACCESS_DENIED|timeout
+  timeout: 120
+model_tier: haiku
+mechanism: 'Queries LDAP for System-Management container and SCCM SPNs (System Center,
+
+  MP_ReportServer, MS_SMS). Returns site code, management points, distribution
+
+  points. Seeds everything downstream — CRED paths, takeover paths, relay paths.
+
+  '
+references:
+  ocd_mindmap: 'Branch 12: SCCM / MECM — Find / Enum'
+  hacktricks: windows-hardening/active-directory-methodology/pentesting-sccm.md
+hacktricks_ref: network-services-pentesting/pentesting-rlogin.md

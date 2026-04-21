@@ -6,7 +6,7 @@ preconditions:
 parameters: {}
 command_template: 'cat /etc/crontab; ls -la /etc/cron.d/; for user in $(cut -f1 -d:
   /etc/passwd); do crontab -u $user -l 2>/dev/null; done'
-parser: null
+parser: generic_parser
 expected_effects:
 - cron_jobs_found
 - privesc_vector_found

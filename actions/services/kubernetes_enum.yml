@@ -7,9 +7,9 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: kubectl --server=https://{target_ip}:6443 --insecure-skip-tls-verify
   get pods --all-namespaces
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- k8s_tested
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 120

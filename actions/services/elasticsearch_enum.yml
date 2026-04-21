@@ -6,9 +6,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: curl -s 'http://{target_ip}:9200/_cat/indices?v'
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- elastic_access
+- data_access
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 120

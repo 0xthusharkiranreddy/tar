@@ -6,9 +6,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: ./pspy64
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- processes_monitored
+- cron_found
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

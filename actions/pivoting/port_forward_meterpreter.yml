@@ -6,9 +6,9 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: portfwd add -l {local_port} -p {remote_port} -r {internal_ip}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- pivot_established
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

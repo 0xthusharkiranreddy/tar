@@ -6,7 +6,7 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: python3 cbc_bitflip.py
-parser: null
+parser: generic_parser
 expected_effects:
 - action_completed
 falsifier:

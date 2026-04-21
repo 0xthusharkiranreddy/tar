@@ -11,7 +11,7 @@ parameters:
   password: from_cred.password
   command: from_engagement.exec_command
 command_template: netexec winrm {target_ip} -u '{username}' -p '{password}' -X '{command}'
-parser: null
+parser: generic_parser
 expected_effects:
 - command_executed
 falsifier:

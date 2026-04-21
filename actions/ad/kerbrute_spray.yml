@@ -10,7 +10,7 @@ parameters:
   password: from_engagement.spray_password
 command_template: kerbrute passwordspray --dc {target_ip} -d {domain} /tmp/users.txt
   '{password}'
-parser: null
+parser: generic_parser
 expected_effects:
 - valid_creds_found
 - has_cred

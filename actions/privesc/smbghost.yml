@@ -1,0 +1,24 @@
+name: smbghost
+category: privesc
+description: SMBGhost (CVE-2020-0796) — SMBv3 compression integer overflow → RCE/LPE
+preconditions:
+- service.port==445
+- smbv3_compression_enabled
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: python3 CVE-2020-0796-LPE.py {target_ip}
+parser: generic_parser
+expected_effects:
+- system_shell
+- rce_achieved
+falsifier:
+  pattern: not vulnerable|patched|SMB compression disabled
+  timeout: 60
+model_tier: sonnet
+mechanism: |
+  CVE-2020-0796. Pre-auth integer overflow in SMBv3 SMB2 COMPRESSION_TRANSFORM_HEADER
+  decompression. Local authenticated path yields SYSTEM; unauthenticated RCE path
+  was demonstrated but often unreliable — use LPE form against Windows 10 1903/1909.
+references:
+  ocd_mindmap: 'Branch 11: SMBGhost (CVE-2020-0796)'
+  hacktricks: windows-hardening/windows-local-privilege-escalation/

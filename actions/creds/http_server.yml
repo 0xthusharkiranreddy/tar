@@ -7,7 +7,7 @@ parameters:
   port: '8000'
   directory: from_engagement.tools_dir
 command_template: python3 -m http.server {port} -d {directory}
-parser: null
+parser: generic_parser
 expected_effects:
 - file_server_started
 falsifier:

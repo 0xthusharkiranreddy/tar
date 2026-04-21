@@ -5,10 +5,11 @@ preconditions:
 - service.port==389
 parameters:
   target_ip: from_engagement.target_ip
-command_template: '# Reconfigure device LDAP server to attacker → capture creds'
-parser: null
+command_template: "# Reconfigure device LDAP server to attacker \u2192 capture creds"
+parser: generic_parser
 expected_effects:
-- action_completed
+- ldap_creds_captured
+- has_cred
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

@@ -11,7 +11,7 @@ parameters:
   password: from_cred.password
 command_template: impacket-findDelegation '{domain}/{username}:{password}' -dc-ip
   {target_ip}
-parser: null
+parser: impacket_parser
 expected_effects:
 - delegation_rights_found
 falsifier:

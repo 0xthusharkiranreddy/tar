@@ -6,9 +6,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: certipy auth -pfx '{pfx_file}' -dc-ip {target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- adcs_findings
+- certificate_obtained
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

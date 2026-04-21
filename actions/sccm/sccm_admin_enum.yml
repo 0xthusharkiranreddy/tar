@@ -1,0 +1,32 @@
+name: sccm_admin_enum
+category: sccm
+description: Enumerate SCCM Full Administrators via WMI on SMS Provider
+preconditions:
+- has_cred
+- sccm_infrastructure_mapped
+parameters:
+  sms_provider: from_engagement.sms_provider
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: sccmhunter admin -u {username} -p '{password}' -d {domain} -tm {sms_provider}
+parser: generic_parser
+expected_effects:
+- sccm_admins_enumerated
+- sccm_full_admin_list
+falsifier:
+  pattern: ACCESS_DENIED|WBEM_E_NOT_FOUND|not a Full Administrator
+  timeout: 60
+model_tier: haiku
+mechanism: 'WMI query against SMS_Admin on the SMS Provider returns all principals
+  with
+
+  Full Administrator role. If the current user is already a Full Admin, this
+
+  opens Takeover-1/2 paths via CMPivot / scripts / collection deployment.
+
+  '
+references:
+  ocd_mindmap: 'Branch 12: SCCM Admin enumeration'
+  hacktricks: windows-hardening/active-directory-methodology/pentesting-sccm.md
+hacktricks_ref: pentesting-web/deserialization/ruby-class-pollution.md

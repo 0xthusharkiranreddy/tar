@@ -8,7 +8,7 @@ parameters:
   username: from_cred.username
   password: from_cred.password
 command_template: ssh {username}@{target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
 - shell_obtained
 - phase_advance

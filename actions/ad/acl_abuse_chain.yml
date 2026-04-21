@@ -1,15 +1,16 @@
 name: acl_abuse_chain
 category: ad
-description: ACL abuse chain (GenericAll→ForceChangePassword→DCSync)
+description: "ACL abuse chain (GenericAll\u2192ForceChangePassword\u2192DCSync)"
 preconditions:
 - domain_joined
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: '# Chain: identify ACL edge → exploit permission → escalate'
-parser: null
+command_template: "# Chain: identify ACL edge \u2192 exploit permission \u2192 escalate"
+parser: generic_parser
 expected_effects:
-- action_completed
+- acl_abused
+- privilege_escalated
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

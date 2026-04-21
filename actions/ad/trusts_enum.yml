@@ -7,9 +7,9 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: netexec ldap {target_ip} -u '{username}' -p '{password}' -M enum_trusts
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- trusts_enumerated
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 120

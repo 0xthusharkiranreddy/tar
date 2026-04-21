@@ -7,7 +7,7 @@ parameters:
   target_ip: from_engagement.target_ip
   domain: from_engagement.domain
 command_template: dig axfr @{target_ip} {domain}
-parser: null
+parser: generic_parser
 expected_effects:
 - zone_transfer_obtained
 - subdomains_found

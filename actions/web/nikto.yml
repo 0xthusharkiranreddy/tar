@@ -6,7 +6,7 @@ preconditions:
 parameters:
   target_url: from_engagement.target_url
 command_template: nikto -h {target_url} -o /tmp/nikto_output.txt
-parser: null
+parser: tech_detect_parser
 expected_effects:
 - web_vulns_discovered
 - server_info_obtained

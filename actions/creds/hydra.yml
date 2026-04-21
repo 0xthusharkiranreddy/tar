@@ -9,7 +9,7 @@ parameters:
   wordlist: /usr/share/wordlists/rockyou.txt
   protocol: from_finding.protocol
 command_template: hydra -l {username} -P {wordlist} {target_ip} {protocol} -t 16
-parser: null
+parser: generic_parser
 expected_effects:
 - password_found
 - has_cred

@@ -1,0 +1,32 @@
+name: sccm_device_enum
+category: sccm
+description: Enumerate SCCM-managed devices for lateral movement planning
+preconditions:
+- has_cred
+- sccm_infrastructure_mapped
+parameters:
+  sms_provider: from_engagement.sms_provider
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: sccmhunter show -u {username} -p '{password}' -d {domain} -tm {sms_provider}
+  --devices
+parser: generic_parser
+expected_effects:
+- sccm_devices_enumerated
+- sccm_collection_map_obtained
+falsifier:
+  pattern: ACCESS_DENIED|no devices|WBEM_E_NOT_FOUND
+  timeout: 90
+model_tier: haiku
+mechanism: 'Inventory every device SCCM manages, including logged-on users, last hardware
+
+  scan, OU. Enables targeted application deployment to a single collection once
+
+  Full Admin is achieved (Elevate-1) → code execution as SYSTEM on the picked box.
+
+  '
+references:
+  ocd_mindmap: 'Branch 12: SCCM device enumeration'
+  hacktricks: windows-hardening/active-directory-methodology/pentesting-sccm.md
+hacktricks_ref: AI/AI-llm-architecture/6.-pre-training-and-loading-models.md

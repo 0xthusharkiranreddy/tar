@@ -6,7 +6,7 @@ preconditions:
 - has_cred
 parameters: {}
 command_template: sudo -l
-parser: null
+parser: generic_parser
 expected_effects:
 - sudo_permissions_known
 - privesc_vector_found

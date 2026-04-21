@@ -12,7 +12,7 @@ parameters:
   password: from_cred.password
 command_template: ldapdomaindump -u '{domain}\{username}' -p '{password}' ldap://{target_ip}
   -o /tmp/ldapdump
-parser: null
+parser: generic_parser
 expected_effects:
 - domain_dumped
 - users_enumerated

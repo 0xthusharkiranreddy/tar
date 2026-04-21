@@ -6,10 +6,11 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: '# S4U2self → S4U2proxy → impersonate admin'
-parser: null
+command_template: "# S4U2self \u2192 S4U2proxy \u2192 impersonate admin"
+parser: impacket_parser
 expected_effects:
-- action_completed
+- delegation_abused
+- shell_obtained
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

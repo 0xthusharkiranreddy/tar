@@ -2,15 +2,19 @@ name: format_string
 category: binary
 description: Format string vulnerability exploitation
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 -c "print('%p.' * 20)""
-parser: null
+command_template: 'python3 -c "print(''%p.'' * 20)"
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Send %p to leak stack values, %n to write. Common in C printf(user_input). Leak canary, libc addresses, or overwrite GOT entries for code execution."
+mechanism: '- [NVISO - Format string exploitation](https://blog.nviso.eu/2024/05/23/format-string-exploitation-a-hands-on-exploration-for-linux/)
+  - [Format string exploitation notes](https://hackmd.io/%40e20gJPRhRbKrBY5xcGKngA/SyM_Wcg_A)'
+hacktricks_ref: pentesting-web/file-inclusion/README.md

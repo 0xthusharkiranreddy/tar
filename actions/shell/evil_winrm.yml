@@ -20,3 +20,4 @@ mechanism: WinRM (HTTP on 5985, HTTPS on 5986) provides PowerShell Remoting. Use
   must be in Remote Management Users group or be local admin. Returns full interactive
   PS session — can run scripts, upload/download files.
 hacktricks_ref: network-services-pentesting/5985-5986-pentesting-winrm.md
+parser: generic_parser

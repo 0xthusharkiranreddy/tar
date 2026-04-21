@@ -20,3 +20,4 @@ mechanism: Sends AS-REQ for each username. Valid names get KDC_ERR_PREAUTH_REQUI
   (user exists, need password). Invalid names get KDC_ERR_C_PRINCIPAL_UNKNOWN. No
   lockout risk — pre-auth check is not a logon attempt.
 hacktricks_ref: windows-hardening/active-directory-methodology/password-spraying.md
+parser: generic_parser

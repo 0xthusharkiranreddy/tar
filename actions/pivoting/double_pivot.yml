@@ -6,13 +6,13 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: ssh -J {jump1_user}@{jump1_ip} {target_user}@{target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- pivot_established
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Multi-hop pivoting: SSH ProxyJump (-J) chains connections. Chisel: chain
-  client→server through each hop. Ligolo: add agent on each pivot host.'
+mechanism: "Multi-hop pivoting: SSH ProxyJump (-J) chains connections. Chisel: chain\
+  \ client\u2192server through each hop. Ligolo: add agent on each pivot host."
 hacktricks_ref: binary-exploitation/arbitrary-write-2-exec/aw2exec-__malloc_hook.md

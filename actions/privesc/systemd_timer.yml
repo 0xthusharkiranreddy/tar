@@ -6,14 +6,15 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: systemctl list-timers --all && find /etc/systemd -writable 2>/dev/null
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- timer_abused
+- root_shell
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'To enable a timer you need root privileges and to execute: sudo systemctl
-  enable backu2.timer Created symlink /etc/systemd/system/multi-user.target.wants/backu2.timer
-  → /lib/systemd/system/backu2.timer.'
+mechanism: "To enable a timer you need root privileges and to execute: sudo systemctl\
+  \ enable backu2.timer Created symlink /etc/systemd/system/multi-user.target.wants/backu2.timer\
+  \ \u2192 /lib/systemd/system/backu2.timer."
 hacktricks_ref: linux-hardening/privilege-escalation/README.md

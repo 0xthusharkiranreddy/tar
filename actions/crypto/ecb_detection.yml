@@ -2,15 +2,19 @@ name: ecb_detection
 category: crypto
 description: ECB mode detection and exploitation
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 -c "print('A'*48)""
-parser: null
+command_template: 'python3 -c "print(''A''*48)"
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "ECB encrypts identical blocks identically. Send repeated input, look for repeated ciphertext blocks. Exploit: byte-at-a-time decryption, cut-and-paste attacks."
+mechanism: 'ECB encrypts identical blocks identically. Send repeated input, look for
+  repeated ciphertext blocks. Exploit: byte-at-a-time decryption, cut-and-paste attacks.'
+hacktricks_ref: generic-methodologies-and-resources/pentesting-methodology.md

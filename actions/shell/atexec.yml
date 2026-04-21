@@ -12,7 +12,7 @@ parameters:
   password: from_cred.password
   command: from_engagement.exec_command
 command_template: impacket-atexec '{domain}/{username}:{password}@{target_ip}' '{command}'
-parser: null
+parser: impacket_parser
 expected_effects:
 - command_executed
 falsifier:

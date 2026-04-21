@@ -8,9 +8,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-getST '{domain}/{username}:{password}' -spn '{spn}' -impersonate
   {target_user} -dc-ip {target_ip}
-parser: null
+parser: impacket_parser
 expected_effects:
-- action_completed
+- tgs_obtained
+- has_ticket
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

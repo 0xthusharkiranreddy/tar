@@ -1,0 +1,30 @@
+name: timeroast
+category: ad
+description: TimeRoasting — recover machine-account hash via NTP MS-SNTP extension
+preconditions:
+- service.port==123
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: python3 timeroast.py {target_ip} -o timeroast_hashes.txt
+parser: generic_parser
+expected_effects:
+- machine_account_hash_captured
+- has_hash
+falsifier:
+  pattern: timeout|ICMP|unreachable|patched|empty
+  timeout: 30
+model_tier: haiku
+mechanism: 'Microsoft''s MS-SNTP extension to NTP authenticates time replies using
+  the computer
+
+  account''s RC4 key. Send a crafted NTP request specifying the target RID; the DC
+
+  responds with a hash derived from the machine-account password. No credentials,
+
+  no auth, just UDP-123. Hashcat mode 31300.
+
+  '
+references:
+  ocd_mindmap: 'Branch 1: TimeRoasting (RID-based, no auth)'
+  hacktricks: windows-hardening/active-directory-methodology/timeroast.md
+hacktricks_ref: windows-hardening/active-directory-methodology/TimeRoasting.md

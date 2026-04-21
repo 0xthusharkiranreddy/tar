@@ -2,15 +2,20 @@ name: ret2libc
 category: binary
 description: Return-to-libc exploitation
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 -c "from pwn import *; print(p64(libc_base + libc.symbols['system']))""
-parser: null
+command_template: 'python3 -c "from pwn import *; print(p64(libc_base + libc.symbols[''system'']))"
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Bypass NX by returning to libc functions. Chain: pop_rdi_gadget → '/bin/sh' string → system(). Find gadgets with ropper/ROPgadget. Leak libc base via format string or GOT."
+mechanism: 'Bypass NX by returning to libc functions. Chain: pop_rdi_gadget → ''/bin/sh''
+  string → system(). Find gadgets with ropper/ROPgadget. Leak libc base via format
+  string or GOT.'
+hacktricks_ref: binary-exploitation/rop-return-oriented-programing/ret2lib/rop-leaking-libc-address/README.md

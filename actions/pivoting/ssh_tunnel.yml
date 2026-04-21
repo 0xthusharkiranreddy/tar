@@ -8,9 +8,9 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: ssh -L {local_port}:{internal_ip}:{internal_port} {username}@{target_ip}
   -N
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- pivot_established
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

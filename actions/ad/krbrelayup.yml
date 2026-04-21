@@ -1,0 +1,32 @@
+name: krbrelayup
+category: ad
+description: KrbRelayUp — local privilege escalation via Kerberos relay to LDAP
+preconditions:
+- domain_joined
+- machine_account_quota_positive
+- os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: KrbRelayUp.exe relay -m rbcd
+parser: generic_parser
+expected_effects:
+- local_system_obtained
+- rbcd_configured
+falsifier:
+  pattern: MachineAccountQuota|patched|ERROR|denied
+  timeout: 60
+model_tier: sonnet
+mechanism: 'Local user on a domain-joined Windows host coerces the machine to authenticate
+  via
+
+  Kerberos to a local relay → relays to LDAP → writes RBCD on the local machine
+
+  account → S4U2self+S4U2proxy as Administrator → SYSTEM. Patched in 2022 but legacy
+
+  hosts remain. Adaptation: rbcd mode if MAQ>0; shadow-cred mode if MAQ=0.
+
+  '
+references:
+  ocd_mindmap: 'Branch 4: Kerberos Relay (KrbRelayUp local privesc)'
+  hacktricks: windows-hardening/active-directory-methodology/resource-based-constrained-delegation.md
+hacktricks_ref: generic-methodologies-and-resources/pentesting-network/spoofing-llmnr-nbt-ns-mdns-dns-and-wpad-and-relay-attacks.md

@@ -1,0 +1,32 @@
+name: veeam_cve2023_27532
+category: services
+description: Veeam CVE-2023-27532 — unauth extraction of credentials from Veeam DB
+preconditions:
+- service.port==9401
+- veeam_version_vulnerable
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: python3 CVE-2023-27532.py -t {target_ip}
+parser: generic_parser
+expected_effects:
+- veeam_credentials_dumped
+- service_account_password
+- has_cred
+falsifier:
+  pattern: 401|patched|not vulnerable
+  timeout: 60
+model_tier: haiku
+mechanism: 'Unauth Veeam Backup & Replication exposed GetSecuredStrings over port
+  9401/9402
+
+  returning encrypted credential blobs + decryption material. Yields the full
+
+  credential store: backup agents, hypervisor roots, service accounts — frequently
+
+  domain-wide privileged.
+
+  '
+references:
+  ocd_mindmap: 'Branch 13: Veeam (CVE-2023-27532)'
+  hacktricks: generic-methodologies-and-resources/
+hacktricks_ref: windows-hardening/windows-local-privilege-escalation/README.md

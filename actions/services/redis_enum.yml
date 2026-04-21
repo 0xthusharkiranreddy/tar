@@ -6,7 +6,7 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: redis-cli -h {target_ip} INFO
-parser: null
+parser: generic_parser
 expected_effects:
 - redis_info_obtained
 - keys_enumerated

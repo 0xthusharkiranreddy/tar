@@ -2,16 +2,20 @@ name: machine_account_quota
 category: ad
 description: Check MachineAccountQuota for computer creation
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 -c "import ldap3; ..."  # query ms-DS-MachineAccountQuota"
-parser: null
+command_template: 'python3 -c "import ldap3; ..."  # query ms-DS-MachineAccountQuota
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- machine_account_added
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Default MAQ=10 allows any auth user to add computer accounts. Required for: RBCD attacks, sAMAccountName spoofing, relay to LDAP with machine account."
+mechanism: 'Default MAQ=10 allows any auth user to add computer accounts. Required
+  for: RBCD attacks, sAMAccountName spoofing, relay to LDAP with machine account.'
+hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/account-persistence.md

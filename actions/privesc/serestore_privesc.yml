@@ -2,15 +2,19 @@ name: serestore_privesc
 category: privesc
 description: SeRestorePrivilege exploitation
 preconditions:
-  - os==windows
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "# Write to protected locations like C:\Windows\System32"
-parser: null
+command_template: '# Write to protected locations like C:\Windows\System32
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- restore_priv_used
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "SeRestorePrivilege: write any file regardless of ACL. Write malicious DLL to System32 for DLL hijack, or overwrite utilman.exe for sticky keys attack."
+mechanism: 'SeRestorePrivilege: write any file regardless of ACL. Write malicious
+  DLL to System32 for DLL hijack, or overwrite utilman.exe for sticky keys attack.'
+hacktricks_ref: linux-hardening/privilege-escalation/interesting-groups-linux-pe/README.md

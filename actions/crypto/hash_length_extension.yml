@@ -7,7 +7,7 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: hash_extender --data '{known_data}' --secret-min 8 --secret-max
   32 --append '{payload}' --signature '{hash}' --format sha256
-parser: null
+parser: generic_parser
 expected_effects:
 - action_completed
 falsifier:

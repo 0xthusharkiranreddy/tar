@@ -6,9 +6,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: kerbrute userenum --dc {target_ip} -d {domain} /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt
-parser: null
+parser: impacket_parser
 expected_effects:
-- action_completed
+- spn_users_found
+- has_users
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 120

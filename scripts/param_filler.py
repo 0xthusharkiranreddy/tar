@@ -21,17 +21,40 @@ ACTIONS_DIR = Path("/home/kali/knowledge/actions")
 SCRIPTS_DIR = Path("/home/kali/.claude/scripts")
 
 
-def load_action(action_name: str) -> dict | None:
-    """Find and load an action YAML by name."""
+_action_map = None
+_action_map_mtime = 0
+
+
+def _build_action_map():
+    """Build name→action dict once per process."""
+    global _action_map, _action_map_mtime
+    try:
+        mtime = max(
+            (f.stat().st_mtime for f in ACTIONS_DIR.rglob("*.yml")),
+            default=0,
+        )
+    except Exception:
+        mtime = 0
+    if _action_map is not None and mtime == _action_map_mtime:
+        return _action_map
+
+    amap = {}
     for yml_file in ACTIONS_DIR.rglob("*.yml"):
         try:
             with open(yml_file) as f:
                 action = yaml.safe_load(f)
-            if action and action.get("name") == action_name:
-                return action
+            if action and "name" in action:
+                amap[action["name"]] = action
         except Exception:
             continue
-    return None
+    _action_map = amap
+    _action_map_mtime = mtime
+    return amap
+
+
+def load_action(action_name: str) -> dict | None:
+    """Find and load an action YAML by name (cached map)."""
+    return _build_action_map().get(action_name)
 
 
 def get_fill_context(db_path: str) -> dict:

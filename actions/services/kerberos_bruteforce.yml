@@ -7,9 +7,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: kerbrute bruteuser --dc {target_ip} -d {domain} /usr/share/wordlists/rockyou.txt
   {username}
-parser: null
+parser: impacket_parser
 expected_effects:
-- action_completed
+- valid_users_found
+- has_users
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

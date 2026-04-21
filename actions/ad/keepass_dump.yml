@@ -1,0 +1,29 @@
+name: keepass_dump
+category: ad
+description: Dump master password from KeePass memory (CVE-2023-32784) via running
+  process
+preconditions:
+- shell_obtained
+- keepass_process_running
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: KeePass-Password-Dumper KeePass.DMP
+parser: generic_parser
+expected_effects:
+- keepass_master_password_leaked
+- has_cred
+falsifier:
+  pattern: process not found|KeePass not running|version patched
+  timeout: 60
+model_tier: haiku
+mechanism: 'CVE-2023-32784. KeePass 2.x < 2.54 leaks the master password character-by-character
+
+  in heap as the user types — residual CustomTextBox strings persist in memory.
+
+  A minidump of KeePass.exe + regex recovery gives every character except the first.
+
+  '
+references:
+  ocd_mindmap: 'Branch 13: KeePass dump (CVE-2023-32784)'
+  hacktricks: windows-hardening/stealing-credentials/credentials-protections.md
+hacktricks_ref: mobile-pentesting/android-app-pentesting/frida-tutorial/objection-tutorial.md

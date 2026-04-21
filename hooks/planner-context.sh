@@ -174,6 +174,32 @@ for i, (r, f) in enumerate(zip(ranked, filled), 1):
         if mech:
             print(f'    Mechanism: {mech}')
     print()
+
+# ── Attack chain planner: suggest multi-step path to phase goal ──
+try:
+    from attack_chain_planner import load_actions as _load_actions, plan_chain, extract_state_predicates
+    phase_to_goal = {
+        'recon': 'initial_foothold',
+        'foothold': 'credential_access',
+        'user': 'root_access',
+        'privesc': 'root_access',
+        'root': 'domain_admin',
+    }
+    goal = phase_to_goal.get(phase, 'root_access')
+    state = extract_state_predicates(db)
+    chain_actions = _load_actions()
+    chain = plan_chain(goal, state, chain_actions, max_depth=4)
+    if chain:
+        print(f'## Suggested Chain → {goal} ({len(chain)} steps)')
+        for i, a in enumerate(chain, 1):
+            effects = ', '.join(sorted(a['_effects']))[:60]
+            print(f'  {i}. [{a.get(\"category\",\"?\")}] **{a[\"name\"]}** → {effects}')
+        print()
+    elif chain == []:
+        print(f'## Chain Planner: {goal} already satisfied')
+        print()
+except Exception:
+    pass
 " 2>/dev/null || echo '## TAR: planner-context error')
 
 printf '%s\n' "$CONTEXT"

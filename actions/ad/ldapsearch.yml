@@ -11,7 +11,7 @@ parameters:
   base_dn: from_engagement.base_dn
 command_template: ldapsearch -x -H ldap://{target_ip} -D '{username}@{domain}' -w
   '{password}' -b '{base_dn}'
-parser: null
+parser: generic_parser
 expected_effects:
 - ldap_objects_enumerated
 falsifier:

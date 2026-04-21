@@ -10,7 +10,7 @@ parameters:
   password: from_cred.password
 command_template: xfreerdp /v:{target_ip} /u:{username} /p:'{password}' /cert:ignore
   +clipboard
-parser: null
+parser: generic_parser
 expected_effects:
 - rdp_session_obtained
 falsifier:

@@ -2,15 +2,21 @@ name: srop
 category: binary
 description: Sigreturn-Oriented Programming (SROP)
 preconditions:
-  - has_target
+- has_target
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 -c "from pwn import *; frame = SigreturnFrame(); frame.rip = ...; frame.rsp = ...""
-parser: null
+command_template: 'python3 -c "from pwn import *; frame = SigreturnFrame(); frame.rip
+  = ...; frame.rsp = ..."
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- action_completed
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "SROP: invoke sigreturn syscall to set all registers at once. Requires: syscall gadget + sigreturn number (15 on x64). pwntools SigreturnFrame automates frame creation."
+mechanism: 'SROP: invoke sigreturn syscall to set all registers at once. Requires:
+  syscall gadget + sigreturn number (15 on x64). pwntools SigreturnFrame automates
+  frame creation.'
+hacktricks_ref: binary-exploitation/rop-return-oriented-programing/srop-sigreturn-oriented-programming/README.md

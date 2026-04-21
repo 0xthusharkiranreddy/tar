@@ -7,7 +7,7 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: rpcclient -U '' -N {target_ip} -c 'enumdomusers; enumdomgroups;
   querygroupmem 0x200'
-parser: null
+parser: generic_parser
 expected_effects:
 - users_enumerated
 - groups_enumerated

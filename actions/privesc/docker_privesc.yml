@@ -5,7 +5,7 @@ preconditions:
 - os==linux
 parameters: {}
 command_template: docker run -v /:/mnt --rm -it alpine chroot /mnt sh
-parser: null
+parser: generic_parser
 expected_effects:
 - root_shell_obtained
 falsifier:

@@ -6,7 +6,7 @@ preconditions:
 parameters: {}
 command_template: echo $PATH; find / -perm -4000 2>/dev/null; strings /usr/local/bin/target_binary
   | grep -E '^[a-z]'
-parser: null
+parser: generic_parser
 expected_effects:
 - path_hijack_achieved
 - root_shell_obtained

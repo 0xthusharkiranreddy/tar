@@ -6,7 +6,7 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: showmount -e {target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
 - nfs_shares_listed
 - files_accessible

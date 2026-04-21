@@ -9,7 +9,7 @@ parameters:
   password: from_cred.password
 command_template: curl -s 'imap://{target_ip}' -u '{username}:{password}' --request
   'LIST "" *'
-parser: null
+parser: generic_parser
 expected_effects:
 - mailboxes_listed
 - emails_read

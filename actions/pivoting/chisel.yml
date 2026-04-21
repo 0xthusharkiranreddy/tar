@@ -7,7 +7,7 @@ parameters:
   listen_port: from_engagement.lport
   target_port: from_engagement.target_port
 command_template: chisel server -p {listen_port} --reverse
-parser: null
+parser: generic_parser
 expected_effects:
 - tunnel_established
 - internal_port_accessible

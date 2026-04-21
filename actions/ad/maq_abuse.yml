@@ -8,9 +8,9 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-addcomputer '{domain}/{username}:{password}' -computer-name
   'FAKE$' -computer-pass 'P@ss123' -dc-ip {target_ip} -method LDAPS
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- machine_account_added
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

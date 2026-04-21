@@ -2,15 +2,21 @@ name: scheduled_task_abuse
 category: privesc
 description: Windows scheduled task exploitation
 preconditions:
-  - os==windows
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "schtasks /query /fo LIST /v | findstr /i 'Task\|Run As\|Task To Run'"
-parser: null
+command_template: 'schtasks /query /fo LIST /v | findstr /i ''Task\|Run As\|Task To
+  Run''
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- task_abused
+- system_shell
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If scheduled task runs as SYSTEM and references writable path/binary, replace with malicious payload. Also check icacls on task binaries for write permissions."
+mechanism: If scheduled task runs as SYSTEM and references writable path/binary, replace
+  with malicious payload. Also check icacls on task binaries for write permissions.
+hacktricks_ref: windows-hardening/windows-local-privilege-escalation/com-hijacking.md

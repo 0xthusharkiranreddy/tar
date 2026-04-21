@@ -15,6 +15,7 @@ falsifier:
   pattern: NT_STATUS_ACCESS_DENIED|NT_STATUS_LOGON_FAILURE|Could not connect
   timeout: 30
 model_tier: haiku
-mechanism: Null session binds to SAMR pipe anonymously. enumdomusers returns RID-username
-  pairs. Works when RestrictAnonymous=0.
+mechanism: '**Mechanism**: Pre-Windows-2003 default allowed `IPC$` enumeration with
+  empty username/password. Modern hardened DCs disable this; misconfigured SMB servers
+  (NAS, printers) often allow.'
 hacktricks_ref: generic-hacking/brute-force.md

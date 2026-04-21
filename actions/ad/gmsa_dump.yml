@@ -7,9 +7,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: netexec ldap {target_ip} -u '{username}' -p '{password}' --gmsa
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- gmsa_password_read
+- has_cred
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

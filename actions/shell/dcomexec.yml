@@ -10,7 +10,7 @@ parameters:
   username: from_cred.username
   password: from_cred.password
 command_template: impacket-dcomexec '{domain}/{username}:{password}@{target_ip}'
-parser: null
+parser: impacket_parser
 expected_effects:
 - shell_obtained
 falsifier:

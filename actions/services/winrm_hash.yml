@@ -8,9 +8,9 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: evil-winrm -i {target_ip} -u '{username}' -H '{nt_hash}'
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- shell_obtained
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

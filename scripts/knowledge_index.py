@@ -248,10 +248,11 @@ class KnowledgeIndex:
                 with open(CACHE_PATH, 'rb') as f:
                     cache = pickle.load(f)
                 # Validate cache version
-                if cache.get('version') == 2:
+                if cache.get('version') == 3:
                     self.sections = cache['sections']
                     self.idf = cache['idf']
                     self.doc_tfs = cache['doc_tfs']
+                    self.token_index = cache['token_index']
                     self._loaded = True
                     return
             except Exception:
@@ -297,16 +298,23 @@ class KnowledgeIndex:
             for t, count in doc_freq.items()
         }
 
+        # Inverted index: token → list of section indices containing it
+        self.token_index = {}
+        for i, tf in enumerate(self.doc_tfs):
+            for tok in tf:
+                self.token_index.setdefault(tok, []).append(i)
+
         self._loaded = True
 
         # Cache
         try:
             with open(CACHE_PATH, 'wb') as f:
                 pickle.dump({
-                    'version': 2,
+                    'version': 3,
                     'sections': self.sections,
                     'idf': self.idf,
                     'doc_tfs': self.doc_tfs,
+                    'token_index': self.token_index,
                 }, f, protocol=pickle.HIGHEST_PROTOCOL)
         except Exception:
             pass
@@ -326,8 +334,15 @@ class KnowledgeIndex:
         if not query_tokens:
             return []
 
+        # Inverted-index shortlist: union of sections containing any query token
+        candidate_idxs = set()
+        for t in query_tokens:
+            if t in self.token_index:
+                candidate_idxs.update(self.token_index[t])
+
         results = []
-        for i, sec in enumerate(self.sections):
+        for i in candidate_idxs:
+            sec = self.sections[i]
             if source and sec.get('source') != source:
                 continue
 
@@ -364,11 +379,19 @@ class KnowledgeIndex:
         Returns a concise excerpt suitable for injection into planner context.
         Prefers sections from pages whose filepath matches the technique name.
         """
+        # Instance-level cache to avoid repeated 35K-section scans in the ranker.
+        cache_key = (action_name, max_chars)
+        if not hasattr(self, "_tc_cache"):
+            self._tc_cache = {}
+        if cache_key in self._tc_cache:
+            return self._tc_cache[cache_key]
+
         # Look up search keywords for this action
         keywords = TECHNIQUE_ALIASES.get(action_name, action_name.replace('_', ' '))
 
         results = self.search(keywords, top_n=10)
         if not results:
+            self._tc_cache[cache_key] = ""
             return ""
 
         # Prefer the introductory section from a page whose filepath matches the technique
@@ -399,7 +422,9 @@ class KnowledgeIndex:
                 text = text[:max_chars] + "..."
 
         source_label = best['source'].upper()
-        return f"[{source_label}: {best['heading']}]\n{text}"
+        result = f"[{source_label}: {best['heading']}]\n{text}"
+        self._tc_cache[cache_key] = result
+        return result
 
     def get_failure_guidance(self, action_name: str, error_pattern: str, max_chars: int = 800) -> str:
         """Get guidance for a specific failure pattern from HackTricks/PAT.
@@ -487,6 +512,12 @@ class KnowledgeIndex:
 
         e.g., get_version_vulns("Apache", "2.4.49") → CVE-2021-41773 path traversal
         """
+        cache_key = (product, version)
+        if not hasattr(self, "_vv_cache"):
+            self._vv_cache = {}
+        if cache_key in self._vv_cache:
+            return self._vv_cache[cache_key]
+
         query = f"{product} {version} exploit vulnerability CVE"
         results = self.search(query, top_n=10)
 
@@ -496,7 +527,9 @@ class KnowledgeIndex:
             if version in r['text'] or product.lower() in r['text'].lower():
                 version_matched.append(r)
 
-        return version_matched[:5] if version_matched else results[:3]
+        final = version_matched[:5] if version_matched else results[:3]
+        self._vv_cache[cache_key] = final
+        return final
 
     def stats(self) -> dict:
         """Return index statistics."""

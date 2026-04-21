@@ -10,7 +10,7 @@ parameters:
   password: from_cred.password
 command_template: mysql -h {target_ip} -u {username} -p'{password}' -e 'show databases;
   select user,host,authentication_string from mysql.user;'
-parser: null
+parser: generic_parser
 expected_effects:
 - databases_enumerated
 - mysql_users_dumped

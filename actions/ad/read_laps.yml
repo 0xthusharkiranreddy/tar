@@ -8,9 +8,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: python3 pyLAPS.py --action get -d {domain} -u '{username}' -p '{password}'
   --dc-ip {target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- laps_password_read
+- has_cred
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

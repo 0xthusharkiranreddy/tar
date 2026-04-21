@@ -6,7 +6,7 @@ preconditions:
 parameters:
   port: from_engagement.lport
 command_template: nc -lvnp {port}
-parser: null
+parser: generic_parser
 expected_effects:
 - shell_obtained
 falsifier:

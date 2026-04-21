@@ -7,7 +7,7 @@ parameters:
   target_url: from_engagement.target_url
 command_template: wpscan --url {target_url} --enumerate u,vp,vt,dbe --plugins-detection
   aggressive
-parser: null
+parser: web_response_parser
 expected_effects:
 - wordpress_version_found
 - vulnerable_plugins_found

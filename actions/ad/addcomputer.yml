@@ -11,7 +11,7 @@ parameters:
   password: from_cred.password
 command_template: impacket-addcomputer '{domain}/{username}:{password}' -computer-name
   'FAKE01$' -computer-pass 'Password123!' -dc-ip {target_ip}
-parser: null
+parser: impacket_parser
 expected_effects:
 - machine_account_created
 falsifier:

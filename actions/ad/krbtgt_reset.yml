@@ -2,16 +2,21 @@ name: krbtgt_reset
 category: ad
 description: Verify krbtgt key version for golden ticket
 preconditions:
-  - domain_joined
-  - has_cred
+- domain_joined
+- has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "python3 -c "import ldap3; ..."  # check msDS-KeyVersionNumber"
-parser: null
+command_template: 'python3 -c "import ldap3; ..."  # check msDS-KeyVersionNumber
+
+  '
+parser: impacket_parser
 expected_effects:
-  - action_completed
+- krbtgt_accessed
+- domain_admin
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Golden ticket detection: krbtgt key version number (kvno). If ticket kvno != current AD kvno, detected. Double krbtgt reset invalidates all golden tickets."
+mechanism: 'Golden ticket detection: krbtgt key version number (kvno). If ticket kvno
+  != current AD kvno, detected. Double krbtgt reset invalidates all golden tickets.'
+hacktricks_ref: pentesting-web/2fa-bypass.md

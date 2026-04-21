@@ -6,9 +6,10 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: procmon.exe /quiet /minimized /backingfile capture.pml
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- dll_hijacked
+- system_shell
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

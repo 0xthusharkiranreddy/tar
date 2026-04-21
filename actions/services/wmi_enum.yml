@@ -7,9 +7,9 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-wmiexec '{domain}/{username}:{password}@{target_ip}' 'systeminfo'
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- wmi_info_gathered
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 120

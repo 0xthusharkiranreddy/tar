@@ -7,7 +7,7 @@ parameters:
   target_ip: from_engagement.target_ip
   community: public
 command_template: snmpwalk -v2c -c {community} {target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
 - system_info_obtained
 - users_found

@@ -6,9 +6,9 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: vncviewer {target_ip}:5900
-parser: null
+parser: generic_parser
 expected_effects:
-- action_completed
+- vnc_tested
 falsifier:
   pattern: error|failed|refused|denied
   timeout: 30

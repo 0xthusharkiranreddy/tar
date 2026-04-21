@@ -8,7 +8,7 @@ parameters:
   target_ip: from_engagement.target_ip
 command_template: impacket-owneredit '{domain}/{username}:{password}' -target '{target_dn}'
   -new-owner '{username}' -dc-ip {target_ip}
-parser: null
+parser: generic_parser
 expected_effects:
 - action_completed
 falsifier:

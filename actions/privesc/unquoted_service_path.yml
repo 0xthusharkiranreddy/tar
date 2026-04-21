@@ -2,15 +2,24 @@ name: unquoted_service_path
 category: privesc
 description: Unquoted service path exploitation
 preconditions:
-  - os==windows
+- os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "wmic service get name,displayname,pathname,startmode | findstr /i 'Auto' | findstr /i /v 'C:\Windows'"
-parser: null
+command_template: 'wmic service get name,displayname,pathname,startmode | findstr
+  /i ''Auto'' | findstr /i /v ''C:\Windows''
+
+  '
+parser: generic_parser
 expected_effects:
-  - action_completed
+- unquoted_exploited
+- system_shell
 falsifier:
-  pattern: "error|failed|refused|denied"
+  pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If service path has spaces and isn't quoted, Windows tries intermediate paths. E.g., C:\Program Files\Service\binary.exe tries C:\Program.exe first. Drop malicious binary there."
+mechanism: 'If service path has spaces and isn''t quoted, Windows tries intermediate
+  paths. E.g., C:\Program Files\Service\binary.exe tries C:\Program.exe first. Drop
+  malicious binary there.
+
+  '
+hacktricks_ref: mobile-pentesting/android-app-pentesting/drozer-tutorial/README.md

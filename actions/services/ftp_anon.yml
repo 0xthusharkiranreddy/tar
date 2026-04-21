@@ -6,7 +6,7 @@ preconditions:
 parameters:
   target_ip: from_engagement.target_ip
 command_template: ftp -n {target_ip} <<< $'user anonymous\npass\nls -la\nbye'
-parser: null
+parser: generic_parser
 expected_effects:
 - ftp_files_listed
 - files_downloaded
