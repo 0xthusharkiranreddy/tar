@@ -26,9 +26,14 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 SOURCES = {
+    # NOTE: ordering matters — _detect_source returns the first matching root,
+    # so the more specific paths (mindmaps, cypher) MUST come before the
+    # generic "knowledge" root which contains them.
+    "mindmaps":   "/home/kali/knowledge/mindmaps/",
+    "cypher":     "/home/kali/knowledge/cypher/",
     "hacktricks": "/home/kali/hacktricks/src/",
-    "pat": "/home/kali/PayloadsAllTheThings/",
-    "knowledge": "/home/kali/knowledge/",
+    "pat":        "/home/kali/PayloadsAllTheThings/",
+    "knowledge":  "/home/kali/knowledge/",
 }
 
 CACHE_PATH = "/tmp/tar_knowledge_index.pkl"
@@ -208,7 +213,8 @@ def _detect_source(filepath: str) -> str:
 
 
 def _discover_files() -> List[str]:
-    """Discover all markdown files across all sources."""
+    """Discover all markdown and cypher files across all sources, deduped by path."""
+    seen = set()
     files = []
     for source_name, root in SOURCES.items():
         if not os.path.isdir(root):
@@ -218,8 +224,15 @@ def _discover_files() -> List[str]:
             if '/.git/' in dirpath or '/images/' in dirpath or '/Intruder/' in dirpath:
                 continue
             for f in filenames:
-                if f.endswith('.md') and not f.startswith('.'):
-                    files.append(os.path.join(dirpath, f))
+                if f.startswith('.'):
+                    continue
+                # Index markdown for prose; .cypher for BloodHound query library
+                if f.endswith('.md') or f.endswith('.cypher'):
+                    fp = os.path.join(dirpath, f)
+                    if fp in seen:
+                        continue
+                    seen.add(fp)
+                    files.append(fp)
     return files
 
 
@@ -248,7 +261,7 @@ class KnowledgeIndex:
                 with open(CACHE_PATH, 'rb') as f:
                     cache = pickle.load(f)
                 # Validate cache version
-                if cache.get('version') == 3:
+                if cache.get('version') == 4:
                     self.sections = cache['sections']
                     self.idf = cache['idf']
                     self.doc_tfs = cache['doc_tfs']
@@ -310,7 +323,7 @@ class KnowledgeIndex:
         try:
             with open(CACHE_PATH, 'wb') as f:
                 pickle.dump({
-                    'version': 3,
+                    'version': 4,
                     'sections': self.sections,
                     'idf': self.idf,
                     'doc_tfs': self.doc_tfs,
@@ -350,11 +363,20 @@ class KnowledgeIndex:
             score = sum(tf.get(t, 0) * self.idf.get(t, 0) for t in query_tokens)
 
             if score > 0:
-                # Source weighting: HackTricks technique sections get 1.5x boost
-                if sec['source'] == 'hacktricks':
+                # Source weighting (in descending authority for methodology):
+                #   mindmaps  — operator decision tree, most strategic
+                #   hacktricks — mechanism prose, canonical technical
+                #   pat       — payload variants
+                #   cypher    — graph queries (used directly, not narrative)
+                src = sec['source']
+                if src == 'mindmaps':
+                    score *= 1.6
+                elif src == 'hacktricks':
                     score *= 1.5
-                elif sec['source'] == 'pat':
+                elif src == 'pat':
                     score *= 1.3
+                elif src == 'cypher':
+                    score *= 1.2
 
                 # Heading match bonus: if query terms appear in heading, 2x
                 heading_tokens = set(tokenize(sec['heading']))

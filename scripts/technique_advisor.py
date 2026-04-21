@@ -178,6 +178,191 @@ PREREQUISITES = {
         ("has_shell", "Must have shell on Linux target", ""),
         ("has_cred", "Need current user's password for sudo -l (unless NOPASSWD)", ""),
     ],
+
+    # ── OCD mindmap additions (v2.1) ──
+    "certifried": [
+        ("has_cred", "Need any domain user credential", ""),
+        ("machine_account_quota_positive", "MachineAccountQuota > 0 or WriteProperty on existing computer", "Check: ldapsearch ms-DS-MachineAccountQuota"),
+        ("write_access_dns_hostname", "WriteProperty on dNSHostName of target computer", "BloodHound: ComputerAccount→WriteDnsHostName"),
+    ],
+    "skeleton_key": [
+        ("local_system_on_dc", "Must be SYSTEM on a Domain Controller", "Prerequisite is typically DA → lsadump::lsa /inject"),
+        ("mimikatz_available", "Need mimikatz (or reflective DLL loader) executable on DC", "AV/EDR bypass likely required"),
+    ],
+    "dsrm_password": [
+        ("local_system_on_dc", "Must be SYSTEM on a DC", ""),
+        ("write_hklm_registry", "Need HKLM\\System\\CurrentControlSet\\Control\\Lsa write", ""),
+    ],
+    "dc_shadow": [
+        ("domain_admin", "Need DA or equivalent (WriteDacl on domain + Replicating Directory Changes)", ""),
+        ("mimikatz_available", "mimikatz !+ driver on attacker box", ""),
+    ],
+    "custom_ssp": [
+        ("local_system_on_dc", "Must be SYSTEM on a DC", ""),
+        ("write_hklm_registry", "Need HKLM\\System\\CurrentControlSet\\Control\\Lsa\\Security Packages write", ""),
+    ],
+    "saphire_ticket": [
+        ("krbtgt_hash", "Need krbtgt NTLM hash", "Obtained via dcsync"),
+        ("target_user_sid", "Need target user's SID and PAC fields", ""),
+    ],
+    "blind_kerberoast": [
+        ("has_cred", "Need any domain user cred (LDAP read)", ""),
+        ("writable_msds_allowed_to_delegate_to_or_spn", "Write access to target user's servicePrincipalName OR add-then-roast variant", "Check BloodHound WriteProperty on User"),
+    ],
+    "nopac": [
+        ("has_cred", "Need any domain user cred", ""),
+        ("machine_account_quota_positive", "MachineAccountQuota must be > 0 (default is 10)", "Check: ldapsearch ms-DS-MachineAccountQuota"),
+        ("dc_unpatched_cve_2021_42287", "DC must be unpatched (pre-Nov 2021)", "Check: Test patch by running the exploit in dry mode"),
+    ],
+    "privexchange": [
+        ("has_cred", "Need any domain mailbox account", ""),
+        ("exchange_vulnerable", "Exchange Server pre-CU fix (Feb 2019 or earlier)", ""),
+    ],
+    "dnsadmins": [
+        ("member_dnsadmins", "User must be in DNSAdmins group", "Check: whoami /groups"),
+        ("write_dnscmd_dll", "Need writable filesystem path for dnscmd /ServerLevelPluginDll", ""),
+    ],
+    "adcs_esc9": [
+        ("has_cred", "Need any domain user cred", ""),
+        ("write_access_upn_or_sid", "WriteProperty on victim's userPrincipalName", "BloodHound: GenericWrite/GenericAll"),
+        ("template_no_sec_ext", "Template has CT_FLAG_NO_SECURITY_EXTENSION set", "Check: certipy find -vulnerable"),
+    ],
+    "adcs_esc10": [
+        ("has_cred", "Need any domain user cred", ""),
+        ("write_access_upn", "WriteProperty on victim's UPN", ""),
+        ("dc_weak_cert_mapping", "DC: StrongCertificateBindingEnforcement=0 or CertificateMappingMethods allows UPN", "Check: registry KDC\\StrongCertificateBindingEnforcement"),
+    ],
+    "adcs_esc13": [
+        ("has_cred", "Need any domain user cred", ""),
+        ("enroll_right_oid_template", "Enroll right on template with linked msDS-OIDToGroupLink", "Check: certipy find -vulnerable | grep ESC13"),
+    ],
+    "adcs_esc14": [
+        ("has_cred", "Need any domain user cred", ""),
+        ("write_alt_security_identities", "WriteProperty on victim's altSecurityIdentities", "BloodHound: GenericWrite/WriteProperty"),
+    ],
+    "adcs_esc15": [
+        ("has_cred", "Need any domain user cred", ""),
+        ("enroll_right_v1_template", "Enroll right on a Schema v1 template", "Check: certipy find -vulnerable | grep v1"),
+    ],
+    "passthecert": [
+        ("has_pfx", "Need a PFX file + password (from ADCS compromise)", ""),
+    ],
+    "krbrelayup": [
+        ("local_user_on_domain_host", "Local user session on a domain-joined host", ""),
+        ("machine_account_quota_positive", "MachineAccountQuota > 0 OR ownership of the computer account", ""),
+    ],
+    "trust_key_extract": [
+        ("domain_admin", "Need DA in source domain (or dcsync rights)", ""),
+        ("trust_to_target_forest", "An outbound or bidirectional trust to the target forest/domain", "Check: nltest /domain_trusts"),
+    ],
+    "trust_ticket_forge": [
+        ("trust_key_extracted", "Must have the inter-realm trust key from trust_key_extract", ""),
+        ("target_enterprise_admin_sid", "Need Enterprise Admins SID in target forest", ""),
+    ],
+    "msol_password": [
+        ("local_system_on_aadconnect_server", "SYSTEM on Azure AD Connect server", ""),
+        ("sql_localdb_running", "LocalDB instance ADSync must be running", "Typically always on AAD Connect box"),
+    ],
+    "keepass_dump": [
+        ("shell_obtained", "Code execution on a host where KeePass.exe is running", ""),
+        ("keepass_version_vulnerable", "KeePass 2.x older than 2.54", "CVE-2023-32784"),
+    ],
+    "targetedkerberoast": [
+        ("has_cred", "Need any domain user cred", ""),
+        ("write_property_on_user", "WriteProperty on target user (to set SPN temporarily)", ""),
+    ],
+    "timeroast": [
+        ("ntp_reachable", "UDP/123 reachable to DC", "No credentials needed"),
+    ],
+    "goldenpac_ms14068": [
+        ("has_cred", "Any domain user cred", ""),
+        ("dc_unpatched_ms14_068", "DC must be legacy Server 2003/2008R2 unpatched", ""),
+    ],
+    "gpp_password": [
+        ("has_cred", "Any domain user can read SYSVOL", ""),
+        ("sysvol_readable", "Standard domain; readable by authenticated users", ""),
+    ],
+    # SCCM
+    "sccm_find": [
+        ("has_cred", "Any domain user", ""),
+    ],
+    "sccm_pxe_hashcap": [
+        ("attacker_on_subnet", "Attacker must be L2-adjacent to trigger DHCP/PXE broadcast", ""),
+        ("sccm_dp_pxe_enabled", "SCCM DP must have PXE enabled", ""),
+    ],
+    "sccm_naa_extract": [
+        ("has_cred", "Any domain user cred", ""),
+        ("sccm_mp_identified", "Site code + MP hostname from sccm_find", ""),
+    ],
+    "sccm_client_push": [
+        ("has_cred", "Any domain user cred", ""),
+        ("client_push_enabled", "Automatic Client Push must be enabled + Fallback to NTLM allowed", ""),
+    ],
+    "sccm_mssql_relay": [
+        ("coercion_method_available", "Need PetitPotam/DFSCoerce reachable on the site server", ""),
+    ],
+    # Privesc (Windows)
+    "remotepotato0": [
+        ("another_user_logged_in", "Second interactive user must be logged on (for cross-session coercion)", ""),
+        ("rpc_135_reachable", "Attacker-controlled host on port 135 for OXID redirection", ""),
+    ],
+    "roguepotato": [
+        ("se_impersonate_privilege", "SeImpersonatePrivilege (service-account)", "whoami /priv"),
+        ("rpc_135_redirect_host", "Attacker-controlled host reachable on port 135", ""),
+    ],
+    "uac_bypass_fodhelper": [
+        ("is_local_admin_uac_medium", "Medium-integrity member of local Administrators", ""),
+    ],
+    "uac_bypass_wsreset": [
+        ("is_local_admin_uac_medium", "Medium-integrity member of local Administrators", ""),
+    ],
+    "applocker_bypass_msbuild": [
+        ("applocker_enabled", "AppLocker policy is the blocker to bypass", "Check: Get-AppLockerPolicy -Effective"),
+    ],
+    "serioussam": [
+        ("unpatched_cve_2021_36934", "Windows 10 1809+ without the Aug 2021 patch", ""),
+        ("vss_available", "At least one Volume Shadow Copy must exist", "vssadmin list shadows"),
+    ],
+    "smbghost": [
+        ("service.port==445", "SMB reachable", ""),
+        ("smbv3_compression_enabled", "SMBv3 compression enabled on target (Win10 1903/1909)", ""),
+    ],
+    # Services / quick wins
+    "eternalblue": [
+        ("service.port==445", "SMB reachable", ""),
+        ("smbv1_enabled", "Target accepts SMBv1", ""),
+    ],
+    "veeam_cve2024_40711": [
+        ("service.port==9401", "Veeam B&R Manager endpoint reachable", ""),
+    ],
+    # Creds
+    "lsass_procdump": [
+        ("is_local_admin", "Local Administrator (or SYSTEM)", ""),
+        ("se_debug_privilege", "SeDebugPrivilege enabled (default for Admins)", ""),
+        ("no_lsa_protection", "LSA RunAsPPL disabled — otherwise PPL bypass required", ""),
+    ],
+    "lsass_comsvcs": [
+        ("is_local_admin", "Local Administrator or SYSTEM", ""),
+        ("no_lsa_protection", "LSA RunAsPPL disabled", ""),
+    ],
+    "mscache2_dump": [
+        ("is_local_admin", "Local Administrator (to save SECURITY hive)", ""),
+    ],
+    "dpapi_masterkey": [
+        ("user_masterkey_file", "Access to user's %APPDATA%\\Microsoft\\Protect\\<SID>\\", ""),
+        ("user_password_or_backup_key", "User password OR DC backup key", ""),
+    ],
+    "sam_offline_dump": [
+        ("is_local_admin", "Local Administrator (to save SAM + SYSTEM hives)", ""),
+    ],
+    "mitm6": [
+        ("attacker_on_subnet", "L2 adjacency on victim VLAN (DHCPv6 is link-scope)", ""),
+        ("no_ra_guard", "Switch RA/DHCPv6 guard must not be enforcing", ""),
+    ],
+    "ntlm_theft_file_drop": [
+        ("has_cred", "Any cred that can write to the share", ""),
+        ("writable_share_found", "A writable file share browsed by potential victims", ""),
+    ],
 }
 
 # ═══════════════════════��══════════════════════════════════════════
@@ -236,6 +421,59 @@ FAILURE_PATTERNS = {
     "bloodhound": {
         "ACCESS_DENIED": "Credential invalid or lacks LDAP read permissions. Any domain user should work — verify cred.",
         "Connection error": "Can't reach LDAP. Check: port 389 open, DNS resolution working, correct DC IP.",
+    },
+    # ── OCD mindmap additions (v2.1) ──
+    "certifried": {
+        "STATUS_DUPLICATE_NAME": "Computer name PWNED$ already exists. Pick a new name or delete the old account.",
+        "MachineAccountQuota": "ms-DS-MachineAccountQuota is 0 — can't create computer account. Fallback: hijack an existing computer (RBCD via WriteProperty).",
+        "ACCESS_DENIED": "No WriteProperty on dNSHostName. Need GenericWrite/GenericAll path from BloodHound.",
+    },
+    "nopac": {
+        "STATUS_USER_EXISTS": "Computer account name collision — pick a different sAMAccountName.",
+        "MachineAccountQuota": "Quota exhausted. Need ownership of an existing computer account instead.",
+        "patched": "DC is patched against CVE-2021-42278/79. Pivot to RBCD via the same machine account.",
+    },
+    "skeleton_key": {
+        "ERROR_ACCESS_DENIED": "Not SYSTEM on DC, or protected-process on lsass.exe. Need mimikatz driver to bypass PPL.",
+        "privilege::debug": "Enable SeDebugPrivilege first: mimikatz> privilege::debug",
+    },
+    "dc_shadow": {
+        "RPC_S_ACCESS_DENIED": "WriteDacl/WriteProperty missing on domain root. Need DA or equivalent with Replicating Directory Changes.",
+    },
+    "adcs_esc9": {
+        "SECURITY_EXTENSION": "Template has security extension enforced (patched post-May 2022) — ESC9 not applicable. Try ESC10 instead.",
+        "UPN_MISMATCH": "Victim UPN couldn't be flipped (insufficient rights). Confirm GenericWrite in BloodHound.",
+    },
+    "adcs_esc15": {
+        "EKU rejected": "Target template is Schema v2 or later — EKUwu inapplicable.",
+    },
+    "krbrelayup": {
+        "MachineAccountQuota": "Quota exhausted — use shadow-credentials mode instead of RBCD.",
+    },
+    "timeroast": {
+        "empty": "No NTP response. Target may not run Windows NTP, or UDP/123 filtered.",
+    },
+    "sccm_naa_extract": {
+        "no NAA configured": "Site has no Network Access Account set — skip this path, try PXE or client-push.",
+        "ACCESS_DENIED": "MP rejected the policy request. Try a different site/mp or verify cred.",
+    },
+    "sccm_pxe_hashcap": {
+        "PXE disabled": "DP has PXE turned off — no CRED-1 path. Try NAA/HTTP variants.",
+        "boot variable empty": "DP returned empty media-variable blob. Site may be patched.",
+    },
+    "serioussam": {
+        "ACCESS_DENIED": "VSS snapshot no longer contains SAM with permissive ACL. Host likely patched (KB5006670).",
+    },
+    "eternalblue": {
+        "STATUS_INVALID_HANDLE": "Target likely patched or non-vulnerable SMB stack. Verify with MS17-010 Metasploit scanner first.",
+    },
+    "mitm6": {
+        "interface not found": "Specified interface doesn't exist. Check: ip link",
+        "bind": "Port 547 already in use (another mitm6 or dhcp6c running). Kill the other process.",
+    },
+    "lsass_procdump": {
+        "RunAsPPL": "LSA is protected-process. Need PPL bypass: mimikatz !+ driver, or snapshot via minidump syscall.",
+        "credential guard": "Credential Guard enabled — LSASS holds only proxies, not hashes. Need on-disk/DPAPI alternatives.",
     },
 }
 
