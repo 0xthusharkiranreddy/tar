@@ -14,6 +14,10 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Boolean-based: different response for TRUE/FALSE. Time-based: SLEEP(5)
-  for TRUE. Extract data char-by-char. sqlmap --technique=BT for boolean+time.'
+mechanism: 'Boolean-based: different response for TRUE/FALSE. Time-based: SLEEP(5) for TRUE. Extract data char-by-char. sqlmap
+  --technique=BT for boolean+time.'
 hacktricks_ref: pentesting-web/ssrf-server-side-request-forgery/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 70958afe5b
+  - db45c63f0d

@@ -14,6 +14,16 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Scan for exposed secrets: .env files, JavaScript source maps, API documentation,
-  git history, error pages, backup files. trufflehog for automated scanning.'
+mechanism: 'Scan for exposed secrets: .env files, JavaScript source maps, API documentation, git history, error pages, backup
+  files. trufflehog for automated scanning.'
 hacktricks_ref: generic-methodologies-and-resources/basic-forensic-methodology/malware-analysis.md
+references:
+  ocd_mindmap_node_ids:
+  - 0e85fb0ef2
+  - 4a78adc22a
+  - 5f42c63992
+  - b4f09bae49
+  - be7ddb81ae
+  - c7c8e928c7
+  - cd0a1d2990
+  - e01d3b2bfb

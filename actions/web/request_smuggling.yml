@@ -13,6 +13,12 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'CL.TE or TE.CL desync between frontend and backend. Smuggle requests to:
-  bypass access controls, poison cache, steal credentials from other users'' requests.'
+mechanism: 'CL.TE or TE.CL desync between frontend and backend. Smuggle requests to: bypass access controls, poison cache,
+  steal credentials from other users'' requests.'
 hacktricks_ref: pentesting-web/http-request-smuggling/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 9876b802e5
+  - c01fb9d65b
+  - e12b3d5da8
+  - e2afb7298e

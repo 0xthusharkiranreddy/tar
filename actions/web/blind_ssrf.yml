@@ -14,7 +14,10 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'No direct response but out-of-band DNS/HTTP callback confirms SSRF. Use
-  Burp Collaborator or interact.sh. Escalate: cloud metadata, internal port scan,
-  protocol smuggling.'
+mechanism: 'No direct response but out-of-band DNS/HTTP callback confirms SSRF. Use Burp Collaborator or interact.sh. Escalate:
+  cloud metadata, internal port scan, protocol smuggling.'
 hacktricks_ref: pentesting-web/ssrf-server-side-request-forgery/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 70958afe5b
+  - db45c63f0d

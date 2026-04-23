@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-dpapi masterkeys -file '{masterkey_file}' -sid '{user_sid}'
-  -password '{password}'
+command_template: impacket-dpapi masterkeys -file '{masterkey_file}' -sid '{user_sid}' -password '{password}'
 parser: generic_parser
 expected_effects:
 - dpapi_secrets_dumped
@@ -16,7 +15,16 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Windows Data Protection API encrypts browser passwords, stored creds, etc.
-  Extract master key with user password/domain backup key, then decrypt credential
-  blobs.
+mechanism: Windows Data Protection API encrypts browser passwords, stored creds, etc. Extract master key with user password/domain
+  backup key, then decrypt credential blobs.
 hacktricks_ref: generic-methodologies-and-resources/basic-forensic-methodology/pcap-inspection/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 0568806739
+  - 4996b99668
+  - 55f913df1d
+  - 856d296d63
+  - b68c295f85
+  - bd14897458
+  - c1ea24a971
+  - dac0a76ff7

@@ -14,5 +14,14 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Sets DC machine account password to empty via Netlogon protocol flaw.
-  Enables DCSync without creds. DESTRUCTIVE: must restore password after exploitation.'
+mechanism: 'Sets DC machine account password to empty via Netlogon protocol flaw. Enables DCSync without creds. DESTRUCTIVE:
+  must restore password after exploitation.'
+references:
+  ocd_mindmap_node_ids:
+  - 0a28fb62fe
+  - 36f74263d6
+  - 3894ffab65
+  - 54c9f49411
+  - 5e6fe23a71
+  - 882bd59fc2
+  - a4e69c2234

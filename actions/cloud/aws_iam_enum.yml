@@ -1,0 +1,31 @@
+name: aws_iam_enum
+category: cloud
+description: Enumerate AWS IAM users, roles, policies, and attached permissions
+preconditions:
+- cloud.aws_creds_available
+parameters:
+  profile: from_finding.aws_profile
+  region: us-east-1
+command_template: >
+  aws iam list-users --profile {profile} --output json > /tmp/iam_users.json;
+  aws iam list-roles --profile {profile} --output json > /tmp/iam_roles.json;
+  aws iam list-policies --scope Local --profile {profile} --output json > /tmp/iam_policies.json;
+  aws sts get-caller-identity --profile {profile} --output json > /tmp/iam_identity.json;
+  cat /tmp/iam_identity.json /tmp/iam_users.json /tmp/iam_roles.json
+parser: json_parser
+expected_effects:
+- aws_iam_enumerated
+- cloud_identity_known
+- aws_roles_discovered
+falsifier:
+  pattern: AccessDenied|NoCredentialProviders|InvalidClientTokenId
+  timeout: 30
+model_tier: haiku
+mechanism: >
+  AWS IAM enumeration via AWS CLI. get-caller-identity reveals current identity (user/role/assumed-role).
+  list-users/list-roles reveals IAM entities. Even read-only credentials can enumerate enough for
+  privilege escalation path analysis (iam:PassRole, lambda:UpdateFunctionConfiguration, etc.).
+  No CloudTrail action — this IS logged. Cloud-aware ops assume every API call is audited.
+hacktricks_ref: cloud-security/aws-security/aws-privilege-escalation.md
+destructive: false
+opsec: medium

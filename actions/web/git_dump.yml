@@ -14,7 +14,13 @@ falsifier:
   pattern: 404|not found|error
   timeout: 120
 model_tier: haiku
-mechanism: Exposed .git/ directory leaks full source code and commit history. Check
-  git log for removed credentials, config files, API keys. Also check .git/config
-  for remote URLs revealing internal infrastructure.
+mechanism: Exposed .git/ directory leaks full source code and commit history. Check git log for removed credentials, config
+  files, API keys. Also check .git/config for remote URLs revealing internal infrastructure.
 hacktricks_ref: mobile-pentesting/android-app-pentesting/frida-tutorial/objection-tutorial.md
+references:
+  ocd_mindmap_node_ids:
+  - 466c9c04ed
+  - 74b728abf2
+  - a52dacd6cd
+  - b8941ce093
+  - ffeeb6448f

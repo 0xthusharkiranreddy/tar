@@ -13,7 +13,11 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Note that when **establishing** a **websocket** connection the **cookie**
-  is **sent** to the server. The **server** might be using it to **relate** each **specific**
-  **user** with his **websocket** **session based on the sent cookie**.
+mechanism: Note that when **establishing** a **websocket** connection the **cookie** is **sent** to the server. The **server**
+  might be using it to **relate** each **specific** **user** with his **websocket** **session based on the sent cookie**.
 hacktricks_ref: pentesting-web/xss-cross-site-scripting/dom-xss.md
+references:
+  ocd_mindmap_node_ids:
+  - 0899176bed
+  - c530b6be65
+  - cb4e0c4e22

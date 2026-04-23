@@ -9,8 +9,7 @@ parameters:
   domain: from_engagement.domain
   username: from_cred.username
   password: from_cred.password
-command_template: bloodhound-python -c all -u '{username}' -p '{password}' -d {domain}
-  -dc {target_ip} -ns {target_ip}
+command_template: bloodhound-python -c all -u '{username}' -p '{password}' -d {domain} -dc {target_ip} -ns {target_ip}
 parser: bloodhound_parser
 expected_effects:
 - ad_graph_collected
@@ -19,7 +18,10 @@ falsifier:
   pattern: ERROR|Authentication failed|Connection refused
   timeout: 120
 model_tier: haiku
-mechanism: 'Collects AD objects (users, groups, computers, GPOs, ACLs, sessions, trusts)
-  via LDAP/SAMR/SRVSVC. Produces JSON files for BloodHound graph analysis. Key queries:
-  shortest path to DA, Kerberoastable users, AS-REP roastable, owned principals.'
+mechanism: 'Collects AD objects (users, groups, computers, GPOs, ACLs, sessions, trusts) via LDAP/SAMR/SRVSVC. Produces JSON
+  files for BloodHound graph analysis. Key queries: shortest path to DA, Kerberoastable users, AS-REP roastable, owned principals.'
 hacktricks_ref: windows-hardening/active-directory-methodology/acl-persistence-abuse/BadSuccessor.md
+references:
+  ocd_mindmap_node_ids:
+  - 4f13526a6b
+  - e1b5ba47b3

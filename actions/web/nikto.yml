@@ -14,7 +14,9 @@ falsifier:
   pattern: 0 host(s) tested|ERROR
   timeout: 300
 model_tier: haiku
-mechanism: Scans for dangerous files/CGIs, outdated software, server misconfigs, default
-  credentials. Noisy but comprehensive. Identifies server headers, allowed methods,
-  interesting directories.
+mechanism: Scans for dangerous files/CGIs, outdated software, server misconfigs, default credentials. Noisy but comprehensive.
+  Identifies server headers, allowed methods, interesting directories.
 hacktricks_ref: network-services-pentesting/pentesting-postgresql.md
+references:
+  ocd_mindmap_node_ids:
+  - 96b62ba41a

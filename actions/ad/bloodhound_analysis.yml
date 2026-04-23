@@ -14,6 +14,11 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Key queries: shortest path to DA, Kerberoastable high-value, AS-REP roastable,
-  owned to DA path, ACL abuse chains, unconstrained delegation hosts.'
+mechanism: 'Key queries: shortest path to DA, Kerberoastable high-value, AS-REP roastable, owned to DA path, ACL abuse chains,
+  unconstrained delegation hosts.'
 hacktricks_ref: windows-hardening/active-directory-methodology/bloodhound.md
+references:
+  ocd_mindmap_node_ids:
+  - 4f13526a6b
+  - 96fbefd7da
+  - e1b5ba47b3

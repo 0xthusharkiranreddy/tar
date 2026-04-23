@@ -17,7 +17,25 @@ falsifier:
   pattern: INVALID_CREDENTIALS|Connection refused
   timeout: 60
 model_tier: haiku
-mechanism: 'Queries LDAP directory with valid creds. Enumerates users, groups, GPOs,
-  trusts. Modules: --gmsa for gMSA passwords, --kerberoasting for SPNs, --asreproast
-  for accounts without preauth.'
+mechanism: 'Queries LDAP directory with valid creds. Enumerates users, groups, GPOs, trusts. Modules: --gmsa for gMSA passwords,
+  --kerberoasting for SPNs, --asreproast for accounts without preauth.'
 hacktricks_ref: windows-hardening/active-directory-methodology/kerberoast.md
+references:
+  ocd_mindmap_node_ids:
+  - 0518e08e96
+  - 0b77cc2186
+  - 13896beabf
+  - 22ba3664a3
+  - 2e55166d61
+  - 2e722e1dfd
+  - 447a6ac22e
+  - 482ff8f95d
+  - 89859f716b
+  - aded367da3
+  - ae0b6d8e9a
+  - b89e703e8f
+  - bfb7d8457c
+  - ce1ab2c080
+  - d344079757
+  - d8605e5478
+  - e2afb7298e

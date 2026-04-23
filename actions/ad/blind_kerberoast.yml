@@ -1,7 +1,6 @@
 name: blind_kerberoast
 category: ad
-description: Blind Kerberoasting (CVE-2022-33679) — TGT downgrade to RC4 against unauth
-  target
+description: "Blind Kerberoasting (CVE-2022-33679) \u2014 TGT downgrade to RC4 against unauth target"
 preconditions:
 - service.port==88
 parameters:
@@ -18,8 +17,7 @@ falsifier:
   pattern: PREAUTH_REQUIRED|PRINCIPAL_UNKNOWN|CVE patched|KDC_ERR
   timeout: 45
 model_tier: sonnet
-mechanism: 'CVE-2022-33679. For accounts with pre-auth disabled, request an AS-REP
-  and force the
+mechanism: 'CVE-2022-33679. For accounts with pre-auth disabled, request an AS-REP and force the
 
   KDC to use RC4-HMAC. The RC4 keystream can be derived from a known-plaintext attack
 
@@ -31,4 +29,10 @@ mechanism: 'CVE-2022-33679. For accounts with pre-auth disabled, request an AS-R
 references:
   ocd_mindmap: 'Branch 1: Blind kerberoast (CVE-2022-33679)'
   hacktricks: windows-hardening/active-directory-methodology/asreproast.md
+  ocd_mindmap_node_ids:
+  - 70958afe5b
+  - a4e69c2234
+  - b902bc6584
+  - db45c63f0d
+  - e962a84a79
 hacktricks_ref: windows-hardening/basic-powershell-for-pentesters/powerview.md

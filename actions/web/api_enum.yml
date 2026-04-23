@@ -5,8 +5,8 @@ preconditions:
 - service.port==80
 parameters:
   target_url: from_engagement.target_url
-command_template: ffuf -u {target_url}/api/FUZZ -w /usr/share/seclists/Discovery/Web-Content/api/api-endpoints.txt
-  -mc all -fc 404
+command_template: ffuf -u {target_url}/api/FUZZ -w /usr/share/seclists/Discovery/Web-Content/api/api-endpoints.txt -mc all
+  -fc 404
 parser: gobuster_parser
 expected_effects:
 - api_endpoints_discovered
@@ -15,8 +15,15 @@ falsifier:
   pattern: 0 results
   timeout: 120
 model_tier: haiku
-mechanism: 'Enumerate API endpoints: /api/v1/, /swagger.json, /openapi.json, /graphql.
-  Test IDOR (change user IDs), mass assignment (add admin=true to POST), broken auth
-  (remove/modify JWT), rate limiting bypass. GraphQL: use introspection query for
-  full schema.'
+mechanism: 'Enumerate API endpoints: /api/v1/, /swagger.json, /openapi.json, /graphql. Test IDOR (change user IDs), mass assignment
+  (add admin=true to POST), broken auth (remove/modify JWT), rate limiting bypass. GraphQL: use introspection query for full
+  schema.'
 hacktricks_ref: network-services-pentesting/pentesting-smtp/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 143aaf01c2
+  - 2c668b85a2
+  - 3b38e74d54
+  - 83b738655e
+  - b23ed1f030
+  - f83b97fd79

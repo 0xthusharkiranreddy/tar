@@ -14,8 +14,22 @@ falsifier:
   pattern: Invalid|incorrect|failed
   timeout: 30
 model_tier: haiku
-mechanism: 'Try default credentials first (admin/admin, admin/password, root/root).
-  Then: SQL injection in login (admin'' OR 1=1--), HTTP verb tampering (GET vs POST),
-  parameter pollution, cookie manipulation, IDOR on user ID, registration as admin
-  if role parameter exposed.'
+mechanism: 'Try default credentials first (admin/admin, admin/password, root/root). Then: SQL injection in login (admin''
+  OR 1=1--), HTTP verb tampering (GET vs POST), parameter pollution, cookie manipulation, IDOR on user ID, registration as
+  admin if role parameter exposed.'
 hacktricks_ref: pentesting-web/sql-injection/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 0a1d0aea4e
+  - 12b1671001
+  - 1597fee66a
+  - 46eaeb66da
+  - 4ed40b8fd7
+  - 4f2e061adb
+  - 5adb353667
+  - 8b6b8fb818
+  - 8e36c0129e
+  - 90bea9e4fe
+  - f28c278d05
+  - f7726d187b
+  - ffd4a7fffc

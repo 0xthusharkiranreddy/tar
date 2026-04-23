@@ -16,6 +16,17 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Default MAQ=10 allows any auth user to add computer accounts. Required
-  for: RBCD attacks, sAMAccountName spoofing, relay to LDAP with machine account.'
+mechanism: 'Default MAQ=10 allows any auth user to add computer accounts. Required for: RBCD attacks, sAMAccountName spoofing,
+  relay to LDAP with machine account.'
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/account-persistence.md
+references:
+  ocd_mindmap_node_ids:
+  - 0a28fb62fe
+  - 1b0601fc2a
+  - 42e858082c
+  - 6940eb8d89
+  - 903f02d1b7
+  - adbb130513
+  - c51a4811c0
+  - c8e794a9c6
+  - f2e47f9099

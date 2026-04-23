@@ -17,17 +17,12 @@ falsifier:
   pattern: bind|denied|interface not found|RA guard
   timeout: 600
 model_tier: sonnet
-mechanism: 'Windows hosts prefer IPv6 over IPv4. mitm6 advertises itself as the DHCPv6
-  server,
-
-  hands out itself as the DNS server. Hosts then resolve internal AD names through
-
-  the attacker. Combine with ntlmrelayx -6 for LDAPS relay → instant DA via RBCD or
-
-  add-to-group. Defeated only by DHCPv6 guard or RA guard on switches.
-
-  '
+mechanism: "Windows hosts prefer IPv6 over IPv4. mitm6 advertises itself as the DHCPv6 server,\nhands out itself as the DNS\
+  \ server. Hosts then resolve internal AD names through\nthe attacker. Combine with ntlmrelayx -6 for LDAPS relay \u2192\
+  \ instant DA via RBCD or\nadd-to-group. Defeated only by DHCPv6 guard or RA guard on switches.\n"
 references:
   ocd_mindmap: 'Branch 1: IPv6 takeover (mitm6 + ntlmrelayx)'
   hacktricks: pentesting-network/spoofing-llmnr-nbt-ns-mdns-dns-and-wpad-and-relay-attacks.md
+  ocd_mindmap_node_ids:
+  - 1bc02a8a46
 hacktricks_ref: generic-methodologies-and-resources/pentesting-network/pentesting-ipv6.md

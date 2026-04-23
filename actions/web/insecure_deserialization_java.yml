@@ -14,7 +14,12 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Java ObjectInputStream.readObject() with gadget chains. Common frameworks:
-  Apache Commons, Spring, WebLogic. Detect: rO0AB (base64) or ac ed 00 05 (hex) in
-  cookies/params.'
+mechanism: 'Java ObjectInputStream.readObject() with gadget chains. Common frameworks: Apache Commons, Spring, WebLogic. Detect:
+  rO0AB (base64) or ac ed 00 05 (hex) in cookies/params.'
 hacktricks_ref: pentesting-web/ssti-server-side-template-injection/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 4f667611c0
+  - 59537a4877
+  - 72843488ba
+  - 9488348ef8

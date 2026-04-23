@@ -17,6 +17,20 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Golden ticket detection: krbtgt key version number (kvno). If ticket kvno
-  != current AD kvno, detected. Double krbtgt reset invalidates all golden tickets.'
+mechanism: 'Golden ticket detection: krbtgt key version number (kvno). If ticket kvno != current AD kvno, detected. Double
+  krbtgt reset invalidates all golden tickets.'
 hacktricks_ref: pentesting-web/2fa-bypass.md
+references:
+  ocd_mindmap_node_ids:
+  - 0b77cc2186
+  - 155b42d9cd
+  - 2817aeb958
+  - 47d646d229
+  - 79afa96e1d
+  - 8eb839a8b3
+  - 9684291d34
+  - a47b5457cf
+  - ac2086bd3d
+  - b8941ce093
+  - cc231d6118
+  - d9683fa976

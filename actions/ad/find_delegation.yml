@@ -9,8 +9,7 @@ parameters:
   domain: from_engagement.domain
   username: from_cred.username
   password: from_cred.password
-command_template: impacket-findDelegation '{domain}/{username}:{password}' -dc-ip
-  {target_ip}
+command_template: impacket-findDelegation '{domain}/{username}:{password}' -dc-ip {target_ip}
 parser: impacket_parser
 expected_effects:
 - delegation_rights_found
@@ -18,7 +17,26 @@ falsifier:
   pattern: No entries found|error
   timeout: 30
 model_tier: haiku
-mechanism: Enumerates unconstrained, constrained, and resource-based constrained delegation.
-  Unconstrained delegation hosts store TGTs — compromise them to capture DA TGT. Constrained
-  delegation allows S4U2proxy to specific SPNs.
+mechanism: "Enumerates unconstrained, constrained, and resource-based constrained delegation. Unconstrained delegation hosts\
+  \ store TGTs \u2014 compromise them to capture DA TGT. Constrained delegation allows S4U2proxy to specific SPNs."
 hacktricks_ref: windows-hardening/active-directory-methodology/kerberos-double-hop-problem.md
+references:
+  ocd_mindmap_node_ids:
+  - 0309542d72
+  - 0884fd7735
+  - 228ae63316
+  - 2dea99a1e5
+  - 43829c4252
+  - 5f58749bfe
+  - 6bfddb9cc2
+  - 74b728abf2
+  - 76711d19f2
+  - 84bce461c5
+  - 95b0f65934
+  - a916261ac8
+  - cb0f21dbcf
+  - ce31a781ac
+  - d01513dd53
+  - d197086c69
+  - d9d71da7af
+  - dad86d3bfa

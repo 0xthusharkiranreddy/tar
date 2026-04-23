@@ -14,5 +14,10 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Uses Kerberos ticket (.ccache) for authentication instead of password/hash.
-  Works with all impacket tools via -k flag.
+mechanism: Uses Kerberos ticket (.ccache) for authentication instead of password/hash. Works with all impacket tools via -k
+  flag.
+references:
+  ocd_mindmap_node_ids:
+  - 368417368d
+  - 3abffe2a3a
+  - 73548655eb

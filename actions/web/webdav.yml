@@ -13,6 +13,11 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'WebDAV (PROPFIND/PUT/MKCOL) enables file upload to web server. Test: OPTIONS
-  request for allowed methods, PUT to upload web shell. IIS default: aspx/asp shells.'
+mechanism: 'WebDAV (PROPFIND/PUT/MKCOL) enables file upload to web server. Test: OPTIONS request for allowed methods, PUT
+  to upload web shell. IIS default: aspx/asp shells.'
 hacktricks_ref: network-services-pentesting/pentesting-web/put-method-webdav.md
+references:
+  ocd_mindmap_node_ids:
+  - 029c733656
+  - 28650fcf4e
+  - b208212eb3

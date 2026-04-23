@@ -353,6 +353,25 @@ EFFECT_RULES = {
     "timing_probe": ["timebased_injection_confirmed", "timing_differential_marginal", "timing_anomaly_detected"],
     "js_secrets_scan": ["js_secret_exposed", "web_recon_done"],
     "honeypot_detect": ["honeypot_detected", "target_fingerprinted"],
+    # Cloud — AWS (v2.3)
+    "aws_iam_enum": ["aws_iam_enumerated", "cloud_identity_known", "aws_roles_discovered"],
+    "aws_s3_enum": ["s3_buckets_discovered", "cloud_data_exposed"],
+    "aws_ec2_metadata": ["aws_instance_role_creds_obtained", "cloud.aws_creds_available", "aws_access_key_found"],
+    "aws_sts_assume": ["aws_role_assumed", "cloud_privilege_escalated", "aws_creds_upgraded"],
+    "aws_lambda_enum": ["lambda_functions_discovered", "cloud_secrets_exposed"],
+    # Cloud — Azure (v2.3)
+    "azure_aad_enum": ["azure_ad_enumerated", "azure_users_discovered", "azure_roles_known"],
+    "azure_managed_identity": ["azure_managed_identity_token_obtained", "cloud.azure_token_available", "cloud_privilege_escalated"],
+    "azure_storage_enum": ["azure_storage_enumerated", "cloud_data_exposed"],
+    # Cloud — GCP (v2.3)
+    "gcp_metadata": ["gcp_metadata_obtained", "gcp_service_account_token", "cloud.gcp_token_available"],
+    "gcp_sa_impersonate": ["gcp_service_accounts_enumerated", "cloud_privilege_escalated"],
+    # JWT deep library (v2.3)
+    "jwt_alg_confusion": ["jwt_forged", "auth_bypass_achieved", "privilege_escalated"],
+    "jwt_jwk_injection": ["jwt_forged", "auth_bypass_achieved"],
+    "jwt_jku_abuse": ["jwt_forged", "auth_bypass_achieved"],
+    "jwt_kid_sqli": ["jwt_forged", "auth_bypass_achieved"],
+    "jwt_sig_strip": ["jwt_forged", "auth_bypass_achieved"],
 }
 
 

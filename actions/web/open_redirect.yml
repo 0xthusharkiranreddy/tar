@@ -13,6 +13,10 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Redirect users to attacker-controlled site. Chain with SSRF (redirect to
-  internal), OAuth token theft (redirect_uri manipulation), or phishing.
+mechanism: Redirect users to attacker-controlled site. Chain with SSRF (redirect to internal), OAuth token theft (redirect_uri
+  manipulation), or phishing.
 hacktricks_ref: pentesting-web/server-side-inclusion-edge-side-inclusion-injection.md
+references:
+  ocd_mindmap_node_ids:
+  - 27a964575a
+  - 3b1993c49f

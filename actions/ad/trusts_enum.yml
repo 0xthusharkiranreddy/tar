@@ -14,6 +14,23 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 120
 model_tier: haiku
-mechanism: Enumerate domain/forest trusts. Bidirectional trusts enable cross-domain
-  attacks. SID history injection allows privilege escalation across trust boundaries.
+mechanism: Enumerate domain/forest trusts. Bidirectional trusts enable cross-domain attacks. SID history injection allows
+  privilege escalation across trust boundaries.
 hacktricks_ref: network-services-pentesting/pentesting-smtp/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 143aaf01c2
+  - 22ba3664a3
+  - 2bdac601b4
+  - 2c668b85a2
+  - 3b38e74d54
+  - 447a6ac22e
+  - 493e45bf91
+  - 83b738655e
+  - 9301a780fc
+  - 93327147fe
+  - b23ed1f030
+  - b8cffbc335
+  - bbf0cf961b
+  - f0ce3fe28b
+  - f83b97fd79

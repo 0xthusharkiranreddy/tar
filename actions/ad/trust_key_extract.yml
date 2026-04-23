@@ -1,7 +1,6 @@
 name: trust_key_extract
 category: ad
-description: Extract inter-realm trust key (TDO secret) from a DC for cross-trust
-  ticket forging
+description: Extract inter-realm trust key (TDO secret) from a DC for cross-trust ticket forging
 preconditions:
 - domain_admin
 - domain_joined
@@ -20,17 +19,31 @@ falsifier:
   pattern: ACCESS_DENIED|ERROR_DS|account does not exist|denied
   timeout: 60
 model_tier: sonnet
-mechanism: 'Each AD trust has an inter-realm trust object (TDO) whose secret is stored
-  as the
-
-  hidden user "<trustedDomain>$" account. With DA in the trusting domain, dump this
-
-  account to recover the inter-realm key — the krbtgt-equivalent for cross-trust
-
-  ticket forging. Combined with trust_ticket_forge to cross into the parent forest.
-
-  '
+mechanism: "Each AD trust has an inter-realm trust object (TDO) whose secret is stored as the\nhidden user \"<trustedDomain>$\"\
+  \ account. With DA in the trusting domain, dump this\naccount to recover the inter-realm key \u2014 the krbtgt-equivalent\
+  \ for cross-trust\nticket forging. Combined with trust_ticket_forge to cross into the parent forest.\n"
 references:
   ocd_mindmap: 'Branch 14: Trust key extraction'
   hacktricks: windows-hardening/active-directory-methodology/forest-and-domain-trusts.md
+  ocd_mindmap_node_ids:
+  - 0568806739
+  - 0e85fb0ef2
+  - 0fbac96ac1
+  - 2eab5a52f2
+  - 47d646d229
+  - 5f42c63992
+  - 856d296d63
+  - 93327147fe
+  - a47b5457cf
+  - b1e65277aa
+  - b4f09bae49
+  - bbf0cf961b
+  - be7ddb81ae
+  - c1ea24a971
+  - c7c8e928c7
+  - c8b80ebbd6
+  - cc231d6118
+  - ccaa0064a5
+  - dac0a76ff7
+  - e01d3b2bfb
 hacktricks_ref: generic-methodologies-and-resources/basic-forensic-methodology/ios-backup-forensics.md

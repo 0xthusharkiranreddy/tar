@@ -8,8 +8,7 @@ parameters:
   domain: from_engagement.domain
   username: from_cred.username
   password: from_cred.password
-command_template: certipy find -u {username}@{domain} -p '{password}' -dc-ip {target_ip}
-  -vulnerable
+command_template: certipy find -u {username}@{domain} -p '{password}' -dc-ip {target_ip} -vulnerable
 parser: generic_parser
 expected_effects:
 - adcs_templates_enumerated
@@ -18,8 +17,10 @@ falsifier:
   pattern: No CAs found|Access denied|CERTSRV_E_TEMPLATE_DENIED|error
   timeout: 60
 model_tier: haiku
-mechanism: Enumerates AD CS templates via LDAP. Checks for ESC1 (enrollee supplies
-  SAN), ESC2 (any-purpose EKU), ESC3 (enrollment agent), ESC4 (template ACL write),
-  ESC6 (EDITF_ATTRIBUTESUBJECTALTNAME2), ESC7 (CA officer approval bypass), ESC8 (HTTP
+mechanism: Enumerates AD CS templates via LDAP. Checks for ESC1 (enrollee supplies SAN), ESC2 (any-purpose EKU), ESC3 (enrollment
+  agent), ESC4 (template ACL write), ESC6 (EDITF_ATTRIBUTESUBJECTALTNAME2), ESC7 (CA officer approval bypass), ESC8 (HTTP
   enrollment). Exploitable templates allow forging certs for domain admin.
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+references:
+  ocd_mindmap_node_ids:
+  - 92b68f891a

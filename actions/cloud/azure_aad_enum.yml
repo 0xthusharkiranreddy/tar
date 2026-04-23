@@ -1,0 +1,55 @@
+name: azure_aad_enum
+category: cloud
+description: Enumerate Azure AD users, groups, roles, and service principals via MS Graph API
+preconditions:
+- cloud.azure_token_available
+parameters:
+  access_token: from_finding.azure_access_token
+  tenant_id: from_finding.azure_tenant_id
+command_template: >
+  python3 -c "
+  import urllib.request, json, sys
+  token = '{access_token}'
+  headers = {'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'}
+
+  def graph(endpoint):
+      try:
+          req = urllib.request.Request(f'https://graph.microsoft.com/v1.0{endpoint}',
+                                       headers=headers)
+          with urllib.request.urlopen(req, timeout=10) as r:
+              return json.loads(r.read())
+      except Exception as e:
+          return {'error': str(e)}
+
+  # Enumerate key objects
+  for path, label in [('/me', 'Current Identity'),
+                       ('/users?top=20', 'Users'),
+                       ('/groups?top=10', 'Groups'),
+                       ('/servicePrincipals?top=10', 'Service Principals'),
+                       ('/directoryRoles', 'Directory Roles')]:
+      data = graph(path)
+      count = len(data.get('value', [data]))
+      print(f'[{label}]: {count} objects')
+      if 'value' in data:
+          for obj in data['value'][:3]:
+              print(f'  - {obj.get(\"displayName\",\"?\")} ({obj.get(\"userPrincipalName\",obj.get(\"id\",\"\"))[:40]})')
+  "
+parser: generic_parser
+expected_effects:
+- azure_ad_enumerated
+- azure_users_discovered
+- azure_roles_known
+falsifier:
+  pattern: Unauthorized|401|InvalidAuthenticationToken|Forbidden
+  timeout: 30
+model_tier: haiku
+mechanism: >
+  Microsoft Graph API provides full Azure AD enumeration with a valid access token.
+  /me reveals identity; /users lists all AAD users (requires User.Read.All); /directoryRoles
+  reveals privileged role memberships (Global Admin, Privileged Role Admin, etc.).
+  Service principals with client secrets are high-value targets — secret = cloud shell access.
+  Tokens can be obtained via device code phishing, SSRF hitting managed identity endpoint,
+  or cracked from cached MSAL token files.
+hacktricks_ref: cloud-security/azure-security/az-azure-ad-enumeration.md
+destructive: false
+opsec: medium

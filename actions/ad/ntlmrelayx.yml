@@ -1,6 +1,6 @@
 name: ntlmrelayx
 category: ad
-description: NTLM relay attack — relay captured auth to target service
+description: "NTLM relay attack \u2014 relay captured auth to target service"
 preconditions:
 - has_target
 - os==windows
@@ -17,7 +17,17 @@ falsifier:
   pattern: signing is required|error|refused
   timeout: 600
 model_tier: haiku
-mechanism: 'Intercepts NTLM auth on port 445 and relays to target. Requires: (1) coercion
-  method that callbacks on 445 (PrinterBug/PetitPotam), (2) target without SMB signing
-  required. Can relay to LDAP for ACL abuse, HTTP for ADCS ESC8, SMB for exec.'
+mechanism: 'Intercepts NTLM auth on port 445 and relays to target. Requires: (1) coercion method that callbacks on 445 (PrinterBug/PetitPotam),
+  (2) target without SMB signing required. Can relay to LDAP for ACL abuse, HTTP for ADCS ESC8, SMB for exec.'
 hacktricks_ref: generic-methodologies-and-resources/phishing-methodology/phishing-documents.md
+references:
+  ocd_mindmap_node_ids:
+  - 062be75b7f
+  - 2e722e1dfd
+  - 4a813f076f
+  - 4e7ae0f651
+  - ce1ab2c080
+  - d14de0c864
+  - d5c13f8d8f
+  - e5d3efc957
+  - e7f4a23c61

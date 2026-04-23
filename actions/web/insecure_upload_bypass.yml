@@ -14,6 +14,12 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Bypass extensions: .pHp, .php5, .phtml, .php.jpg. Bypass content-type:
-  multipart type field. Bypass magic bytes: GIF89a prefix. Double extension: shell.php.jpg.'
+mechanism: 'Bypass extensions: .pHp, .php5, .phtml, .php.jpg. Bypass content-type: multipart type field. Bypass magic bytes:
+  GIF89a prefix. Double extension: shell.php.jpg.'
 hacktricks_ref: pentesting-web/sql-injection/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 0a1d0aea4e
+  - 1597fee66a
+  - 4f2e061adb
+  - f7726d187b

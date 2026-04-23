@@ -14,7 +14,9 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Include remote file in PHP (allow_url_include=On). Host PHP web shell on
-  attacker, include via vulnerable parameter. Less common than LFI but gives direct
-  RCE.
+mechanism: Include remote file in PHP (allow_url_include=On). Host PHP web shell on attacker, include via vulnerable parameter.
+  Less common than LFI but gives direct RCE.
 hacktricks_ref: pentesting-web/file-inclusion/README.md
+references:
+  ocd_mindmap_node_ids:
+  - d618a4a7fe

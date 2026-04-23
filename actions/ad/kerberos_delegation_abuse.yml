@@ -15,6 +15,29 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Full delegation attack: (1) Get TGT for compromised service account, (2)
-  S4U2self for ticket to self, (3) S4U2proxy to target SPN as impersonated user.'
+mechanism: 'Full delegation attack: (1) Get TGT for compromised service account, (2) S4U2self for ticket to self, (3) S4U2proxy
+  to target SPN as impersonated user.'
 hacktricks_ref: windows-hardening/active-directory-methodology/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 155b42d9cd
+  - 266e6548d8
+  - 3390534b75
+  - 399c92c461
+  - 5093e2095b
+  - 609a98cdf8
+  - 616254a3bc
+  - 6bfddb9cc2
+  - 76711d19f2
+  - 79afa96e1d
+  - 7db7b90387
+  - a916261ac8
+  - adbb130513
+  - cb0f21dbcf
+  - cd0a1d2990
+  - ce31a781ac
+  - d9683fa976
+  - dad86d3bfa
+  - e190afe523
+  - e198b3963f
+  - f4d15b528e

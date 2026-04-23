@@ -25,6 +25,92 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+# ── Embedding re-ranker (optional — degrades gracefully if not installed) ──
+_RERANKER = None
+_RERANKER_CHECKED = False
+EMBEDDING_RERANK_SHORTLIST = 200   # TF-IDF shortlist size before re-ranking
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+EMBEDDING_CACHE_PATH = "/tmp/tar_embeddings.pkl"
+
+
+def _get_reranker():
+    """Lazy-load the embedding re-ranker. Returns None if unavailable."""
+    global _RERANKER, _RERANKER_CHECKED
+    if _RERANKER_CHECKED:
+        return _RERANKER
+    _RERANKER_CHECKED = True
+    try:
+        from sentence_transformers import SentenceTransformer
+        import numpy as np  # noqa: F401 — verify numpy available too
+        _RERANKER = EmbeddingReranker(EMBEDDING_MODEL)
+    except Exception:
+        _RERANKER = None
+    return _RERANKER
+
+
+class EmbeddingReranker:
+    """Re-ranks TF-IDF candidates using sentence embeddings (cosine similarity)."""
+
+    def __init__(self, model_name: str = EMBEDDING_MODEL):
+        from sentence_transformers import SentenceTransformer
+        self._model = SentenceTransformer(model_name)
+        self._section_cache: dict = {}   # text_hash → embedding
+
+    def _embed(self, texts: List[str]):
+        """Embed a list of texts, using cache for section embeddings."""
+        import numpy as np
+        out = []
+        to_encode_idx = []
+        to_encode_txt = []
+
+        for i, t in enumerate(texts):
+            h = hash(t[:500])
+            if h in self._section_cache:
+                out.append((i, self._section_cache[h]))
+            else:
+                out.append((i, None))
+                to_encode_idx.append(i)
+                to_encode_txt.append(t[:500])
+
+        if to_encode_txt:
+            vecs = self._model.encode(to_encode_txt, batch_size=64, show_progress_bar=False)
+            for idx, vec in zip(to_encode_idx, vecs):
+                h = hash(texts[idx][:500])
+                self._section_cache[h] = vec
+                out[idx] = (idx, vec)
+
+        return np.array([v for _, v in out])
+
+    def rerank(self, query: str, candidates: List[dict], top_n: int = 5) -> List[dict]:
+        """Re-rank candidates by cosine similarity to query embedding."""
+        import numpy as np
+        if not candidates:
+            return candidates
+
+        texts = [c['heading'] + " " + c['text'][:400] for c in candidates]
+        q_vec = self._model.encode([query], show_progress_bar=False)[0]
+        c_vecs = self._embed(texts)
+
+        # Cosine similarity
+        q_norm = q_vec / (np.linalg.norm(q_vec) + 1e-9)
+        c_norms = c_vecs / (np.linalg.norm(c_vecs, axis=1, keepdims=True) + 1e-9)
+        scores = c_norms @ q_norm
+
+        # Blend: 0.4 * embedding + 0.6 * tfidf (normalised to [0,1])
+        tfidf_scores = np.array([c['score'] for c in candidates])
+        max_tf = tfidf_scores.max() or 1.0
+        tfidf_norm = tfidf_scores / max_tf
+        blended = 0.6 * tfidf_norm + 0.4 * scores
+
+        ranked_idx = np.argsort(blended)[::-1]
+        reranked = []
+        for i in ranked_idx[:top_n]:
+            c = dict(candidates[i])
+            c['score'] = float(blended[i])
+            c['embedding_score'] = float(scores[i])
+            reranked.append(c)
+        return reranked
+
 SOURCES = {
     # NOTE: ordering matters — _detect_source returns the first matching root,
     # so the more specific paths (mindmaps, cypher) MUST come before the
@@ -335,13 +421,19 @@ class KnowledgeIndex:
         elapsed = time.time() - t0
         print(f"[KnowledgeIndex] Built index: {len(self.sections)} sections from {len(files)} files in {elapsed:.1f}s", file=sys.stderr)
 
-    def search(self, query: str, source: Optional[str] = None, top_n: int = 5) -> List[dict]:
+    def search(self, query: str, source: Optional[str] = None, top_n: int = 5,
+               use_reranker: bool = True) -> List[dict]:
         """Search the index. Returns list of {heading, text, filepath, source, score}.
+
+        TF-IDF shortlists up to EMBEDDING_RERANK_SHORTLIST candidates; if
+        sentence-transformers is available the shortlist is re-ranked by
+        cosine similarity and blended (60% TF-IDF, 40% embedding).
 
         Args:
             query: Search terms
             source: Filter to 'hacktricks', 'pat', or 'knowledge'
             top_n: Number of results
+            use_reranker: Set False to skip embedding re-rank (faster, less accurate)
         """
         query_tokens = tokenize(query)
         if not query_tokens:
@@ -393,6 +485,20 @@ class KnowledgeIndex:
                 })
 
         results.sort(key=lambda x: x['score'], reverse=True)
+
+        # ── Embedding re-rank shortlist (P2b) ──────────────────────────────
+        # Only run when: caller wants it AND the shortlist is large enough to
+        # benefit AND sentence-transformers is available.
+        if use_reranker and len(results) > top_n:
+            shortlist = results[:EMBEDDING_RERANK_SHORTLIST]
+            reranker = _get_reranker()
+            if reranker is not None:
+                try:
+                    results = reranker.rerank(query, shortlist, top_n=top_n)
+                    return results
+                except Exception:
+                    pass  # fall through to plain TF-IDF
+
         return results[:top_n]
 
     def get_technique_context(self, action_name: str, max_chars: int = 1500) -> str:

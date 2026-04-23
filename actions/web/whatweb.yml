@@ -14,7 +14,9 @@ falsifier:
   pattern: ERROR|Timed out
   timeout: 60
 model_tier: haiku
-mechanism: 'Fingerprints web technologies: CMS (WordPress/Drupal/Joomla), frameworks
-  (Django/Rails/Laravel), languages (PHP/ASP.NET), servers (Apache/Nginx/IIS), JavaScript
-  libraries. -a 3 is aggressive mode.'
+mechanism: 'Fingerprints web technologies: CMS (WordPress/Drupal/Joomla), frameworks (Django/Rails/Laravel), languages (PHP/ASP.NET),
+  servers (Apache/Nginx/IIS), JavaScript libraries. -a 3 is aggressive mode.'
 hacktricks_ref: generic-hacking/tunneling-and-port-forwarding.md
+references:
+  ocd_mindmap_node_ids:
+  - 96b62ba41a

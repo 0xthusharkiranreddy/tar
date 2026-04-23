@@ -7,8 +7,7 @@ parameters:
   target_ip: from_engagement.target_ip
   domain: from_engagement.domain
   wordlist: /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
-command_template: 'ffuf -u http://{target_ip} -H ''Host: FUZZ.{domain}'' -w {wordlist}
-  -mc all -fc 302 -fs 0'
+command_template: 'ffuf -u http://{target_ip} -H ''Host: FUZZ.{domain}'' -w {wordlist} -mc all -fc 302 -fs 0'
 parser: web_response_parser
 expected_effects:
 - vhosts_discovered
@@ -17,7 +16,15 @@ falsifier:
   pattern: 0 results
   timeout: 120
 model_tier: haiku
-mechanism: 'Virtual host enumeration via Host header fuzzing. Filter by response size
-  (-fs) to remove default responses. Add discovered vhosts to /etc/hosts. Common finds:
-  dev.domain, staging.domain, admin.domain, api.domain.'
+mechanism: 'Virtual host enumeration via Host header fuzzing. Filter by response size (-fs) to remove default responses. Add
+  discovered vhosts to /etc/hosts. Common finds: dev.domain, staging.domain, admin.domain, api.domain.'
 hacktricks_ref: pentesting-web/domain-subdomain-takeover.md
+references:
+  ocd_mindmap_node_ids:
+  - 143aaf01c2
+  - 2c668b85a2
+  - 3b38e74d54
+  - 83b738655e
+  - b23ed1f030
+  - f0ce3fe28b
+  - f83b97fd79

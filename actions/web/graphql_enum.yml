@@ -5,8 +5,8 @@ preconditions:
 - service.port==80
 parameters:
   target_ip: from_engagement.target_ip
-command_template: "curl -s '{target_url}/graphql' -H 'Content-Type: application/json'\
-  \ -d '{{\"query\":\"{{__schema{{types{{name fields{{name}}}}}}}}\"}}' \n"
+command_template: "curl -s '{target_url}/graphql' -H 'Content-Type: application/json' -d '{{\"query\":\"{{__schema{{types{{name\
+  \ fields{{name}}}}}}}}\"}}' \n"
 parser: web_response_parser
 expected_effects:
 - graphql_enumerated
@@ -14,7 +14,18 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 120
 model_tier: haiku
-mechanism: 'Introspection query reveals full schema. Look for: sensitive queries (users,
-  admins), mutations (create/update/delete), subscription endpoints. Batching attacks
-  for auth bypass.'
+mechanism: 'Introspection query reveals full schema. Look for: sensitive queries (users, admins), mutations (create/update/delete),
+  subscription endpoints. Batching attacks for auth bypass.'
 hacktricks_ref: network-services-pentesting/pentesting-web/graphql.md
+references:
+  ocd_mindmap_node_ids:
+  - 143aaf01c2
+  - 22ba3664a3
+  - 2bdac601b4
+  - 2c668b85a2
+  - 3b38e74d54
+  - 447a6ac22e
+  - 83b738655e
+  - b23ed1f030
+  - f0ce3fe28b
+  - f83b97fd79

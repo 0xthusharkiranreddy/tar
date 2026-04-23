@@ -15,8 +15,21 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Modern domains often have `MachineAccountQuota > 0` (default 10), allowing
-  any authenticated principal to create up to N computer objects. If you also hold
-  the `SeEnableDelegationPrivilege` token privilege (or equivalent rights), you can
-  set the newl
+mechanism: Modern domains often have `MachineAccountQuota > 0` (default 10), allowing any authenticated principal to create
+  up to N computer objects. If you also hold the `SeEnableDelegationPrivilege` token privilege (or equivalent rights), you
+  can set the newl
 hacktricks_ref: windows-hardening/active-directory-methodology/kerberos-double-hop-problem.md
+references:
+  ocd_mindmap_node_ids:
+  - 0f82415955
+  - 1b081a8c68
+  - 6bfddb9cc2
+  - 76711d19f2
+  - 894ff6002b
+  - 9a2cae2e0f
+  - a75b5b213b
+  - a916261ac8
+  - cb0f21dbcf
+  - ce31a781ac
+  - d9d71da7af
+  - dad86d3bfa

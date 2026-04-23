@@ -14,7 +14,12 @@ falsifier:
   pattern: error|Address already in use
   timeout: 600
 model_tier: haiku
-mechanism: Poisons LLMNR/NBT-NS/mDNS name resolution — when a host fails DNS lookup,
-  Responder answers and captures NTLMv2 hashes. Only captures hashes when target initiates
-  name resolution. Use with coercion (PrinterBug, PetitPotam) for targeted capture.
+mechanism: "Poisons LLMNR/NBT-NS/mDNS name resolution \u2014 when a host fails DNS lookup, Responder answers and captures\
+  \ NTLMv2 hashes. Only captures hashes when target initiates name resolution. Use with coercion (PrinterBug, PetitPotam)\
+  \ for targeted capture."
 hacktricks_ref: windows-hardening/active-directory-methodology/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 1cc03d248d
+  - 711010423d
+  - 8e9ed675da

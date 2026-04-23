@@ -84,6 +84,17 @@ if summary.get('critical_findings'):
 if failed_list:
     state_lines.append(f\"Failed: {', '.join(failed_list[:8])}\")
 
+# ── Stuck detection + lockout guard warnings ──
+try:
+    from world_model import WorldModel as _WM3
+    _wm3 = _WM3(db)
+    stuck_findings = _wm3.get_findings(category='stuck_detection')
+    _wm3.close()
+    for sf in stuck_findings[-1:]:
+        state_lines.append(f\"[STUCK] {sf['description'][:100]}\")
+except Exception:
+    pass
+
 print('## TAR World State')
 for l in state_lines:
     print(l)
@@ -229,6 +240,7 @@ try:
         'user': 'root_access',
         'privesc': 'root_access',
         'root': 'domain_admin',
+        'cloud': 'cloud_data_exfil',
     }
     goal = phase_to_goal.get(phase, 'root_access')
     state = extract_state_predicates(db)

@@ -1,0 +1,36 @@
+name: aws_s3_enum
+category: cloud
+description: Enumerate S3 buckets, check for public read/write, and list bucket contents
+preconditions:
+- cloud.aws_creds_available
+parameters:
+  profile: from_finding.aws_profile
+  target_domain: from_engagement.target_domain
+command_template: >
+  aws s3 ls --profile {profile} 2>&1 | tee /tmp/s3_buckets.txt;
+  python3 -c "
+  import subprocess, sys
+  with open('/tmp/s3_buckets.txt') as f:
+      buckets = [l.split()[-1] for l in f if l.strip() and not l.startswith('2')]
+  for b in buckets[:20]:
+      print(f'=== Bucket: {b} ===')
+      r = subprocess.run(['aws','s3','ls',f's3://{b}','--no-sign-request'],
+                         capture_output=True, text=True)
+      print(r.stdout[:500] or r.stderr[:200])
+  "
+parser: generic_parser
+expected_effects:
+- s3_buckets_discovered
+- cloud_data_exposed
+falsifier:
+  pattern: AccessDenied|NoCredentialProviders|Unable to locate credentials
+  timeout: 60
+model_tier: haiku
+mechanism: >
+  S3 enumeration: list all buckets owned by the account, then check each for public
+  read access via --no-sign-request. Public buckets are a critical misconfiguration —
+  any internet user can read/write without credentials. Also check bucket ACLs and
+  bucket policies for cross-account access grants.
+hacktricks_ref: cloud-security/aws-security/aws-s3-enumeration.md
+destructive: false
+opsec: medium

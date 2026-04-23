@@ -14,7 +14,11 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'SAML attacks: XML signature wrapping (move assertion outside signed portion),
-  comment injection (user<!-->admin), XXE in SAML response, golden SAML with stolen
-  cert.'
+mechanism: 'SAML attacks: XML signature wrapping (move assertion outside signed portion), comment injection (user<!-->admin),
+  XXE in SAML response, golden SAML with stolen cert.'
 hacktricks_ref: network-services-pentesting/49-pentesting-tacacs+.md
+references:
+  ocd_mindmap_node_ids:
+  - 0899176bed
+  - c530b6be65
+  - cb4e0c4e22

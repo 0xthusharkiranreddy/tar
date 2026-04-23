@@ -16,6 +16,11 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Java RCE: deserialization (ysoserial gadgets), JNDI injection (Log4Shell),
-  OGNL injection (Struts), EL injection (JSP/JSF), XXE in XML parsers.'
+mechanism: 'Java RCE: deserialization (ysoserial gadgets), JNDI injection (Log4Shell), OGNL injection (Struts), EL injection
+  (JSP/JSF), XXE in XML parsers.'
 hacktricks_ref: generic-methodologies-and-resources/python/bypass-python-sandboxes/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 59537a4877
+  - 72843488ba
+  - 9488348ef8

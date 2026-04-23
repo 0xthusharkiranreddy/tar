@@ -13,7 +13,13 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'PHP loose comparison (==) treats ''0e123'' as 0 (scientific notation).
-  Magic hashes: MD5(''240610708'')=''0e462097...''. Also: null == false == 0 == ''''
-  in PHP.'
+mechanism: 'PHP loose comparison (==) treats ''0e123'' as 0 (scientific notation). Magic hashes: MD5(''240610708'')=''0e462097...''.
+  Also: null == false == 0 == '''' in PHP.'
 hacktricks_ref: network-services-pentesting/pentesting-web/php-tricks-esp/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 0a1d0aea4e
+  - 1597fee66a
+  - 2e55166d61
+  - 7856563d11
+  - f7726d187b

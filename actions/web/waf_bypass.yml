@@ -13,7 +13,12 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'WAF bypasses: null byte (%00), double URL encoding, Unicode normalization,
-  case variation, comment insertion (e.g., SEL/**/ECT), alternative syntax, chunked
-  encoding.'
+mechanism: 'WAF bypasses: null byte (%00), double URL encoding, Unicode normalization, case variation, comment insertion (e.g.,
+  SEL/**/ECT), alternative syntax, chunked encoding.'
 hacktricks_ref: pentesting-web/sql-injection/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 0a1d0aea4e
+  - 1597fee66a
+  - 4f2e061adb
+  - f7726d187b

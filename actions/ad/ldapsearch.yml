@@ -9,8 +9,7 @@ parameters:
   username: from_cred.username
   password: from_cred.password
   base_dn: from_engagement.base_dn
-command_template: ldapsearch -x -H ldap://{target_ip} -D '{username}@{domain}' -w
-  '{password}' -b '{base_dn}'
+command_template: ldapsearch -x -H ldap://{target_ip} -D '{username}@{domain}' -w '{password}' -b '{base_dn}'
 parser: generic_parser
 expected_effects:
 - ldap_objects_enumerated
@@ -18,7 +17,10 @@ falsifier:
   pattern: Can't contact|Operations error|refused
   timeout: 60
 model_tier: haiku
-mechanism: 'Direct LDAP query. Useful for targeted searches: (servicePrincipalName=*)
-  for SPN users, (userAccountControl:1.2.840.113556.1.4.803:=4194304) for no-preauth,
-  (msDS-AllowedToDelegateTo=*) for delegation.'
+mechanism: 'Direct LDAP query. Useful for targeted searches: (servicePrincipalName=*) for SPN users, (userAccountControl:1.2.840.113556.1.4.803:=4194304)
+  for no-preauth, (msDS-AllowedToDelegateTo=*) for delegation.'
 hacktricks_ref: windows-hardening/windows-local-privilege-escalation/dpapi-extracting-passwords.md
+references:
+  ocd_mindmap_node_ids:
+  - 672b23a4ff
+  - 7856563d11

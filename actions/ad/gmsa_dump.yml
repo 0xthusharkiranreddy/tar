@@ -15,6 +15,20 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Group Managed Service Accounts have passwords stored in msDS-ManagedPassword.
-  Readable by principals in PrincipalsAllowedToRetrieveManagedPassword.
+mechanism: Group Managed Service Accounts have passwords stored in msDS-ManagedPassword. Readable by principals in PrincipalsAllowedToRetrieveManagedPassword.
 hacktricks_ref: mobile-pentesting/android-app-pentesting/frida-tutorial/objection-tutorial.md
+references:
+  ocd_mindmap_node_ids:
+  - 006503e346
+  - 1073601d13
+  - 22e11b52db
+  - 2bc89dc54f
+  - 466c9c04ed
+  - 5b58eef1da
+  - 8221ec262b
+  - a501250b37
+  - a52dacd6cd
+  - b8941ce093
+  - d349432a34
+  - ea7fc6f03d
+  - ffeeb6448f

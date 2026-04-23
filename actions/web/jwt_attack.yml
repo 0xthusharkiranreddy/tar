@@ -14,7 +14,9 @@ falsifier:
   pattern: No vulnerabilities found
   timeout: 60
 model_tier: haiku
-mechanism: 'JWT attacks: alg:none (remove signature), RS256→HS256 confusion (sign
-  with public key as HMAC secret), weak secret brute-force (hashcat -m 16500), kid
-  injection (path traversal or SQL injection in kid header).'
+mechanism: "JWT attacks: alg:none (remove signature), RS256\u2192HS256 confusion (sign with public key as HMAC secret), weak\
+  \ secret brute-force (hashcat -m 16500), kid injection (path traversal or SQL injection in kid header)."
 hacktricks_ref: pentesting-web/hacking-jwt-json-web-tokens.md
+references:
+  ocd_mindmap_node_ids:
+  - 6b9b045393

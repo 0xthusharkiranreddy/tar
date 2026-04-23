@@ -14,6 +14,12 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: PHP unserialize() with gadget chains. PHPGGC generates payloads for Laravel,
-  Symfony, WordPress, Magento, etc. __destruct/__wakeup methods trigger the chain.
+mechanism: PHP unserialize() with gadget chains. PHPGGC generates payloads for Laravel, Symfony, WordPress, Magento, etc.
+  __destruct/__wakeup methods trigger the chain.
 hacktricks_ref: pentesting-web/open-redirect.md
+references:
+  ocd_mindmap_node_ids:
+  - 2eab5a52f2
+  - 3ebca72ae1
+  - cbffbd4d28
+  - f85c2bcff1

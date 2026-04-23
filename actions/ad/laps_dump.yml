@@ -15,6 +15,15 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: LAPS stores local admin passwords in AD attribute ms-Mcs-AdmPwd. Readable
-  by authorized users/groups. LAPSv2 uses ms-LAPS-Password.
+mechanism: LAPS stores local admin passwords in AD attribute ms-Mcs-AdmPwd. Readable by authorized users/groups. LAPSv2 uses
+  ms-LAPS-Password.
 hacktricks_ref: mobile-pentesting/android-app-pentesting/frida-tutorial/objection-tutorial.md
+references:
+  ocd_mindmap_node_ids:
+  - 0d8efdd99f
+  - 366ba5514b
+  - 466c9c04ed
+  - 493e45bf91
+  - 9829e0c622
+  - a52dacd6cd
+  - b8941ce093

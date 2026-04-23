@@ -14,6 +14,31 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: PKINIT authentication using certificate. Returns NT hash via U2U. Can be
-  used for pass-the-hash or further authentication.
+mechanism: PKINIT authentication using certificate. Returns NT hash via U2U. Can be used for pass-the-hash or further authentication.
 hacktricks_ref: generic-hacking/tunneling-and-port-forwarding.md
+references:
+  ocd_mindmap_node_ids:
+  - 12b1671001
+  - 1eab3dd158
+  - 22ee673b33
+  - 23e37dd06d
+  - 2eab5a52f2
+  - 46eaeb66da
+  - 4e40160940
+  - 4ed40b8fd7
+  - 5adb353667
+  - 682b8c0d85
+  - 6ef6b75aa3
+  - 7b1d58ff2d
+  - 8b6b8fb818
+  - 8e36c0129e
+  - 90bea9e4fe
+  - 92b68f891a
+  - 9a318199f3
+  - b4a42ab484
+  - b5b12fca9c
+  - ba64fed1d7
+  - cea4159422
+  - ed94d5a403
+  - f28c278d05
+  - ffd4a7fffc

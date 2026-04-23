@@ -15,7 +15,11 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'BloodHound ACL edges: GenericAll (full control), GenericWrite (modify
-  attrs), WriteDACL (grant rights), WriteOwner (take ownership), ForceChangePassword,
-  AddMember.'
+mechanism: 'BloodHound ACL edges: GenericAll (full control), GenericWrite (modify attrs), WriteDACL (grant rights), WriteOwner
+  (take ownership), ForceChangePassword, AddMember.'
 hacktricks_ref: windows-hardening/active-directory-methodology/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 1fd23b0b69
+  - 2d0198bf76
+  - c2793958f0

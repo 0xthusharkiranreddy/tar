@@ -15,5 +15,19 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Authenticates using NT hash directly. No password needed. Works against
-  SMB, WinRM (via evil-winrm -H), RDP (restricted admin mode).
+mechanism: Authenticates using NT hash directly. No password needed. Works against SMB, WinRM (via evil-winrm -H), RDP (restricted
+  admin mode).
+references:
+  ocd_mindmap_node_ids:
+  - 368417368d
+  - 3abffe2a3a
+  - 3cf99b3510
+  - 4a813f076f
+  - 531d4d3ae2
+  - 58f55da6bd
+  - 64c66b25ca
+  - 76d882e407
+  - 9d24a6572c
+  - adbb130513
+  - be7ddb81ae
+  - fc1a0e8e22

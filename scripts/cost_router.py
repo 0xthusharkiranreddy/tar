@@ -123,8 +123,46 @@ def get_model(db_path: str, role: str) -> str:
     return tier_config.get(role, "haiku")
 
 
+PHASE_PIVOT_THRESHOLD = 5   # consecutive failures before forcing a phase pivot
+CATEGORY_STUCK_THRESHOLD = 3  # same-category failures before suppressing that category
+
+PHASE_ORDER_LIST = ["recon", "foothold", "user", "privesc", "root"]
+
+
+def _detect_stuck_category(db_path: str, wm) -> str | None:
+    """
+    Check if recent failures are concentrated in one action category.
+    Returns the stuck category name, or None if not stuck.
+    """
+    try:
+        rows = wm.conn.execute(
+            "SELECT action_name FROM failed_attempts ORDER BY id DESC LIMIT 8"
+        ).fetchall()
+        if not rows:
+            return None
+        recent = [r[0] for r in rows]
+        # Load action categories
+        from action_ranker import load_all_actions
+        actions_map = {a["name"]: a.get("category", "") for a in load_all_actions()}
+        categories = [actions_map.get(name, "") for name in recent if name in actions_map]
+        if not categories:
+            return None
+        from collections import Counter
+        most_common_cat, count = Counter(categories).most_common(1)[0]
+        if count >= CATEGORY_STUCK_THRESHOLD and most_common_cat:
+            return most_common_cat
+    except Exception:
+        pass
+    return None
+
+
 def record_critic_failure(db_path: str):
-    """Record a critic failure. May trigger auto-escalation."""
+    """
+    Record a critic failure. May trigger:
+      a) Model tier escalation (existing: after ESCALATION_THRESHOLD failures)
+      b) Phase pivot (new: after PHASE_PIVOT_THRESHOLD failures in same phase)
+      c) Category suppression (new: if stuck in same action category)
+    """
     sys.path.insert(0, str(SCRIPTS_DIR))
     from world_model import WorldModel
 
@@ -145,7 +183,34 @@ def record_critic_failure(db_path: str):
         (new_failures, phase),
     )
 
-    # Check escalation
+    result_msgs = []
+
+    # ── Phase pivot (new) ─────────────────────────────────────────
+    # After PHASE_PIVOT_THRESHOLD failures in the same phase, force advancement
+    # rather than burning more tokens on the same dead strategy.
+    if new_failures >= PHASE_PIVOT_THRESHOLD:
+        current_idx = PHASE_ORDER_LIST.index(phase) if phase in PHASE_ORDER_LIST else 0
+        if current_idx < len(PHASE_ORDER_LIST) - 1:
+            next_phase = PHASE_ORDER_LIST[current_idx + 1]
+            wm.advance_phase(next_phase)
+            wm.conn.execute(
+                "UPDATE cost_tracking SET consecutive_failures=0 WHERE phase=?",
+                (phase,),
+            )
+            result_msgs.append(f"PHASE_PIVOT: {phase} → {next_phase} (stuck after {new_failures} failures)")
+
+    # ── Category suppression (new) ────────────────────────────────
+    stuck_cat = _detect_stuck_category(db_path, wm)
+    if stuck_cat:
+        # Write a WM finding so the hook can surface it
+        wm.add_finding(
+            category="stuck_detection",
+            description=f"STUCK in category '{stuck_cat}' — suppressing for this phase, try a different attack vector",
+            severity="warn",
+        )
+        result_msgs.append(f"CATEGORY_STUCK: {stuck_cat} suppressed")
+
+    # ── Model tier escalation (existing) ─────────────────────────
     if new_failures >= ESCALATION_THRESHOLD:
         base_idx = TIER_ORDER.index(base) if base in TIER_ORDER else 1
         current_esc = record["escalated_tier"]
@@ -160,13 +225,11 @@ def record_critic_failure(db_path: str):
                 "UPDATE cost_tracking SET escalated_tier=?, consecutive_failures=0 WHERE phase=?",
                 (new_tier, phase),
             )
-            wm.conn.commit()
-            wm.close()
-            return f"ESCALATED to {new_tier} (was {base}, {new_failures} consecutive failures)"
+            result_msgs.append(f"ESCALATED to {new_tier} (was {base}, {new_failures} failures)")
 
     wm.conn.commit()
     wm.close()
-    return f"failures={new_failures}/{ESCALATION_THRESHOLD}"
+    return " | ".join(result_msgs) if result_msgs else f"failures={new_failures}/{ESCALATION_THRESHOLD}"
 
 
 def record_success(db_path: str):

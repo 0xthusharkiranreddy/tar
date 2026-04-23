@@ -15,7 +15,23 @@ falsifier:
   pattern: not allowed|forbidden|rejected|blocked|invalid
   timeout: 30
 model_tier: haiku
-mechanism: 'Upload web shell (PHP/ASPX/JSP). Bypasses: double extension (shell.php.jpg),
-  null byte (shell.php%00.jpg), content-type spoofing, magic bytes (GIF89a prefix).
-  After upload, access shell at predictable path for command execution.'
+mechanism: 'Upload web shell (PHP/ASPX/JSP). Bypasses: double extension (shell.php.jpg), null byte (shell.php%00.jpg), content-type
+  spoofing, magic bytes (GIF89a prefix). After upload, access shell at predictable path for command execution.'
 hacktricks_ref: pentesting-web/xxe-xee-xml-external-entity.md
+references:
+  ocd_mindmap_node_ids:
+  - 05af50505c
+  - 22ee673b33
+  - 23e37dd06d
+  - 28650fcf4e
+  - 397f7fd7ac
+  - 3a474e7f9a
+  - 4d2e81cfe3
+  - 7abad631b0
+  - 9a318199f3
+  - 9ba0fe0706
+  - b4a42ab484
+  - cda05d1a7b
+  - d618a4a7fe
+  - d7c8eb4071
+  - edcb56b401

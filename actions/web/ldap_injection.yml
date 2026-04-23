@@ -13,7 +13,28 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'LDAP injection in web apps querying LDAP. Bypass auth: *)(uid=*))(|(uid=*.
-  Extract data: *)(password=a* → boolean blind. Common in enterprise SSO/directory
-  lookups.'
+mechanism: "LDAP injection in web apps querying LDAP. Bypass auth: *)(uid=*))(|(uid=*. Extract data: *)(password=a* \u2192\
+  \ boolean blind. Common in enterprise SSO/directory lookups."
 hacktricks_ref: pentesting-web/login-bypass/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 0518e08e96
+  - 062be75b7f
+  - 0b77cc2186
+  - 13896beabf
+  - 22ba3664a3
+  - 2e55166d61
+  - 2e722e1dfd
+  - 366ba5514b
+  - 482ff8f95d
+  - 89859f716b
+  - aded367da3
+  - ae0b6d8e9a
+  - b4a42ab484
+  - b89e703e8f
+  - b8cffbc335
+  - bfb7d8457c
+  - ce1ab2c080
+  - d344079757
+  - d8605e5478
+  - e2afb7298e

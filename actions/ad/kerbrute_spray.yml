@@ -8,8 +8,7 @@ parameters:
   target_ip: from_engagement.target_ip
   domain: from_engagement.domain
   password: from_engagement.spray_password
-command_template: kerbrute passwordspray --dc {target_ip} -d {domain} /tmp/users.txt
-  '{password}'
+command_template: kerbrute passwordspray --dc {target_ip} -d {domain} /tmp/users.txt '{password}'
 parser: generic_parser
 expected_effects:
 - valid_creds_found
@@ -18,7 +17,10 @@ falsifier:
   pattern: 0 valid passwords|error|timeout|locked out
   timeout: 120
 model_tier: haiku
-mechanism: Kerberos pre-auth spray. Faster and stealthier than SMB-based spraying.
-  Does not trigger traditional logon failure events (4625). Use one password per spray
-  round with delay between rounds to avoid lockout.
+mechanism: Kerberos pre-auth spray. Faster and stealthier than SMB-based spraying. Does not trigger traditional logon failure
+  events (4625). Use one password per spray round with delay between rounds to avoid lockout.
 hacktricks_ref: windows-hardening/active-directory-methodology/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 369300702f
+  - 6c398246f1

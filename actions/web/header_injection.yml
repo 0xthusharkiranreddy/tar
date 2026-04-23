@@ -13,6 +13,10 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: "Inject CRLF (\r\n) to add headers. Can set cookies, redirect (Location\
-  \ header), or inject content (double CRLF for response splitting)."
+mechanism: "Inject CRLF (\r\n) to add headers. Can set cookies, redirect (Location header), or inject content (double CRLF\
+  \ for response splitting)."
 hacktricks_ref: binary-exploitation/basic-stack-binary-exploitation-methodology/elf-tricks.md
+references:
+  ocd_mindmap_node_ids:
+  - 9876b802e5
+  - c01fb9d65b

